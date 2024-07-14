@@ -11,7 +11,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "vehicle")
+@Table(name = "vehicles")
 public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,9 +24,9 @@ public class Vehicle {
     @Column(name = "model", columnDefinition = "VARCHAR(15)")
     private String model;
     @Column(name = "license_plate", columnDefinition = "VARCHAR(12)")
-    private String license_plate;
+    private String licensePlate;
     @Column(name = "max_seat")
-    private int max_seats;
+    private int maxSeats;
     @Column(name="status", columnDefinition = "VARCHAR(10)")
     private String status;
 }

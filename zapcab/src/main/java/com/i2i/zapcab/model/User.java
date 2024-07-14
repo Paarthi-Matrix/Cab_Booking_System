@@ -24,7 +24,7 @@ public class User {
     @Column(name="email", columnDefinition = "VARCHAR(20)")
     private String email;
     @Column(name = "phone_number", columnDefinition = "LONG")
-    private Long phone_number;
+    private Long phoneNumber;
     @Column(name = "gender", columnDefinition = "VARCHAR(10)")
     private String gender;
     @Column(name="password", columnDefinition = "VARCHAR(20)")

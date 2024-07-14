@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.Date;
+import java.util.Set;
 
 @Builder
 @Getter
@@ -31,4 +32,7 @@ public class Ride {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "request_id")
     private RideRequest rideRequest;
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "vehicle_id")
+    private Set<Vehicle> vehicles;
 }
