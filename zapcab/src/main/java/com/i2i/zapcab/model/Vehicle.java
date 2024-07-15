@@ -1,9 +1,10 @@
 package com.i2i.zapcab.model;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,4 +33,7 @@ public class Vehicle {
     private int maxSeats;
     @Column(name="status", columnDefinition = "VARCHAR(10)")
     private String status;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "driver_id")
+    private Driver driver;
 }

@@ -20,5 +20,4 @@ public class Customer {
     private int id;
     @Column(name = "tier", nullable = false)
     private String tier;
-
 }

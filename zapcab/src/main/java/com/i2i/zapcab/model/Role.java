@@ -2,6 +2,7 @@ package com.i2i.zapcab.model;
 
 import com.i2i.zapcab.helper.RoleEnum;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -14,6 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Builder
+@Entity
 @Data
 @Table(name = "roles")
 public class Role {

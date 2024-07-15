@@ -2,6 +2,7 @@ package com.i2i.zapcab.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -10,10 +11,9 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Builder
+@Entity
 @Data
 @Table(name = "drivers")
 public class Driver {
@@ -34,7 +34,4 @@ public class Driver {
     private int ratings;
     @Column(name = "wallet", nullable = false)
     private int wallet;
-    @OneToOne(mappedBy = "vehicle", cascade = CascadeType.ALL)
-    @JoinColumn(name = "vehicle_id")
-    private Vehicle vehicle;
 }
