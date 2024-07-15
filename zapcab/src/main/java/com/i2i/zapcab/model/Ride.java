@@ -16,8 +16,7 @@ import java.util.Date;
 import java.util.Set;
 
 @Builder
-@Getter
-@Setter
+@Data
 @Table(name = "rides")
 public class Ride {
     @Id

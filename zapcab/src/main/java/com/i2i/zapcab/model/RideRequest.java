@@ -14,13 +14,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Builder
-@Getter
-@Setter
+@Data
 @Table(name = "ride_request")
 public class RideRequest {
     @Id

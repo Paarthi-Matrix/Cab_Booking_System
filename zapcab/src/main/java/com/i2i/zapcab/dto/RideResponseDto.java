@@ -1,15 +1,12 @@
 package com.i2i.zapcab.dto;
 
-
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Date;
 
+import lombok.Builder;
+import lombok.Data;
+
 @Builder
-@Getter
-@Setter
+@Data
 public class RideResponseDto {
     private String pickupPoint;
     private String dropPoint;

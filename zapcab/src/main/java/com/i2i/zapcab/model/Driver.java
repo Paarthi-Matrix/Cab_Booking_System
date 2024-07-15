@@ -9,12 +9,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Builder
-@Getter
-@Setter
+@Data
 @Table(name = "drivers")
 public class Driver {
     @Id

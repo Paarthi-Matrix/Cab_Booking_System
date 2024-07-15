@@ -11,6 +11,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,8 +20,7 @@ import java.util.UUID;
 
 @Builder
 @Entity
-@Getter
-@Setter
+@Data
 @Table(name = "users")
 public class User {
     @Id

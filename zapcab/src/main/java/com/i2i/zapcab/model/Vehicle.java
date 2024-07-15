@@ -1,6 +1,7 @@
 package com.i2i.zapcab.model;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.Column;
@@ -12,8 +13,7 @@ import jakarta.persistence.Table;
 
 @Builder
 @Entity
-@Getter
-@Setter
+@Data
 @Table(name = "vehicles")
 public class Vehicle {
     @Id

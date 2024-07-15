@@ -1,17 +1,16 @@
 package com.i2i.zapcab.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import lombok.Builder;
+import lombok.Data;
+
 @Builder
-@Getter
-@Setter
+@Data
 public class UpdateDriverPasswordDto {
     @NotNull(message = "Contact number is mandatory")
     @Digits(integer = 10, fraction = 0, message = "Contact number should be a valid number")
