@@ -12,15 +12,17 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
 
+import static com.i2i.zapcab.constant.ZapCabConstant.*;
+
 @Builder
 @Data
 public class RegisterDriverDto {
     @NotBlank(message = "Name is mandatory")
-    @Pattern(regexp = "^[A-Za-z]+$", message = "Name must contain only alphabetic characters")
+    @Pattern(regexp = STRING_REGEX, message = VALID_PATTERN_MESSAGE)
     private String name;
 
     @NotBlank(message = "Region is mandatory")
-    @Pattern(regexp = "^[A-Za-z]+$", message = "Name must contain only alphabetic characters")
+    @Pattern(regexp = STRING_REGEX, message = VALID_PATTERN_MESSAGE)
     private String region;
 
     @NotNull(message = "Contact number is mandatory")
@@ -29,7 +31,7 @@ public class RegisterDriverDto {
 
     @NotBlank(message = "Email is mandatory")
     @Email(message = "Email should be valid")
-    @Pattern(regexp = "^[\\w.-]+@[\\w.-]+\\.com$", message = "Email should contain .com and @")
+    @Pattern(regexp = VALID_EMAIL, message = "Email should contain .com and @")
     private String email;
 
     @NotBlank(message = "License number is mandatory")
@@ -43,9 +45,11 @@ public class RegisterDriverDto {
     private LocalDate dateOfBirth;
 
     @NotBlank(message = "Gender is mandatory")
+    @Pattern(regexp = STRING_REGEX, message = VALID_PATTERN_MESSAGE)
     private String gender;
 
     @NotBlank(message = "License plate is mandatory")
+    @Pattern(regexp = STRING_REGEX)
     private String licensePlate;
 }
 

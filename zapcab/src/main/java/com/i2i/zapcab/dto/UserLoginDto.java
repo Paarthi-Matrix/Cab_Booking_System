@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
+import static com.i2i.zapcab.constant.ZapCabConstant.STRONG_PASSWORD;
+
 @Builder
 @Data
 public class UserLoginDto {
@@ -18,6 +20,6 @@ public class UserLoginDto {
 
     @NotBlank(message = "Password is mandatory")
     @Size(min = 6, message = "Password should have at least 6 characters")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$", message = "Password must contain at least one letter, one number, and one special character")
+    @Pattern(regexp = STRONG_PASSWORD, message = "Password must contain at least one letter, one number, and one special character")
     private String password;
 }

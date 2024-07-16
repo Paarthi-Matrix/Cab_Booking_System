@@ -13,11 +13,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
+import static com.i2i.zapcab.constant.ZapCabConstant.*;
+
 @Builder
 @Data
 public class RegisterCustomerDto {
     @NotBlank(message = "Name is mandatory")
-    @Pattern(regexp = "^[A-Za-z]+$", message = "Name must contain only alphabetic characters")
+    @Pattern(regexp = STRING_REGEX, message = VALID_PATTERN_MESSAGE)
     private String name;
 
     @NotNull(message = "Contact number is mandatory")
@@ -26,11 +28,11 @@ public class RegisterCustomerDto {
 
     @NotBlank(message = "Email is mandatory")
     @Email(message = "Email should be valid")
-    @Pattern(regexp = "^[\\w.-]+@[\\w.-]+\\.com$", message = "Email should contain .com and @")
+    @Pattern(regexp = VALID_EMAIL, message = "Email should contain .com and @")
     private String email;
 
     @NotBlank(message = "Gender is mandatory")
-    @Pattern(regexp = "^[A-Za-z]+$", message = "Gender must contain only alphabetic characters")
+    @Pattern(regexp = STRING_REGEX, message = VALID_PATTERN_MESSAGE)
     private String gender;
 
     @NotNull(message = "Date of birth is mandatory")
@@ -39,7 +41,7 @@ public class RegisterCustomerDto {
 
     @NotBlank(message = "Password is mandatory")
     @Size(min = 6, message = "Password should have at least 6 characters")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$", message = "Password must contain at least one letter, one number, and one special character")
+    @Pattern(regexp = STRONG_PASSWORD, message = "Password must contain at least one letter, one number, and one special character")
     private String password;
 }
 
