@@ -12,36 +12,37 @@ import jakarta.validation.constraints.Size;
 
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.security.core.parameters.P;
 
 import static com.i2i.zapcab.constant.ZapCabConstant.*;
 
 @Builder
 @Data
 public class RegisterCustomerDto {
-    @NotBlank(message = "Name is mandatory")
-    @Pattern(regexp = STRING_REGEX, message = VALID_PATTERN_MESSAGE)
+    @NotBlank(message = NAME_NOT_BLANK)
+    @Pattern(regexp = STRING_REGEX, message =NAME_PATTERN_MESSAGE)
     private String name;
 
-    @NotNull(message = "Contact number is mandatory")
-    @Digits(integer = 10, fraction = 0, message = "Contact number should be a valid number")
-    private Long contactNumber;
+    @NotBlank(message = MOBILE_NUMBER_NOT_BLANK)
+    @Pattern(regexp = MOBILE_NUMBER_REGEX, message = MOBILE_NUMBER_PATTERN_MESSAGE)
+    private String mobileNumber;
 
-    @NotBlank(message = "Email is mandatory")
-    @Email(message = "Email should be valid")
-    @Pattern(regexp = VALID_EMAIL, message = "Email should contain .com and @")
+    @NotBlank(message = EMAIL_NOT_BLANK)
+    @Email(message = EMAIL_PATTERN_MESSAGE)
+    @Pattern(regexp = EMAIL_REGEX, message = EMAIL_PATTERN_MESSAGE)
     private String email;
 
-    @NotBlank(message = "Gender is mandatory")
-    @Pattern(regexp = STRING_REGEX, message = VALID_PATTERN_MESSAGE)
+    @NotBlank(message = GENDER_NOT_BLANK)
+    @Pattern(regexp = STRING_REGEX, message = GENDER_PATTERN_MESSAGE)
     private String gender;
 
-    @NotNull(message = "Date of birth is mandatory")
-    @Past(message = "Date of birth must be a past date")
-    private LocalDate dateOfBirth;
-
-    @NotBlank(message = "Password is mandatory")
-    @Size(min = 6, message = "Password should have at least 6 characters")
-    @Pattern(regexp = STRONG_PASSWORD, message = "Password must contain at least one letter, one number, and one special character")
+    @NotBlank(message = PASSWORD_NOT_BLANK)
+    @Size(min = 6, message = PASSWORD_SIZE)
+    @Pattern(regexp = PASSWORD_REGEX, message = PASSWORD_PATTERN_MESSAGE)
     private String password;
+
+    @NotNull(message = DOB_NOT_NULL)
+    @Past(message = DOB_PAST_MESSAGE)
+    private LocalDate dateOfBirth;
 }
 

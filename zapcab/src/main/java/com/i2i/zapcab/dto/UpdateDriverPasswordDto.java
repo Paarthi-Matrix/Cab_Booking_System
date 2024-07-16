@@ -1,25 +1,28 @@
 package com.i2i.zapcab.dto;
 
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
 import lombok.Builder;
 import lombok.Data;
 
-import static com.i2i.zapcab.constant.ZapCabConstant.STRONG_PASSWORD;
+import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_REGEX;
+import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_REGEX;
+import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_SIZE;
 
 @Builder
 @Data
 public class UpdateDriverPasswordDto {
-    @NotNull(message = "Contact number is mandatory")
-    @Digits(integer = 10, fraction = 0, message = "Contact number should be a valid number")
-    private Long contactNumber;
+    @NotBlank(message = MOBILE_NUMBER_NOT_BLANK)
+    @Pattern(regexp = MOBILE_NUMBER_REGEX, message = MOBILE_NUMBER_PATTERN_MESSAGE)
+    private String contactNumber;
 
-    @NotBlank(message = "Password is mandatory")
-    @Size(min = 6, message = "Password should have at least 6 characters")
-    @Pattern(regexp = STRONG_PASSWORD, message = "Password must contain at least one letter, one number, and one special character")
+    @NotBlank(message = PASSWORD_NOT_BLANK)
+    @Size(min = 6, message = PASSWORD_SIZE)
+    @Pattern(regexp = PASSWORD_REGEX, message = PASSWORD_PATTERN_MESSAGE)
     private String password;
 }

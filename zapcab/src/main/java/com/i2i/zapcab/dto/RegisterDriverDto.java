@@ -1,55 +1,54 @@
 package com.i2i.zapcab.dto;
 
-import java.time.LocalDate;
-
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
-
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 import static com.i2i.zapcab.constant.ZapCabConstant.*;
 
 @Builder
 @Data
 public class RegisterDriverDto {
-    @NotBlank(message = "Name is mandatory")
-    @Pattern(regexp = STRING_REGEX, message = VALID_PATTERN_MESSAGE)
+    @NotBlank(message = NAME_NOT_BLANK)
+    @Pattern(regexp = STRING_REGEX, message = NAME_PATTERN_MESSAGE)
     private String name;
 
-    @NotBlank(message = "Region is mandatory")
-    @Pattern(regexp = STRING_REGEX, message = VALID_PATTERN_MESSAGE)
+    @NotBlank(message = REGION_NOT_BLANK)
+    @Pattern(regexp = STRING_REGEX, message = REGION_PATTERN_MESSAGE)
     private String region;
 
-    @NotNull(message = "Contact number is mandatory")
-    @Digits(integer = 10, fraction = 0, message = "Contact number should be a valid number")
-    private Long contactNumber;
+    @NotBlank(message = MOBILE_NUMBER_NOT_BLANK)
+    @Pattern(regexp = MOBILE_NUMBER_REGEX, message = MOBILE_NUMBER_PATTERN_MESSAGE)
+    private String mobileNumber;
 
-    @NotBlank(message = "Email is mandatory")
-    @Email(message = "Email should be valid")
-    @Pattern(regexp = VALID_EMAIL, message = "Email should contain .com and @")
+    @NotBlank(message = EMAIL_NOT_BLANK)
+    @Email(message = EMAIL_PATTERN_MESSAGE)
+    @Pattern(regexp = EMAIL_REGEX, message = EMAIL_PATTERN_MESSAGE)
     private String email;
 
-    @NotBlank(message = "License number is mandatory")
-    private String licenseNo;
+    @NotBlank(message = LICENSE_NUMBER_NOT_BLANK)
+    @Pattern(regexp = LICENSE_NUMBER_REGEX)
+    private String licenseNumber;
 
-    @NotBlank(message = "RC Book number is mandatory")
+    @NotBlank(message = RC_BOOK_NOT_BLANK)
     private String rcBookNo;
 
-    @NotNull(message = "Date of birth is mandatory")
-    @Past(message = "Date of birth must be a past date")
+    @NotNull(message = DOB_NOT_NULL)
+    @Past(message = DOB_PAST_MESSAGE)
     private LocalDate dateOfBirth;
 
-    @NotBlank(message = "Gender is mandatory")
-    @Pattern(regexp = STRING_REGEX, message = VALID_PATTERN_MESSAGE)
+    @NotBlank(message = GENDER_NOT_BLANK)
+    @Pattern(regexp = VALID_GENDER, message = GENDER_PATTERN_MESSAGE)
     private String gender;
 
-    @NotBlank(message = "License plate is mandatory")
-    @Pattern(regexp = STRING_REGEX)
+    @NotBlank(message = LICENSE_PLATE_NOT_BLANK)
+    @Pattern(regexp = LICENSE_PLATE_REGEX)
     private String licensePlate;
 }
 
