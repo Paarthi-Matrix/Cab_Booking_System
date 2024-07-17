@@ -1,11 +1,6 @@
 package com.i2i.zapcab.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import lombok.Builder;
 import lombok.Data;
@@ -20,4 +15,7 @@ public class Customer {
     private int id;
     @Column(name = "tier", nullable = false)
     private String tier;
+    @OneToOne
+    @JoinColumn(name = "user_id",nullable = false)
+    private User user;
 }

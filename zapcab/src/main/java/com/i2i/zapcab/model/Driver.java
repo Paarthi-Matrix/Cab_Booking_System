@@ -34,4 +34,7 @@ public class Driver {
     private int ratings;
     @Column(name = "wallet", nullable = false)
     private int wallet;
+    @OneToOne
+    @JoinColumn(name = "user_id",nullable = false)
+    private User user;
 }

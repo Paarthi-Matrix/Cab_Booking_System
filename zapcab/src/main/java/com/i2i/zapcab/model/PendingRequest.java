@@ -11,8 +11,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -32,15 +30,15 @@ public class PendingRequest {
     private String city;
     @Column(name = "rc_book_no", nullable = false)
     private String rcBookNo;
-    @Column(name = "date_of_birth",nullable = false)
+    @Column(name = "date_of_birth", nullable = false)
     private LocalDate dob;
-    @Column(name = "phone_number", columnDefinition = "LONG")
-    private Long phoneNumber;
+    @Column(name = "mobile_number")
+    private String mobileNumber;
     @Column(name = "gender", columnDefinition = "VARCHAR(10)")
     private String gender;
     @Column(name = "status", columnDefinition = "VARCHAR(15)")
     private String status;
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST })
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "user_id")
     private User user;
 }

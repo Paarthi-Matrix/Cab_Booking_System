@@ -1,20 +1,33 @@
 package com.i2i.zapcab.dto;
 
-import java.time.LocalDate;
-
-import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.security.core.parameters.P;
 
-import static com.i2i.zapcab.constant.ZapCabConstant.*;
+import java.time.LocalDate;
+
+import static com.i2i.zapcab.constant.ZapCabConstant.DOB_NOT_NULL;
+import static com.i2i.zapcab.constant.ZapCabConstant.DOB_PAST_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.EMAIL_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.EMAIL_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.EMAIL_REGEX;
+import static com.i2i.zapcab.constant.ZapCabConstant.GENDER_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.GENDER_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_REGEX;
+import static com.i2i.zapcab.constant.ZapCabConstant.NAME_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.NAME_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_REGEX;
+import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_SIZE;
+import static com.i2i.zapcab.constant.ZapCabConstant.STRING_REGEX;
 
 @Builder
 @Data

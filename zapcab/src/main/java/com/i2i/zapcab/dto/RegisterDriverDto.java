@@ -10,7 +10,27 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
-import static com.i2i.zapcab.constant.ZapCabConstant.*;
+import static com.i2i.zapcab.constant.ZapCabConstant.DOB_NOT_NULL;
+import static com.i2i.zapcab.constant.ZapCabConstant.DOB_PAST_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.EMAIL_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.EMAIL_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.EMAIL_REGEX;
+import static com.i2i.zapcab.constant.ZapCabConstant.GENDER_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.GENDER_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.LICENSE_NUMBER_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.LICENSE_NUMBER_REGEX;
+import static com.i2i.zapcab.constant.ZapCabConstant.LICENSE_PLATE_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.LICENSE_PLATE_REGEX;
+import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_REGEX;
+import static com.i2i.zapcab.constant.ZapCabConstant.NAME_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.NAME_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.RC_BOOK_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.REGION_NOT_BLANK;
+import static com.i2i.zapcab.constant.ZapCabConstant.REGION_PATTERN_MESSAGE;
+import static com.i2i.zapcab.constant.ZapCabConstant.STRING_REGEX;
+import static com.i2i.zapcab.constant.ZapCabConstant.VALID_GENDER;
 
 @Builder
 @Data
