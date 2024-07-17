@@ -7,7 +7,8 @@ public class ZapCabConstant {
     public static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$";
     public static final String VALID_GENDER = ("male|female|m|f|others");
     public static final String MOBILE_NUMBER_REGEX = "(0|91)?[6-9][0-9]{9}";
-    public static final String LICENSE_NUMBER_REGEX = "^(([A-Z]{2}[0-9]{2})( )|([A-Z]{2}-[0-9]{2}))((19|20)[0-9][0-9])[0-9]{7}$";
+    public static final String LICENSE_NUMBER_REGEX = "^(([A-Z]{2}[0-9]{2})( )|([A-Z]{2}-[0-9]{2}))((19|20)[0-9]" +
+            "[0-9])[0-9]{7}$";
     public static final String LICENSE_PLATE_REGEX = ("([A-Z]{2}[ -][0-9]{1,2}[ -][A-Z]{1,2}[ -][0-9]{4})");
 
     //Message

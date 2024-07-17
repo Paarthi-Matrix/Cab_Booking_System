@@ -20,7 +20,7 @@ import lombok.Data;
 public class VehicleLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int d;
+    private int id;
     @Column(name = "location", nullable = false)
     private String location;
     @OneToOne(cascade = CascadeType.ALL)
