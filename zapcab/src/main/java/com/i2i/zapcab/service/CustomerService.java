@@ -1,8 +1,13 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.dto.RideResponseDto;
+import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
+import com.i2i.zapcab.dto.RideRequestResponseDto;
+
+import java.util.List;
 
 public interface CustomerService {
 
-    public RideResponseDto getCustomerBookingResult(String id);
+
+    List<RideRequestResponseDto> getAvailableVehiclesWithFare(CheckVehicleAvailabilityDto
+                                                              checkVehicleAvailabilityDto);
 }

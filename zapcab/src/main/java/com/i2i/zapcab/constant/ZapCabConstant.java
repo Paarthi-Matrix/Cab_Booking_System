@@ -32,4 +32,28 @@ public class ZapCabConstant {
     public static final String GENDER_PATTERN_MESSAGE = "Gender is not valid";
     public static final String MOBILE_NUMBER_PATTERN_MESSAGE = "Mobile number must be a valid number";
     public static final String LICENSE_PLATE_NOT_BLANK = "License plate is mandatory";
+
+    //Cab Category
+    public static final String XUV = "xuv";
+    public static final String SEDAN = "sedan";
+    public static final String MINI = "mini";
+    public static final String AUTO = "auto";
+    public static final String BIKE = "bike";
+
+    //Category wise rate
+    public static final int XUV_RATE_PER_KM = 15;
+    public static final int SEDAN_RATE_PER_KM = 10;
+    public static final int MINI_RATE_PER_KM = 8;
+    public static final int AUTO_RATE_PER_KM = 5;
+    public static final int BIKE_RATE_PER_KM = 3;
+
+    //Category wise speed
+    public static final int XUV_SPEED_PER_KM = 80;
+    public static final int SEDAN_SPEED_PER_KM = 70;
+    public static final int MINI_SPEED_PER_KM = 70;
+    public static final int AUTO_SPEED_PER_KM = 60;
+    public static final int BIKE_SPEED_PER_KM = 60;
+    //fare
+    public static final int NORMAL_RATE = 2;
+    public static final int PEAK_RATE = 3;
 }
