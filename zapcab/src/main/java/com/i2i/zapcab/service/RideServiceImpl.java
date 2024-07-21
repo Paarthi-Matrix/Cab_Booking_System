@@ -1,6 +1,9 @@
 package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.RideRatingDto;
+import com.i2i.zapcab.dto.RideRequestDto;
+import com.i2i.zapcab.dto.RideResponseDto;
+import com.i2i.zapcab.dto.StatusDto;
 import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.mapper.RideMapper;
 import com.i2i.zapcab.exception.UnexpectedException;
@@ -54,5 +57,25 @@ public class RideServiceImpl implements RideService{
         } catch (Exception e) {
             throw new UnexpectedException("Error Occurred while get ride by ride request id:" + id, e);
         }
+    }
+
+    @Override
+    public RideResponseDto getRide(int id) {
+        return null;
+    }
+
+    @Override
+    public RideResponseDto updateRideStatus(int id, StatusDto statusDto) {
+        return null;
+    }
+
+    @Override
+    public RideResponseDto updateRide(int id, RideRequestDto rideRequestDto) {
+        return null;
+    }
+
+    @Override
+    public String trackRideStatus(int id) {
+        return "";
     }
 }

@@ -62,9 +62,6 @@ public class AdminServiceImpl implements AdminService {
             throw new UnexpectedException("Unable to retrieve the pending requests list", e);
         }
     }
-
-        return requests;
-    }
     @Override
     public AuthenticationResponseDto updatePendingRequest(UpdatePendingRequestDto updatePendingRequestDto) {
         logger.info("Starting to update pending request for phone number: {}",
