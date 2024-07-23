@@ -1,13 +1,13 @@
 package com.i2i.zapcab.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
-import lombok.Builder;
-import lombok.Data;
-
+@Data
 @Builder
 @Entity
-@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "customers")
 public class Customer {
     @Id
@@ -15,7 +15,7 @@ public class Customer {
     private int id;
     @Column(name = "tier", nullable = false)
     private String tier;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id",nullable = false)
     private User user;
 }

@@ -70,12 +70,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        if (request.getServletPath().contains("/v1/auth")) {
+        if (request.getServletPath().contains("/v1/auth") ||
+        request.getServletPath().contains("/v1/admins")) {
             logger.debug("Hit endpoint for auth. Passing to next filter chain.");
             filterChain.doFilter(request, response);
             return;
         }
         final String authHeader = request.getHeader(AUTHORIZATION_HEADER);
+        System.out.println("auth header"+authHeader);
         String jwt = "";
         final String userId;
         if (authHeader == null ||!authHeader.startsWith(BEARER_HEADER)) {
@@ -84,12 +86,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         jwt = authHeader.substring(7);//todo
         userId = jwtService.extractUsername(jwt);
-        System.out.println("the user id"+userId);
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userId);
-            System.out.println("user name"+userDetails.getUsername());
             if (jwtService.isTokenValid(jwt, userDetails)) {
-                System.out.println("token valid!");
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -100,11 +99,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
-        }   
+        }
         if (isAuthorized(request)) {
-
+            logger.debug("The request authorized");
             filterChain.doFilter(request, response);
-            System.out.println("The request authorized");
         } else {
             System.out.println("The request is not authorized");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);

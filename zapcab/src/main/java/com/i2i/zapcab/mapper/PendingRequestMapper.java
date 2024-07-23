@@ -1,10 +1,11 @@
 package com.i2i.zapcab.mapper;
 
 import com.i2i.zapcab.dto.RegisterDriverDto;
+import com.i2i.zapcab.dto.RegisterDriverRequestDto;
 import com.i2i.zapcab.model.PendingRequest;
 
 public class PendingRequestMapper {
-    public PendingRequest dtoToEntity(RegisterDriverDto registerDriverDto){
+    public PendingRequest dtoToEntity(RegisterDriverRequestDto registerDriverDto){
         return PendingRequest.builder().
                 name(registerDriverDto.getName()).
                 email(registerDriverDto.getEmail()).
@@ -21,8 +22,8 @@ public class PendingRequestMapper {
                 rcBookNo(registerDriverDto.getRcBookNo()).build();
     }
 
-    public RegisterDriverDto entityToDto(PendingRequest pendingRequest){
-        return RegisterDriverDto.builder().
+    public RegisterDriverRequestDto entityToDto(PendingRequest pendingRequest){
+        return RegisterDriverRequestDto.builder().
                 name(pendingRequest.getName()).
                 email(pendingRequest.getEmail()).
                 mobileNumber(pendingRequest.getMobileNumber()).

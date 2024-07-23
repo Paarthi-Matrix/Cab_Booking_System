@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
@@ -34,7 +36,9 @@ import static com.i2i.zapcab.constant.ZapCabConstant.VALID_GENDER;
 
 @Builder
 @Data
-public class RegisterDriverDto {
+@NoArgsConstructor
+@AllArgsConstructor
+public class RegisterDriverRequestDto {
     @NotBlank(message = NAME_NOT_BLANK)
     @Pattern(regexp = STRING_REGEX, message = NAME_PATTERN_MESSAGE)
     private String name;
@@ -42,7 +46,7 @@ public class RegisterDriverDto {
     @NotBlank(message = REGION_NOT_BLANK)
     @Pattern(regexp = STRING_REGEX, message = REGION_PATTERN_MESSAGE)
     private String region;
-
+    private String city;
     @NotBlank(message = MOBILE_NUMBER_NOT_BLANK)
     @Pattern(regexp = MOBILE_NUMBER_REGEX, message = MOBILE_NUMBER_PATTERN_MESSAGE)
     private String mobileNumber;
@@ -70,5 +74,7 @@ public class RegisterDriverDto {
     @NotBlank(message = LICENSE_PLATE_NOT_BLANK)
     @Pattern(regexp = LICENSE_PLATE_REGEX)
     private String licensePlate;
+    private String category;
+    private String type;
+    private String model;
 }
-

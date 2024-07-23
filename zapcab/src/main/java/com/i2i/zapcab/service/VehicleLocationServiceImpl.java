@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.i2i.zapcab.model.Vehicle;
 import com.i2i.zapcab.model.VehicleLocation;
 import com.i2i.zapcab.repository.VehicleLocationRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,12 +15,15 @@ public class VehicleLocationServiceImpl implements VehicleLocationService {
 
     @Autowired
     VehicleLocationRepository vehicleLocationRepository;
+
     @Override
+    @Transactional
     public VehicleLocation getVehicleLocationById(int id) {
         return null;
     }
 
     @Override
+    @Transactional
     public void updateVehicleLocationByVehicleId(String location, Vehicle vehicle) {
         VehicleLocation vehicleLocation = vehicleLocationRepository.findByVehicleId(vehicle.getId());
         vehicleLocation.setLocation(location);

@@ -17,9 +17,4 @@ public class PinGeneration {
         return randomString;
     }
 
-    public static boolean pinVerification(String generatedPin, String customerPin) {
-        String firstPart = generatedPin.substring(0, generatedPin.length() / 2);
-        String fullCustomerPin = firstPart + customerPin;
-        return generatedPin.equals(fullCustomerPin);
-    }
 }

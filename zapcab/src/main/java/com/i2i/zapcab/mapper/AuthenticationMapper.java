@@ -1,9 +1,9 @@
 package com.i2i.zapcab.mapper;
 
-import com.i2i.zapcab.dto.AuthenticationResponse;
+import com.i2i.zapcab.dto.AuthenticationResponseDto;
 
 public class AuthenticationMapper {
-    public AuthenticationResponse tokenToResponseToken(String token){
-        return AuthenticationResponse.builder().token(token).build();
+    public AuthenticationResponseDto tokenToResponseToken(String token){
+        return AuthenticationResponseDto.builder().token(token).build();
     }
 }

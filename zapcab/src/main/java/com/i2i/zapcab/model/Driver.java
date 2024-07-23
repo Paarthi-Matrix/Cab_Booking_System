@@ -34,7 +34,9 @@ public class Driver {
     private int ratings;
     @Column(name = "wallet", nullable = false)
     private int wallet;
-    @OneToOne
-    @JoinColumn(name = "user_id",nullable = false)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
     private User user;
+    @OneToOne(cascade = CascadeType.PERSIST)
+    private Vehicle vehicle;
 }

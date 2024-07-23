@@ -2,10 +2,6 @@ package com.i2i.zapcab.service;
 
 import java.util.List;
 
-import com.i2i.zapcab.dto.RegisterUserRequestDto;
-import com.i2i.zapcab.exception.AuthenticationException;
-import com.i2i.zapcab.exception.NotFoundException;
-import com.i2i.zapcab.repository.CustomerRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,61 +9,78 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import com.i2i.zapcab.config.JwtService;
+import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.AuthenticationRequestDto;
-import com.i2i.zapcab.dto.AuthenticationResponse;
-import com.i2i.zapcab.dto.RegisterDriverDto;
-import com.i2i.zapcab.model.*;
-import com.i2i.zapcab.repository.PendingRequestsRepository;
+import com.i2i.zapcab.dto.DriverRegisterResponseDto;
+import com.i2i.zapcab.dto.RegisterCustomerRequestDto;
+import com.i2i.zapcab.dto.RegisterDriverRequestDto;
+import com.i2i.zapcab.exception.AuthenticationException;
+import com.i2i.zapcab.exception.NotFoundException;
+import com.i2i.zapcab.model.Customer;
+import com.i2i.zapcab.model.PendingRequest;
+import com.i2i.zapcab.model.Role;
+import com.i2i.zapcab.model.User;
+import com.i2i.zapcab.repository.CustomerRepository;
+import com.i2i.zapcab.repository.PendingRequestRepository;
 import com.i2i.zapcab.repository.RoleRepository;
 import com.i2i.zapcab.repository.UserRepository;
 
+import static com.i2i.zapcab.constant.ZapCabConstant.*;
 
 @Service
-public class AuthenticationServiceImpl implements AuthenticationService {
-    private static final Logger logger = LogManager.getLogger(AdminServiceImpl.class);
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    JwtService jwtService;
-    @Autowired
-    AuthenticationManager authenticationManager;
-    @Autowired
-    RoleRepository repository;
-    @Autowired
-    CustomerRepository customerRepository;
-    @Autowired
-    PendingRequestsRepository pendingRequestsRepository;
-    @Autowired
-    PasswordEncoder passwordEncoder;
+public class AuthenticationServiceImpl implements  AuthenticationService {
 
-    public AuthenticationResponse customerRegister(RegisterUserRequestDto registerRequestDto) {
-        try {
-            logger.debug("Starting customer registration for email: {}", registerRequestDto.getEmail());
-            List<Role> roles = repository.findByRoleType(registerRequestDto.getRole());
-            User user = User.builder().name(registerRequestDto.getName()).dateOfBirth(registerRequestDto.getDateOfBirth())
-                    .email(registerRequestDto.getEmail()).gender(registerRequestDto.getGender())
-                    .mobileNumber(registerRequestDto.getMobileNumber()).password(passwordEncoder.encode(registerRequestDto.getPassword()))
-                    .role(roles).build();
-            Customer customer = Customer.builder().tier("Bronze").user(user).build();
-            userRepository.save(user);
-            customerRepository.save(customer);
-            logger.debug("Customer registration successful for email: {}", registerRequestDto.getEmail());
-            String jwtToken = jwtService.generateToken(user);
-            return AuthenticationResponse.builder()
-                    .token(jwtToken).build();
-        } catch (Exception e) {
-            logger.error("Customer registration failed for email: {}", registerRequestDto.getEmail(), e);
-            throw new AuthenticationException("Cannot register customer: " + registerRequestDto.getEmail(), e);
-        }
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private JwtService jwtService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
+    private RoleRepository repository;
+    @Autowired
+    private PendingRequestRepository pendingRequestRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private static Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
+
+    @Override
+    @Transactional
+    public AuthenticationResponseDto customerRegister(RegisterCustomerRequestDto registerRequestDto) {
+        List<Role> roles = repository.findByRoleType(registerRequestDto.getRole());
+        User user = User.builder()
+                .name(registerRequestDto.getName())
+                .dateOfBirth(registerRequestDto.getDateOfBirth())
+                .email(registerRequestDto.getEmail())
+                .gender(registerRequestDto.getGender())
+                .mobileNumber(registerRequestDto.getPhoneNumber())
+                .password(passwordEncoder.encode(registerRequestDto.getPassword()))
+                .role(roles)
+                .build();
+        Customer customer = Customer.builder()
+                .tier(INITIAL_CUSTOMER_TIRE)
+                .user(user)
+                .build();
+        userRepository.save(user);
+        customerRepository.save(customer);
+        logger.info("Customer registered successfully!");
+        String jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponseDto.builder()
+                .token(jwtToken).build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequestDto authenticationRequestDto) {
+    @Override
+    public AuthenticationResponseDto authenticate (AuthenticationRequestDto authenticationRequestDto) {
         User user = userRepository.findByMobileNumber(authenticationRequestDto.getPhoneNumber());
-
         if (ObjectUtils.isEmpty(user)) {
+            logger.info("No user with given mobile number is found in the database.");
             throw new NotFoundException("No user with phone number " +
                     authenticationRequestDto.getPhoneNumber() +
                     " found in database!");
@@ -84,45 +97,36 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             );
         } catch (Exception e) {
             logger.debug("Authentication failed: " + e.getMessage());
-            throw new AuthenticationException("Invalid credentials credentials", e);
+            throw new AuthenticationException("Invalid credentials credentials",e);
         }
         logger.debug("Fetched user: " + (user != null ? user.getName() : "null"));
         String jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        return AuthenticationResponseDto.builder().token(jwtToken).build();
     }
 
     @Override
-    public AuthenticationResponse adminRegister(RegisterUserRequestDto registerRequestDto) {
-        List<Role> roles = repository.findByRoleType(registerRequestDto.getRole());
-        User user = User.builder().name(registerRequestDto.getName())
-                .dateOfBirth(registerRequestDto.getDateOfBirth()).email(registerRequestDto.getEmail())
-                .gender(registerRequestDto.getGender()).mobileNumber(registerRequestDto.getMobileNumber())
-                .password(passwordEncoder.encode(registerRequestDto.getPassword())).role(roles)
-                .build();
-        userRepository.save(user);
-        String jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken).build();
-    }
-
-    public AuthenticationResponse driverRequest(RegisterDriverDto registerDriverDto) {
+    @Transactional
+    public DriverRegisterResponseDto driverRegisterRequest(RegisterDriverRequestDto registerDriverRequestDto) {
         PendingRequest pendingRequest = PendingRequest.builder()
-                .name(registerDriverDto.getName())
-                .email(registerDriverDto.getEmail())
-                .region(registerDriverDto.getRegion())
-                .licenseNo(registerDriverDto.getLicenseNumber())
-                .rcBookNo(registerDriverDto.getRcBookNo())
-                .status("pending")
-                .city(registerDriverDto.getCity())
-                .dob(registerDriverDto.getDateOfBirth())
-                .gender(registerDriverDto.getGender())
-                .mobileNumber(registerDriverDto.getMobileNumber())
-                .category(registerDriverDto.getCategory())
-                .model(registerDriverDto.getModel())
-                .type(registerDriverDto.getType())
-                .licensePlate(registerDriverDto.getLicensePlate())
+                .name(registerDriverRequestDto.getName())
+                .email(registerDriverRequestDto.getEmail())
+                .region(registerDriverRequestDto.getRegion())
+                .licenseNo(registerDriverRequestDto.getLicenseNumber())
+                .rcBookNo(registerDriverRequestDto.getRcBookNo())
+                .status(INITIAL_STATUS_OF_DRIVER)
+                .city(registerDriverRequestDto.getCity())
+                .dob(registerDriverRequestDto.getDateOfBirth())
+                .gender(registerDriverRequestDto.getGender())
+                .mobileNumber(registerDriverRequestDto.getMobileNumber())
+                .category(registerDriverRequestDto.getCategory())
+                .model(registerDriverRequestDto.getModel())
+                .type(registerDriverRequestDto.getType())
+                .remarks(INITIAL_REMARKS)
+                .licensePlate(registerDriverRequestDto.getLicensePlate())
                 .build();
-        pendingRequestsRepository.save(pendingRequest);
-        return AuthenticationResponse.builder().token("Applied successfully").build();
+        pendingRequestRepository.save(pendingRequest);
+        return DriverRegisterResponseDto.builder()
+                .status("Driver added to the pending request successfully!")
+                .build();
     }
 }

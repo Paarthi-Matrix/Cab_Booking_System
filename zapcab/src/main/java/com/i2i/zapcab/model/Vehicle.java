@@ -33,7 +33,4 @@ public class Vehicle {
     private int maxSeats;
     @Column(name="status", columnDefinition = "VARCHAR(10)")
     private String status;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "driver_id")
-    private Driver driver;
 }

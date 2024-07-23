@@ -14,19 +14,28 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Builder
 @Entity
 @Data
 @Table(name = "users")
-public class User {
+@NoArgsConstructor
+@AllArgsConstructor
+public class User implements UserDetails {
     @Id
     private String id;
     @Column(name="name", columnDefinition = "VARCHAR(20)", nullable = false)
     private String name;
-    @Column(name="email", columnDefinition = "VARCHAR(20)")
+    @Column(name="email", columnDefinition = "VARCHAR(50)")
     private String email;
     @Column(name = "mobile_number")
     private String mobileNumber;
@@ -36,14 +45,48 @@ public class User {
     private String password;
     @Column(name = "date_of_birth",nullable = false)
     private LocalDate dateOfBirth;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> role;
+
     @PrePersist
     protected void onCreate() {
         if (this.id == null) {
             this.id = UUID.randomUUID().toString();
         }
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return role.stream()
+                .map(r -> new SimpleGrantedAuthority(r.getRoleName().toString()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUsername() {
+        return id;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

@@ -1,7 +1,7 @@
 package com.i2i.zapcab.constant;
 
 public class ZapCabConstant {
-    //Regex
+    /**Regex*/
     public static final String STRING_REGEX = "^[A-Za-z]+$";
     public static final String EMAIL_REGEX = "^[\\w.-]+@[\\w.-]+\\.com$";
     public static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])" +
@@ -12,7 +12,7 @@ public class ZapCabConstant {
             "((19|20)[0-9][0-9])[0-9]{7}$";
     public static final String LICENSE_PLATE_REGEX = ("([A-Z]{2}[ -][0-9]{1,2}[ -][A-Z]" +
             "{1,2}[ -][0-9]{4})");
-    //Message
+    /**Message*/
     public static final String NAME_NOT_BLANK = "Name is mandatory";
     public static final String NAME_PATTERN_MESSAGE = "Name must contain only alphabetic characters";
     public static final String REGION_NOT_BLANK = "Region is mandatory";
@@ -60,4 +60,9 @@ public class ZapCabConstant {
     public static final String REQUEST_STATUS = "Pending";
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_HEADER = "Bearer ";
+    public static final String INITIAL_STATUS_OF_DRIVER = "Pending";
+    public static final String INITIAL_CUSTOMER_TIRE = "Bronze";
+    public static final String INITIAL_REMARKS = " ";
+    public static final String INITIAL_VEHICLE_STATUS = "Unavailable";
+    public static final String INITIAL_DRIVER_STATUS = "OFF-DUTY";
 }

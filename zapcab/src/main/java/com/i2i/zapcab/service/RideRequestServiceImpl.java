@@ -2,7 +2,6 @@ package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.RideRequestDto;
-import com.i2i.zapcab.mapper.RideRequestMapper;
 import com.i2i.zapcab.model.Customer;
 import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.repository.RideRequestRepository;
