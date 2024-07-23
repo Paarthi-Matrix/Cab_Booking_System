@@ -11,7 +11,7 @@ public class RideRequestDto {
     private String pickupPoint;
     private String dropPoint;
     private String vehicleCategory;
-    private int distance;
     private int fare;
     private Date dropTime;
+    private int distance;
 }

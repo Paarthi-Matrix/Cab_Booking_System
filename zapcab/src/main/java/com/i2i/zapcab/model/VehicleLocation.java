@@ -9,14 +9,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Builder
 @Data
-@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "vehicle_location")
+@Entity
 public class VehicleLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

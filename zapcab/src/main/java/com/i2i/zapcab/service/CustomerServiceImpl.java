@@ -1,86 +1,72 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.common.FareCalculator;
 import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
+import com.i2i.zapcab.dto.RideRatingDto;
+import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.dto.RideRequestResponseDto;
+import com.i2i.zapcab.exception.AuthenticationException;
+import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.repository.CustomerRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static com.i2i.zapcab.constant.ZapCabConstant.*;
-
+@Service
 public class CustomerServiceImpl implements CustomerService {
+    private static final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
     @Autowired
     private CustomerRepository customerRepository;
     @Autowired
-    private VehicleService vehicleService;
-    private static final Map<String, Integer> distances = new HashMap<>();
+    private VehicleLocationService vehicleLocationService;
+    @Autowired
+    private RideRequestService rideRequestService;
+    @Autowired
+    private RideService rideService;
+    @Autowired
+    private DriverService driverService;
 
-    static {
-        distances.put("Guindy-Velachery", 10);
-        distances.put("Guindy-Airport", 8);
-        distances.put("Velachery-Airport", 12);
-    }
+    private final FareCalculator fareCalculator = new FareCalculator();
 
+    @Override
     public List<RideRequestResponseDto> getAvailableVehiclesWithFare(
             CheckVehicleAvailabilityDto checkVehicleAvailabilityDto) {
         List<RideRequestResponseDto> rideRequestResponseDtos = new ArrayList<>();
-        vehicleService.getVehiclesByLocation(checkVehicleAvailabilityDto.getPickupPoint()).
-                forEach((vehicles) -> {
-                    RideRequestResponseDto rideRequestResponseDto = calculateFare(
-                            checkVehicleAvailabilityDto.getPickupPoint(),
-                            checkVehicleAvailabilityDto.getDropPoint(),
-                            vehicles.getVehicle().getCategory());
-                    rideRequestResponseDtos.add(rideRequestResponseDto);
-                });
-        return rideRequestResponseDtos;
+        try {
+            logger.info("Fetching vehicles for pickup point: {}",
+                    checkVehicleAvailabilityDto.getPickupPoint());
+            vehicleLocationService.getVehiclesByLocation(
+                    checkVehicleAvailabilityDto.getPickupPoint())
+                    .forEach(vehicle -> {
+                        RideRequestResponseDto rideRequestResponseDto = fareCalculator.calculateFare(
+                                checkVehicleAvailabilityDto.getPickupPoint(),
+                                checkVehicleAvailabilityDto.getDropPoint(),
+                                vehicle.getVehicle().getCategory());
+                        rideRequestResponseDtos.add(rideRequestResponseDto);
+                    });
+            return rideRequestResponseDtos;
+        } catch (Exception e) {
+            logger.error("Error fetching available vehicles: {}", e.getMessage());
+            throw new AuthenticationException("Error occurred while fetching vehicles and calculating fare",e);
+        }
     }
 
-    private RideRequestResponseDto calculateFare(String pickup, String drop, String category) {
-        return fareByCategory(distances.getOrDefault(pickup + "-" + drop,
-                        distances.getOrDefault(drop + "-" + pickup, 0)),
-                LocalTime.now().getHour(), category);
+    public RideRequest saveRideRequest(int id ,RideRequestDto rideRequestDto){
+        try{
+            return rideRequestService.saveRideRequest(customerRepository.findById(id).get(),rideRequestDto);
+        }catch (Exception e){
+            logger.error("Error Occurred while adding ride request {}" , e.getMessage());
+            return null;
+        }
     }
 
-    private RideRequestResponseDto fareByCategory(double distance, int currentHour, String category) {
-        RideRequestResponseDto rideRequestResponseDto = new RideRequestResponseDto();
-        int categoryRate = 0;
-        double fare = 0;
-        int speed = 0;
-        boolean peakHour = ((currentHour >= 8 && currentHour <= 11)
-                || (currentHour >= 18 && currentHour <= 20));
-        if (category.equals(XUV)) {
-            categoryRate = XUV_RATE_PER_KM;
-            speed = XUV_SPEED_PER_KM;
-        } else if (category.equals(SEDAN)) {
-            categoryRate = SEDAN_RATE_PER_KM;
-            speed = SEDAN_SPEED_PER_KM;
-        } else if (category.equals(MINI)) {
-            categoryRate = MINI_RATE_PER_KM;
-            speed = MINI_SPEED_PER_KM;
-        } else if (category.equals(AUTO)) {
-            categoryRate = AUTO_RATE_PER_KM;
-            speed = AUTO_SPEED_PER_KM;
-        } else if (category.equals(BIKE)) {
-            categoryRate = BIKE_RATE_PER_KM;
-            speed = BIKE_SPEED_PER_KM;
-        }
-        if (peakHour) {
-            fare = distance * PEAK_RATE * categoryRate;
-        } else {
-            fare = distance * NORMAL_RATE * categoryRate;
-        }
-        speed = peakHour? speed-30: speed;
-        double time = distance / speed;
-        String estimatedTime = time + " hours";
-        rideRequestResponseDto.setVehicleCategory(category);
-        rideRequestResponseDto.setFare(fare);
-        rideRequestResponseDto.setEstimatedDropTime(estimatedTime);
-        return rideRequestResponseDto;
+    public boolean updateDriverRating(int id, RideRatingDto ratings){
+        return driverService.updateDriverRating(rideService.updateRideRating(id,ratings),
+                ratings.getRatings());
     }
 }

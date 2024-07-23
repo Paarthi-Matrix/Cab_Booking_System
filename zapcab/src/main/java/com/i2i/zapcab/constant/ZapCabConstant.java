@@ -56,4 +56,8 @@ public class ZapCabConstant {
     //fare
     public static final int NORMAL_RATE = 2;
     public static final int PEAK_RATE = 3;
+
+    public static final String REQUEST_STATUS = "Pending";
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String BEARER_HEADER = "Bearer ";
 }

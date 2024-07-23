@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RideRequestResponseDto {
+    private int distance;
     private String vehicleCategory;
     private String estimatedDropTime;
     private double fare;

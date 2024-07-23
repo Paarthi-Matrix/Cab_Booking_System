@@ -1,0 +1,40 @@
+package com.i2i.zapcab.mapper;
+
+import com.i2i.zapcab.dto.RegisterDriverDto;
+import com.i2i.zapcab.model.PendingRequest;
+
+public class PendingRequestMapper {
+    public PendingRequest dtoToEntity(RegisterDriverDto registerDriverDto){
+        return PendingRequest.builder().
+                name(registerDriverDto.getName()).
+                email(registerDriverDto.getEmail()).
+                mobileNumber(registerDriverDto.getMobileNumber()).
+                region(registerDriverDto.getRegion()).
+                city(registerDriverDto.getCity()).
+                dob(registerDriverDto.getDateOfBirth()).
+                gender(registerDriverDto.getGender()).
+                category(registerDriverDto.getCategory()).
+                model(registerDriverDto.getModel()).
+                type(registerDriverDto.getType()).
+                licensePlate(registerDriverDto.getLicensePlate()).
+                licenseNo(registerDriverDto.getLicenseNumber()).
+                rcBookNo(registerDriverDto.getRcBookNo()).build();
+    }
+
+    public RegisterDriverDto entityToDto(PendingRequest pendingRequest){
+        return RegisterDriverDto.builder().
+                name(pendingRequest.getName()).
+                email(pendingRequest.getEmail()).
+                mobileNumber(pendingRequest.getMobileNumber()).
+                region(pendingRequest.getRegion()).
+                city(pendingRequest.getCity()).
+                dateOfBirth(pendingRequest.getDob()).
+                gender(pendingRequest.getGender()).
+                category(pendingRequest.getCategory()).
+                model(pendingRequest.getModel()).
+                type(pendingRequest.getType()).
+                licensePlate(pendingRequest.getLicensePlate()).
+                licenseNumber(pendingRequest.getLicenseNo()).
+                rcBookNo(pendingRequest.getRcBookNo()).build();
+    }
+}
