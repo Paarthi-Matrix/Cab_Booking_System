@@ -41,7 +41,7 @@ public class User implements UserDetails {
     private String mobileNumber;
     @Column(name = "gender", columnDefinition = "VARCHAR(10)")
     private String gender;
-    @Column(name="password", columnDefinition = "VARCHAR(20)")
+    @Column(name="password", columnDefinition = "VARCHAR(255)")
     private String password;
     @Column(name = "date_of_birth",nullable = false)
     private LocalDate dateOfBirth;

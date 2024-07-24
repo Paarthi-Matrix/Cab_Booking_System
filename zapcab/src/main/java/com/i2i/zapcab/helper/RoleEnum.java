@@ -14,7 +14,7 @@ package com.i2i.zapcab.helper;
  * </ol>
  */
 public enum RoleEnum {
-    driver,
-    customer,
-    admin;
+    ADMIN,
+    CUSTOMER,
+    DRIVER
 }

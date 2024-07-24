@@ -10,4 +10,6 @@ public interface DriverService {
     void updateDriverStatusAndLocation(String id, UpdateDriverStatusDto updateDriverStatusDto);
 
     void changePassword(String id, String newPassword);
+
+    boolean updateDriverRating(int id, int ratings);
 }

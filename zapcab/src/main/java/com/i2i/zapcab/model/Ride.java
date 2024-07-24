@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.Set;
 
 @Builder
 @Data
@@ -30,18 +31,18 @@ public class Ride {
     private int distance;
     @Column(name = "fare", nullable = false)
     private int fare;
-    @Column(name = "start_time", nullable = false)
+    @Column(name = "start_time")
     private Date startTime;
-    @Column(name = "end_time", nullable = false)
+    @Column(name = "end_time")
     private Date endTime;
-    @Column(name = "ride_rating", nullable = false)
+    @Column(name = "ride_rating")
     private float rideRating;
-    @Column(name = "drop_point", columnDefinition = "VARCHAR(20)", nullable = false)
+    @Column(name = "drop_point", columnDefinition = "VARCHAR(20)")
     private String dropPoint;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "request_id")
     private RideRequest rideRequest;
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "vehicle_id")
-    private Vehicle vehicle;
+    @JoinColumn(name = "driver_id")
+    private Driver driver;
 }

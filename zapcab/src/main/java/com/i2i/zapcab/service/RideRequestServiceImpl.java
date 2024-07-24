@@ -2,6 +2,7 @@ package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.RideRequestDto;
+import com.i2i.zapcab.mapper.RideRequestMapper;
 import com.i2i.zapcab.model.Customer;
 import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.repository.RideRequestRepository;
@@ -30,6 +31,7 @@ public class RideRequestServiceImpl implements RideRequestService{
     @Override
     public RideRequest saveRideRequest(Customer customer,RideRequestDto rideRequestDto){
         RideRequest rideRequest = rideRequestMapper.requestDtoToEntity(rideRequestDto);
+        rideRequest.setStatus("Pending");
         rideRequest.setCustomer(customer);
         return rideRequestRepository.save(rideRequest);
     }

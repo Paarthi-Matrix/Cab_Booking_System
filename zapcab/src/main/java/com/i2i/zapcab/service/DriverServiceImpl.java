@@ -8,6 +8,7 @@ import com.i2i.zapcab.model.Vehicle;
 import com.i2i.zapcab.repository.DriverRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Optional;
 
@@ -47,6 +48,16 @@ public class DriverServiceImpl implements DriverService{
     @Override
     public void changePassword(String id, String newPassword) {
         userService.changePassword(id, newPassword);
+    }
+
+    @Override
+    public boolean updateDriverRating(int id, int ratings){
+        Driver driver = driverRepository.findById(id).get();
+        int currentRating = driver.getRatings();
+        int updatedRating = (currentRating + ratings) / 2;
+        driver.setRatings(updatedRating);
+        Driver updatedDriver = driverRepository.save(driver);
+        return !ObjectUtils.isEmpty(updatedDriver);
     }
 }
 

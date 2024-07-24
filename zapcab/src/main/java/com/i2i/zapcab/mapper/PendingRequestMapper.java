@@ -1,6 +1,5 @@
 package com.i2i.zapcab.mapper;
 
-import com.i2i.zapcab.dto.RegisterDriverDto;
 import com.i2i.zapcab.dto.RegisterDriverRequestDto;
 import com.i2i.zapcab.model.PendingRequest;
 

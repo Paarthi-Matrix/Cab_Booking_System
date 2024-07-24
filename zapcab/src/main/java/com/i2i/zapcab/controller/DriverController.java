@@ -31,13 +31,12 @@ public class DriverController {
      *         <li>SUSPENDED</li>
      *     </ol>
      * </p>
-     * @param Userid
-     *       This id will be available in the incoming JWT token.
+     *
      * @param updateDriverStatusDto {@link UpdateDriverStatusDto}
      *       This must contain all the values of the `UpdateDriverStatusDto`.
      * @return ApiResponseDto<String> {@link ApiResponseDto}
      */
-    @PatchMapping("/me")
+    @PatchMapping("/me/locations")
     public ApiResponseDto<String> updateDriverStatusAndLocation(@RequestBody UpdateDriverStatusDto updateDriverStatusDto) {
         String Userid = JwtDecoder.extractUserIdFromToken();
         try {

@@ -1,7 +1,6 @@
 package com.i2i.zapcab.mapper;
 
 import com.i2i.zapcab.dto.RegisterUserRequestDto;
-import com.i2i.zapcab.dto.UserResponseDto;
 import com.i2i.zapcab.model.Role;
 import com.i2i.zapcab.model.User;
 

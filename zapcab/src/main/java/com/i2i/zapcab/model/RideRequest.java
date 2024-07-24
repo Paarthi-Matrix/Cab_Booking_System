@@ -1,5 +1,7 @@
 package com.i2i.zapcab.model;
 
+
+
 import java.util.Date;
 import java.util.Set;
 
@@ -14,15 +16,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @Builder
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
-@Table(name = "ride_request")
+@Table(name = "ride_requests")
 public class RideRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +47,8 @@ public class RideRequest {
     private int distance;
     @Column(name = "ride_time", nullable = false)
     private Date rideTime;
+    @Column(name = "request_status", columnDefinition = "VARCHAR(20)")
+    private String status;
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "customer_id")
     private Customer customer;
