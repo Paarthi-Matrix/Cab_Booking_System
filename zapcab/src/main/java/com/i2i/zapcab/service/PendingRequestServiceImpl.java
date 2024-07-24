@@ -12,19 +12,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
-public class PendingRequestServiceImpl implements PendingRequestService{
+public class PendingRequestServiceImpl implements PendingRequestService {
     @Autowired
     PendingRequestRepository pendingRequestRepository;
 
     @Transactional
     @Override
-    public void savePendingRequest(PendingRequest pendingRequest) {
+    public PendingRequest savePendingRequest(PendingRequest pendingRequest) {
         try {
-            pendingRequestRepository.save(pendingRequest);
+            return pendingRequestRepository.save(pendingRequest);
         } catch (Exception e) {
             String errorMessage = "Un expected error happened while updating " +
                     pendingRequest.getName() +

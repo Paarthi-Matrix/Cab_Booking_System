@@ -56,10 +56,19 @@ public class DriverController {
         }
         return ApiResponseDto.statusOk("Driver location and status updated successfully!");
     }
-   @GetMapping("/requests")
-    public ResponseEntity<List<RequestedRideDto>> getAvailableDrivers(@RequestBody GetRideRequestListsDto getRideRequestListsDto ){
+
+    /**
+     *<p>
+     *     This method is used to display the requested ride to the driver. The filtration is done based on
+     *      location and the vehicle category.
+     *</p>
+     * @param getRideRequestListsDto {@link GetRideRequestListsDto}
+     * @return ApiResponseDto<List<RequestedRideDto> {@link RequestedRideDto}
+     */
+   @GetMapping("me/requests")
+    public ApiResponseDto<List<RequestedRideDto>> getAvailableDrivers(@RequestBody GetRideRequestListsDto getRideRequestListsDto ){
        List<RequestedRideDto> requestedRideDtos = driverService.getRideRequests(getRideRequestListsDto);
-       return new ResponseEntity<>(requestedRideDtos, HttpStatusCode.valueOf(200));
+       return ApiResponseDto.statusOk(requestedRideDtos);
    }
 
     /**
@@ -75,10 +84,18 @@ public class DriverController {
         driverService.changePassword(id, changePasswordRequestDto.getNewPassword());
         return ApiResponseDto.statusOk("Driver password changed successfully!");
     }
+
+    /**
+     * <p>
+     *     This method is used to fetch the ride details mapped with the customer.
+     * </p>
+     * @param selectedRideDto {@link DriverSelectedRideDto}
+     * @return
+     */
    @PostMapping("/request/accept")
-    public ResponseEntity<RideDetailsDto> getRideDetails(@RequestBody DriverSelectedRideDto selectedRideDto){
+    public ApiResponseDto<RideDetailsDto> getRideDetails(@RequestBody DriverSelectedRideDto selectedRideDto){
        RideDetailsDto rideDetailsDto = driverService.getRideDetails(selectedRideDto);
-       return new ResponseEntity<>(rideDetailsDto, HttpStatusCode.valueOf(200));
+       return ApiResponseDto.statusOk(rideDetailsDto);
    }
 
 }

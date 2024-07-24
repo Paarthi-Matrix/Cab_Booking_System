@@ -68,7 +68,7 @@ public class AdminServiceImpl implements AdminService {
                     request.setStatus(updatePendingRequestDto.getStatus());
                     request.setRemarks(updatePendingRequestDto.getRemarks());
                     authenticationResponse = driverRegister(request);
-                    pendingRequestService.saveRequests(request);
+                    pendingRequestService.savePendingRequest(request);
                     logger.info("Pending request successfully updated for phone number: {}",
                             updatePendingRequestDto.getPhoneNumber());
                 } else {

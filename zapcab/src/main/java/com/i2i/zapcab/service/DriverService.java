@@ -25,15 +25,9 @@ public interface DriverService {
 
     public RideDetailsDto getRideDetails(DriverSelectedRideDto selectedRideDto);
 
-    /**
-     * This method is used to get the driver detail for the particular mobile number
-     * @param mobileNumber Driver's
-     * @return
-     */
+   public Driver getByMobileNumber(String mobileNumber);
 
-    public Driver getByMobileNumber(String mobileNumber);
-
-    public void updateDriverStatus(UpdateDriverStatusDto updateDriverStatusDto);
+   // public void updateDriverStatus(UpdateDriverStatusDto updateDriverStatusDto);
 
     void updateDriverStatusAndLocation(String id, UpdateDriverStatusDto updateDriverStatusDto);
 

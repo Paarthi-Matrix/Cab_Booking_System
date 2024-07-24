@@ -21,16 +21,6 @@ public interface AuthenticationService {
     public AuthenticationResponseDto customerRegister(RegisterCustomerRequestDto registerRequestDto);
 
     /**
-     * This method is used to register the user as admin.
-     * @param registerRequestDto {@link RegisterUserRequestDto}
-     * @return Token
-     *       Returns the token as string for each user
-     */
-
-    public AuthenticationResponse adminRegister(RegisterUserRequestDto registerRequestDto);
-
-
-    /**
      * This method is used to authenticate the user
      * @param authenticationRequestDto
      * @return

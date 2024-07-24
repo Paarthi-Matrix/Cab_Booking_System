@@ -10,9 +10,10 @@ import java.util.Optional;
 
 @Component
 public interface PendingRequestService {
+
     Page<PendingRequest> getAllPendingRequests(int page, int size);
 
     public Optional<PendingRequest> findRequestByMobileNumber(String mobileNumber);
 
-    public PendingRequest saveRequests(PendingRequest pendingRequest);
+    public PendingRequest savePendingRequest(PendingRequest pendingRequest);
 }

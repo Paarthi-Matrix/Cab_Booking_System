@@ -15,7 +15,6 @@ public class RideServiceImpl implements RideService{
 
     @Override
     public void saveRide(RideRequest rideRequest, String mobileNumber, Driver driver) {
-        //Driver driver = driverService.getByMobileNumber(mobileNumber);
         Ride ride = Ride.builder().status("Booked")
                 .rideRequest(rideRequest)
                 .distance(rideRequest.getDistance())
