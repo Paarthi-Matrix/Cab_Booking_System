@@ -77,14 +77,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         final String authHeader = request.getHeader(AUTHORIZATION_HEADER);
-        System.out.println("auth header"+authHeader);
         String jwt = "";
         final String userId;
         if (authHeader == null ||!authHeader.startsWith(BEARER_HEADER)) {
-            System.out.println("No proper headers for HttpServletRequest. Passing to next filter chain.");
+            logger.debug("No proper headers for HttpServletRequest. Passing to next filter chain.");
             return;
         }
-        jwt = authHeader.substring(7);//todo
+        jwt = authHeader.substring(BEARER_HEADER.length());
         userId = jwtService.extractUsername(jwt);
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userId);
@@ -101,10 +100,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         if (isAuthorized(request)) {
-            logger.debug("The request authorized");
+            logger.info("The request authorized");
             filterChain.doFilter(request, response);
         } else {
-            System.out.println("The request is not authorized");
+            logger.info("The request is not authorized");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
     }

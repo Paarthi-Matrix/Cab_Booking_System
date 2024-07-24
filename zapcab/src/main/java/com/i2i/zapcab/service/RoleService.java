@@ -8,5 +8,5 @@ import java.util.List;
 
 @Component
 public interface RoleService {
-    public List<Role> getByRoleType(List<RoleEnum> roleEnums);
+    List<Role> getByRoleType(List<RoleEnum> roleEnums);
 }

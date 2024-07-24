@@ -6,6 +6,7 @@ import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.dto.RideRequestResponseDto;
 import com.i2i.zapcab.exception.AuthenticationException;
+import com.i2i.zapcab.model.Customer;
 import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.repository.CustomerRepository;
 import org.slf4j.Logger;
@@ -63,6 +64,11 @@ public class CustomerServiceImpl implements CustomerService {
             logger.error("Error Occurred while adding ride request {}" , e.getMessage());
             return null;
         }
+    }
+
+    @Override
+    public void saveCustomer(Customer customer) {
+        customerRepository.save(customer);
     }
 
     public boolean updateDriverRating(int id, RideRatingDto ratings){

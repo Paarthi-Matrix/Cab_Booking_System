@@ -1,5 +1,6 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.dto.ChangePasswordRequestDto;
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.GetRideRequestListsDto;
 import com.i2i.zapcab.dto.RequestedRideDto;
@@ -57,8 +58,8 @@ public class DriverServiceImpl implements DriverService{
     }
 
     @Override
-    public void changePassword(String id, String newPassword) {
-        userService.changePassword(id, newPassword);
+    public void changePassword(String id, ChangePasswordRequestDto ChangePasswordRequestDto) {
+        userService.changePassword(id, ChangePasswordRequestDto.getNewPassword());
     }
 
     @Override
@@ -70,6 +71,7 @@ public class DriverServiceImpl implements DriverService{
         Driver updatedDriver = driverRepository.save(driver);
         return !ObjectUtils.isEmpty(updatedDriver);
     }
+
     @Override
     public List<RequestedRideDto> getRideRequests(GetRideRequestListsDto getRideRequestListsDto) {
         List<RequestedRideDto> requestedRideDtos = new ArrayList<>();

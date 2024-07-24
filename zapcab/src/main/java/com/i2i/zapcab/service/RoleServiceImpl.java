@@ -9,6 +9,9 @@ import com.i2i.zapcab.helper.RoleEnum;
 import com.i2i.zapcab.model.Role;
 import com.i2i.zapcab.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class RoleServiceImpl implements RoleService {

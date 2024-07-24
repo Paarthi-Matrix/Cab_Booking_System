@@ -65,4 +65,5 @@ public class ZapCabConstant {
     public static final String INITIAL_REMARKS = " ";
     public static final String INITIAL_VEHICLE_STATUS = "Unavailable";
     public static final String INITIAL_DRIVER_STATUS = "OFF-DUTY";
+    public static final String REJECTED_STATUS = "Rejected";
 }

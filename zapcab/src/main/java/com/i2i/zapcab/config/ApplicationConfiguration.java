@@ -21,6 +21,25 @@ import org.springframework.util.ObjectUtils;
 import com.i2i.zapcab.model.User;
 import com.i2i.zapcab.repository.UserRepository;
 
+/**
+ * <p>
+ * The ApplicationConfiguration class is a configuration class for setting up the application's security components.
+ * This class is responsible for configuring user details service, authentication provider, authentication manager,
+ * and password encoder. It ensures that user authentication and authorization are handled appropriately by integrating
+ * with Spring Security and the application's user repository.
+ * </p>
+ * <p>
+ * Key Responsibilities:
+ * </p>
+ * <ul>
+ *     <li>Define and provide a UserDetailsService bean that loads user-specific data during authentication.</li>
+ *     <li>Configure an AuthenticationProvider bean to process authentication requests using the defined UserDetailsService
+ *         and password encoder.</li>
+ *     <li>Provide an AuthenticationManager bean that manages authentication processes in the application.</li>
+ *     <li>Define and provide a PasswordEncoder bean for encoding passwords using the BCrypt hashing algorithm.</li>
+ * </ul>
+ *
+ */
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfiguration {

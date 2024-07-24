@@ -21,6 +21,16 @@ import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.helper.JwtDecoder;
 import com.i2i.zapcab.service.DriverService;
 
+/**
+ * <p>
+ *     The DriverController class handles HTTP requests related to driver operations.
+ *     This includes updating the driver's status and location, and changing the driver's password.
+ * </p>
+ * <p>
+ *     The methods in this controller return ApiResponseDto objects, which encapsulate the response
+ *     data and status code for the API responses.
+ * </p>
+ */
 @RestController
 @RequestMapping("/v1/drivers")
 @RequiredArgsConstructor
@@ -41,7 +51,6 @@ public class DriverController {
      *         <li>SUSPENDED</li>
      *     </ol>
      * </p>
-     *
      * @param updateDriverStatusDto {@link UpdateDriverStatusDto}
      *       This must contain all the values of the `UpdateDriverStatusDto`.
      * @return ApiResponseDto<String> {@link ApiResponseDto}
@@ -75,13 +84,13 @@ public class DriverController {
      * <p>
      *     This method is responsible for changing the password of the driver.
      * </p>
-     * @param `ChangePasswordRequestDto` {@link ChangePasswordRequestDto}
+     * @param ChangePasswordRequestDto {@link ChangePasswordRequestDto}
      * @return ApiResponseDto<String> {@link ApiResponseDto}
      */
-    @PatchMapping("/me")
+    @PatchMapping("/me/password")
     public ApiResponseDto<String> changePassword(@RequestBody ChangePasswordRequestDto changePasswordRequestDto) {
         String id = JwtDecoder.extractUserIdFromToken();
-        driverService.changePassword(id, changePasswordRequestDto.getNewPassword());
+        driverService.changePassword(id, changePasswordRequestDto);
         return ApiResponseDto.statusOk("Driver password changed successfully!");
     }
 

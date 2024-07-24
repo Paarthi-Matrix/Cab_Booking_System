@@ -4,6 +4,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.i2i.zapcab.exception.AuthenticationException;
 
+/**
+ * <p>
+ * This method is responsible for decoding the JWT token and return the preferred values from it.
+ * </p>
+ */
 public class JwtDecoder {
 
     /**

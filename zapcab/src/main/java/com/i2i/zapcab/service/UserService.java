@@ -7,10 +7,8 @@ import java.util.Optional;
 
 @Component
 public interface UserService {
-    User saveUser(User user);
-
     Optional<User> getUserById(String id);
     User getUserByMobileNumber(String mobileNumber);
-
+    void saveUser(User user);
     void changePassword(String id, String newPassword);
 }

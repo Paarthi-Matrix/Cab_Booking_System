@@ -7,9 +7,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface RideService {
-
-    public void saveRide(RideRequest rideRequest, String mobileNumber, Driver driver);
-
+    void saveRide(RideRequest rideRequest, String mobileNumber, Driver driver);
     int updateRideRating(int id, RideRatingDto ratings);
-
 }

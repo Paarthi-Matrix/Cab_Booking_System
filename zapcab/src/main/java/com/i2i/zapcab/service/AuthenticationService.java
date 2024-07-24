@@ -10,6 +10,12 @@ import com.i2i.zapcab.dto.RegisterDriverRequestDto;
 import com.i2i.zapcab.dto.RegisterUserRequestDto;
 import org.springframework.stereotype.Component;
 
+/**
+ * <p>
+ *     The AuthenticationService interface is responsible for defining the
+ *     authentication for sign up functionality for driver, customer and authenticate user(customer or driver)
+ * </p>
+ */
 @Component
 public interface AuthenticationService {
     /**

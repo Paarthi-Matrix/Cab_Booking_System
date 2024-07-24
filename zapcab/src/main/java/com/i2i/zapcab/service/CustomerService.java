@@ -4,6 +4,7 @@ import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
 import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.dto.RideRequestResponseDto;
+import com.i2i.zapcab.model.Customer;
 import com.i2i.zapcab.model.RideRequest;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,6 @@ public interface CustomerService {
     List<RideRequestResponseDto> getAvailableVehiclesWithFare(CheckVehicleAvailabilityDto checkVehicleAvailabilityDto);
 
     RideRequest saveRideRequest(int id,RideRequestDto rideRequestDto);
-
+    void saveCustomer(Customer customer);
     boolean updateDriverRating(int id, RideRatingDto ratings);
 }

@@ -28,7 +28,6 @@ public class SecurityConfiguration implements WebSecurityConfigurer {
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        // Customize the converter as needed
         return converter;
     }
     @Bean

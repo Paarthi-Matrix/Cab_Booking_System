@@ -1,14 +1,41 @@
 package com.i2i.zapcab.dto;
 
-import com.i2i.zapcab.common.ErrorMessage;
-import com.i2i.zapcab.common.SuccessMessage;
+import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
+import com.i2i.zapcab.common.ErrorMessage;
+import com.i2i.zapcab.common.SuccessMessage;
 
+/**
+ * <p>
+ *     The ApiResponseDto class is a generic DTO (Data Transfer Object) used for wrapping responses
+ *     in a consistent format across the application. It extends the ResponseEntity class from Spring
+ *     to provide HTTP status codes along with the response data and messages.
+ * </p>
+ *
+ * <p>
+ *     The class includes a timestamp to indicate when the response was created, a message providing
+ *     information about the response, and the actual data being returned. There are two constructors
+ *     for success and error responses, encapsulating the appropriate messages and status codes.
+ * </p>
+ *
+ * <p>
+ *     The class provides several static methods for creating ApiResponseDto instances with various HTTP
+ *     status codes, including OK, CREATED, ACCEPTED, NO_CONTENT, UNAUTHORIZED, INTERNAL_SERVER_ERROR, and
+ *     BAD_REQUEST. Each method returns an ApiResponseDto with the appropriate status code, message, and data.
+ * </p>
+ *
+ * <p>
+ *     This class ensures that all API responses have a consistent structure, which improves the readability
+ *     and maintainability of the code, as well as the ease of understanding for API consumers.
+ * </p>
+ *
+ * @param <T> The type of the data being returned in the response.
+ */
 @Getter
 @Setter
 public class ApiResponseDto<T> extends ResponseEntity<Object> {

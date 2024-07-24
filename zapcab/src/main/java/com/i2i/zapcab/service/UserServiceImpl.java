@@ -1,5 +1,7 @@
 package com.i2i.zapcab.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,15 +14,12 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService{
 
+    private static Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
-
-    @Override
-    public User saveUser(User user) {
-        return userRepository.save(user);
-    }
 
     @Override
     public User getUserByMobileNumber(String mobileNumber) {
@@ -28,12 +27,24 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
+    /**
+     * <p>
+     *    This method is used to change the password for both the driver and customer
+     * </p>
+     * @param id
+     * @param newPassword
+     */
+    @Override
     public void changePassword(String id, String newPassword) {
-        System.out.println("New password "+newPassword);
         User user = userRepository.findById(id).orElse(null);
         assert user != null;
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+        logger.info("Password changed successfully!");
     }
 
     public Optional<User> getUserById(String id) {
