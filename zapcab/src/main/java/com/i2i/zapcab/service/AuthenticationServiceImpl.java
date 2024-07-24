@@ -1,7 +1,12 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.dto.AuthenticationResponse;
 import java.util.List;
 
+import com.i2i.zapcab.dto.RegisterUserRequestDto;
+import com.i2i.zapcab.exception.AuthenticationException;
+import com.i2i.zapcab.exception.NotFoundException;
+import com.i2i.zapcab.repository.CustomerRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +23,11 @@ import com.i2i.zapcab.dto.AuthenticationRequestDto;
 import com.i2i.zapcab.dto.DriverRegisterResponseDto;
 import com.i2i.zapcab.dto.RegisterCustomerRequestDto;
 import com.i2i.zapcab.dto.RegisterDriverRequestDto;
-import com.i2i.zapcab.exception.AuthenticationException;
-import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.model.Customer;
 import com.i2i.zapcab.model.PendingRequest;
 import com.i2i.zapcab.model.Role;
 import com.i2i.zapcab.model.User;
-import com.i2i.zapcab.repository.CustomerRepository;
+
 import com.i2i.zapcab.repository.PendingRequestRepository;
 import com.i2i.zapcab.repository.RoleRepository;
 import com.i2i.zapcab.repository.UserRepository;
@@ -32,10 +35,11 @@ import com.i2i.zapcab.repository.UserRepository;
 import static com.i2i.zapcab.constant.ZapCabConstant.*;
 
 @Service
-public class AuthenticationServiceImpl implements  AuthenticationService {
-
+public class AuthenticationServiceImpl implements AuthenticationService {
+    private static final Logger logger = LogManager.getLogger(AdminServiceImpl.class);
     @Autowired
     private UserRepository userRepository;
+    UserService userService;
     @Autowired
     private JwtService jwtService;
     @Autowired
@@ -45,11 +49,9 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
     @Autowired
     private RoleRepository repository;
     @Autowired
-    private PendingRequestRepository pendingRequestRepository;
+    PendingRequestRepository pendingRequestsRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    private static Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
 
     @Override
     @Transactional
@@ -68,7 +70,7 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
                 .tier(INITIAL_CUSTOMER_TIRE)
                 .user(user)
                 .build();
-        userRepository.save(user);
+        userService.saveUser(user);
         customerRepository.save(customer);
         logger.info("Customer registered successfully!");
         String jwtToken = jwtService.generateToken(user);
@@ -97,11 +99,31 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
             );
         } catch (Exception e) {
             logger.debug("Authentication failed: " + e.getMessage());
-            throw new AuthenticationException("Invalid credentials credentials",e);
+            throw new AuthenticationException("Invalid credentials credentials", e);
         }
         logger.debug("Fetched user: " + (user != null ? user.getName() : "null"));
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponseDto.builder().token(jwtToken).build();
+    }
+
+    @Override
+    public AuthenticationResponse adminRegister(RegisterUserRequestDto registerRequestDto) {
+        try {
+            logger.info("Registering the admin {} ", registerRequestDto.getName());
+            List<Role> roles = repository.findByRoleType(registerRequestDto.getRole());
+            User user = User.builder().name(registerRequestDto.getName())
+                    .dateOfBirth(registerRequestDto.getDateOfBirth()).email(registerRequestDto.getEmail())
+                    .gender(registerRequestDto.getGender()).mobileNumber(registerRequestDto.getMobileNumber())
+                    .password(passwordEncoder.encode(registerRequestDto.getPassword())).role(roles)
+                    .build();
+            userService.saveUser(user);
+            String jwtToken = jwtService.generateToken(user);
+            return AuthenticationResponse.builder()
+                    .token(jwtToken).build();
+        } catch (Exception e) {
+            logger.error("Can't register the admin : {}", registerRequestDto);
+            throw new AuthenticationException("Unable to register the admin : " + registerRequestDto.getName(), e);
+        }
     }
 
     @Override
@@ -124,7 +146,7 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
                 .remarks(INITIAL_REMARKS)
                 .licensePlate(registerDriverRequestDto.getLicensePlate())
                 .build();
-        pendingRequestRepository.save(pendingRequest);
+        pendingRequestsRepository.save(pendingRequest);
         return DriverRegisterResponseDto.builder()
                 .status("Driver added to the pending request successfully!")
                 .build();

@@ -18,6 +18,11 @@ public class UserServiceImpl implements UserService{
     PasswordEncoder passwordEncoder;
 
     @Override
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
     public User getUserByMobileNumber(String mobileNumber) {
         return userRepository.findByMobileNumber(mobileNumber);
     }

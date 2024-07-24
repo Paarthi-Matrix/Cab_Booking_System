@@ -46,7 +46,10 @@ public class RegisterDriverRequestDto {
     @NotBlank(message = REGION_NOT_BLANK)
     @Pattern(regexp = STRING_REGEX, message = REGION_PATTERN_MESSAGE)
     private String region;
+    @NotBlank(message = REGION_NOT_BLANK)
+    @Pattern(regexp = STRING_REGEX, message = REGION_PATTERN_MESSAGE)
     private String city;
+
     @NotBlank(message = MOBILE_NUMBER_NOT_BLANK)
     @Pattern(regexp = MOBILE_NUMBER_REGEX, message = MOBILE_NUMBER_PATTERN_MESSAGE)
     private String mobileNumber;
@@ -78,3 +81,4 @@ public class RegisterDriverRequestDto {
     private String type;
     private String model;
 }
+

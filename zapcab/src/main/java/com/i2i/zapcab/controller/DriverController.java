@@ -1,9 +1,19 @@
 package com.i2i.zapcab.controller;
 
+import com.i2i.zapcab.dto.AvailableDriverDto;
+import com.i2i.zapcab.dto.DriverSelectedRideDto;
+import com.i2i.zapcab.dto.GetRideRequestListsDto;
+import com.i2i.zapcab.dto.RequestedRideDto;
+import com.i2i.zapcab.dto.RideDetailsDto;
+import com.i2i.zapcab.dto.UpdateDriverStatusDto;
+import com.i2i.zapcab.service.DriverService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.ChangePasswordRequestDto;
 import com.i2i.zapcab.dto.UpdateDriverStatusDto;
@@ -46,6 +56,11 @@ public class DriverController {
         }
         return ApiResponseDto.statusOk("Driver location and status updated successfully!");
     }
+   @GetMapping("/requests")
+    public ResponseEntity<List<RequestedRideDto>> getAvailableDrivers(@RequestBody GetRideRequestListsDto getRideRequestListsDto ){
+       List<RequestedRideDto> requestedRideDtos = driverService.getRideRequests(getRideRequestListsDto);
+       return new ResponseEntity<>(requestedRideDtos, HttpStatusCode.valueOf(200));
+   }
 
     /**
      * <p>
@@ -60,4 +75,10 @@ public class DriverController {
         driverService.changePassword(id, changePasswordRequestDto.getNewPassword());
         return ApiResponseDto.statusOk("Driver password changed successfully!");
     }
+   @PostMapping("/request/accept")
+    public ResponseEntity<RideDetailsDto> getRideDetails(@RequestBody DriverSelectedRideDto selectedRideDto){
+       RideDetailsDto rideDetailsDto = driverService.getRideDetails(selectedRideDto);
+       return new ResponseEntity<>(rideDetailsDto, HttpStatusCode.valueOf(200));
+   }
+
 }

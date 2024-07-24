@@ -13,6 +13,16 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Data Transfer Object for registering the user as a driver.
+ * This dto has the following fields :
+ *    Name : Must have only Alphabets
+ *    email : A valid user's email which must have @ and .com
+ *    mobile number : A valid 10 digit mobile number
+ *    Region and city of the user
+ *    Valid license number and rc book
+ *    Vehicle category and type that the user holds
+ */
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

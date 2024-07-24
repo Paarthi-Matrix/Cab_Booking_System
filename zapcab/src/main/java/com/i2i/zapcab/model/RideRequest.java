@@ -1,7 +1,5 @@
 package com.i2i.zapcab.model;
 
-
-
 import java.util.Date;
 import java.util.Set;
 
@@ -19,6 +17,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

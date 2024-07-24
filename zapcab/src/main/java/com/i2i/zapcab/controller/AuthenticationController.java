@@ -1,27 +1,25 @@
 package com.i2i.zapcab.controller;
 
-import com.i2i.zapcab.dto.*;
+import com.i2i.zapcab.dto.ApiResponseDto;
+import com.i2i.zapcab.dto.AuthenticationRequestDto;
+import com.i2i.zapcab.dto.AuthenticationResponse;
+import com.i2i.zapcab.dto.AuthenticationResponseDto;
+import com.i2i.zapcab.dto.DriverRegisterResponseDto;
+import com.i2i.zapcab.dto.RegisterCustomerRequestDto;
+import com.i2i.zapcab.dto.RegisterDriverRequestDto;
+import com.i2i.zapcab.dto.RegisterUserRequestDto;
 import com.i2i.zapcab.exception.AuthenticationException;
 import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * <p>
- *     The AuthenticationController class handles all authentication-related requests for the application.
- *     It includes endpoints for registering customers and drivers, as well as authenticating users.
- * </p>
- * <p>
- *     This controller is responsible for processing the registration and authentication requests.
- *     It ensures that the input data is received correctly,
- *     processes the data through the service layer, and returns appropriate responses to the client.
- * </p>
- */
 @RestController
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
@@ -87,4 +85,5 @@ public class AuthenticationController {
         }
         return ApiResponseDto.statusOk(authenticationResponse);
     }
+
 }

@@ -1,8 +1,15 @@
 package com.i2i.zapcab.service;
 
+import static com.i2i.zapcab.constant.ZapCabConstant.REQUEST_STATUS;
 import java.util.List;
 import java.util.Optional;
-
+import com.i2i.zapcab.config.JwtService;
+import com.i2i.zapcab.dto.AuthenticationResponse;
+import com.i2i.zapcab.exception.AuthenticationException;
+import com.i2i.zapcab.helper.DriverStatusEnum;
+import com.i2i.zapcab.helper.PinGeneration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,21 +33,19 @@ import static com.i2i.zapcab.constant.ZapCabConstant.INITIAL_VEHICLE_STATUS;
 
 @Service
 public class AdminServiceImpl implements AdminService {
-
+    private static final Logger logger = LogManager.getLogger(AdminServiceImpl.class);
     @Autowired
-    private PendingRequestRepository pendingRequestRepository;
-    @Autowired
-    private DriverService driverService;
+    PendingRequestService pendingRequestService;
     @Autowired
     private AuthenticationService authenticationService;
     @Autowired
-    private RoleService roleService;
+    DriverService driverService;
     @Autowired
-    private PendingRequestService pendingRequestService;
+    RoleService roleService;
     @Autowired
-    private JwtService jwtService;
+    PasswordEncoder passwordEncoder;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    JwtService jwtService;
 
     @Override
     public Page<PendingRequest> pendingRequestProcessing(int page, int size) {
@@ -48,54 +53,70 @@ public class AdminServiceImpl implements AdminService {
 
         return requests;
     }
-
     @Override
-    @Transactional
     public AuthenticationResponseDto modifyPendingRequest(UpdatePendingRequestDto updatePendingRequestDto) {
-        Optional<PendingRequest> pendingRequest = pendingRequestRepository.findByMobileNumber(updatePendingRequestDto.getPhoneNumber());
-        AuthenticationResponseDto authenticationResponse = null;
-        if(pendingRequest.isPresent()){
-            PendingRequest request = pendingRequest.get();
-            request.setStatus(updatePendingRequestDto.getStatus());
-            request.setRemarks(updatePendingRequestDto.getRemarks());
-            authenticationResponse = driverRegister(request);
-            pendingRequestService.savePendingRequest(request);
+        logger.info("Starting to update pending request for phone number: {}",
+                updatePendingRequestDto.getPhoneNumber());
+        try {
+            AuthenticationResponseDto authenticationResponse = new AuthenticationResponseDto();
+            Optional<PendingRequest> pendingRequest = pendingRequestService.findRequestByMobileNumber(updatePendingRequestDto.getPhoneNumber());
+            if (pendingRequest.isPresent()) {
+                PendingRequest request = pendingRequest.get();
+                if (REQUEST_STATUS.equalsIgnoreCase(request.getStatus())) {
+                    logger.info("Updating pending request status for phone number: {}",
+                            updatePendingRequestDto.getPhoneNumber());
+                    request.setStatus(updatePendingRequestDto.getStatus());
+                    request.setRemarks(updatePendingRequestDto.getRemarks());
+                    authenticationResponse = driverRegister(request);
+                    pendingRequestService.saveRequests(request);
+                    logger.info("Pending request successfully updated for phone number: {}",
+                            updatePendingRequestDto.getPhoneNumber());
+                } else {
+                    logger.warn("Pending request status not matching for phone number: {}",
+                            updatePendingRequestDto.getPhoneNumber());
+                }
+            } else {
+                logger.warn("Pending request not found for phone number: {}",
+                        updatePendingRequestDto.getPhoneNumber());
+            }
+            return authenticationResponse;
+        } catch (Exception e ) {
+            logger.error("Error updating pending request for phone number: {}",
+                    updatePendingRequestDto.getPhoneNumber(), e);
+            throw new AuthenticationException("Cant able to update the pending requests for the driver : ");
         }
-        return authenticationResponse;
     }
 
-    @Transactional
-    private AuthenticationResponseDto driverRegister(PendingRequest request) {
-        List<RoleEnum> roleEnums = List.of(RoleEnum.values());
-        List<Role> roles = roleService.getByRoleType(roleEnums);
-        User user = User.builder()
-                .name(request.getName())
-                .dateOfBirth(request.getDob())
-                .email(request.getEmail())
-                .gender(request.getGender())
-                .mobileNumber(request.getMobileNumber())
-                .role(roles)
-                .password(passwordEncoder.encode(PinGeneration.driverPasswordGeneration()))
-                .build();
-        Vehicle vehicle = Vehicle.builder()
-                .category(request.getCategory())
-                .type(request.getType())
-                .model(request.getModel())
-                .licensePlate(request.getLicensePlate())
-                .maxSeats(4)
-                .status(INITIAL_VEHICLE_STATUS)
-                .build();
-        Driver driver = Driver.builder()
-                .region(request.getRegion())
-                .noOfCancellation(2)
-                .licenseNo(request.getLicenseNo())
-                .rcBookNo(request.getRcBookNo())
-                .user(user)
-                .status(INITIAL_DRIVER_STATUS)
-                .vehicle(vehicle)
-                .build();
-        driverService.saveDriver(driver);
-        String jwt = jwtService.generateToken(user);
-        return AuthenticationResponseDto.builder().token(jwt).build();
+    /**
+     * Used to register the driver once the user is approved.
+     * @param pendingRequest {@link PendingRequest}
+     * @return AuthenticationResponse which holds a unique token for that particular user.
+     */
+    private AuthenticationResponseDto driverRegister(PendingRequest pendingRequest) {
+        try {
+            logger.debug("Starting driver registration process for email: {}", pendingRequest.getEmail());
+            List<RoleEnum> roleEnums = List.of(RoleEnum.values());
+            List<Role> roles = roleService.getByRoleType(roleEnums);
+            User user = User.builder().name(pendingRequest.getName()).dateOfBirth(pendingRequest.getDob())
+                    .email(pendingRequest.getEmail()).gender(pendingRequest.getGender())
+                    .mobileNumber(pendingRequest.getMobileNumber())
+                    .password(passwordEncoder.encode(PinGeneration.driverPasswordGeneration())).role(roles)
+                    .build();
+            Vehicle vehicle = Vehicle.builder().category(pendingRequest.getCategory()).type(pendingRequest.getType())
+                    .model(pendingRequest.getModel()).licensePlate(pendingRequest.getLicensePlate())
+                    .maxSeats(4).status("available").build();
+            Driver driver = Driver.builder().region(pendingRequest.getRegion()).noOfCancellation(2)
+                    .licenseNo(pendingRequest.getLicenseNo()).rcBookNo(pendingRequest.getRcBookNo()).user(user)
+                    .status(String.valueOf(DriverStatusEnum.OnDuty)).vehicle(vehicle).build();
+            driverService.saveDriver(driver);
+            logger.info("Driver registration successful for email: {}", pendingRequest.getEmail());
+            String jwtToken = jwtService.generateToken(user);
+            return AuthenticationResponseDto.builder()
+                    .token(jwtToken).build();
+        } catch (Exception e) {
+            logger.error("Driver registration failed for email: {}", pendingRequest.getEmail(), e);
+            throw new AuthenticationException("Driver registration failed for : " + pendingRequest.getName() +
+                    "\t mobile number : " + pendingRequest.getMobileNumber(), e);
+        }
     }
 }

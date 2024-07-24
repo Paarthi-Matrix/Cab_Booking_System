@@ -5,8 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
+
+/**
+ * Data transfer object for providing the token to the authorised
+ */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RideRequestResponseDto {
