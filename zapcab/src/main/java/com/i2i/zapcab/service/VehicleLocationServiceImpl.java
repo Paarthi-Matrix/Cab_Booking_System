@@ -1,5 +1,6 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.exception.UnexpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,13 @@ public class VehicleLocationServiceImpl implements VehicleLocationService {
         vehicleLocationRepository.save(vehicleLocation);
     }
 
-    public List<VehicleLocation> getVehiclesByLocation(String location){
-        return vehicleLocationRepository.findAllByLocation(location);
+    @Override
+    public List<VehicleLocation> getVehiclesByLocation(String location) {
+        try {
+            return vehicleLocationRepository.findAllByLocation(location);
+        } catch (Exception e) {
+            throw new UnexpectedException("Error Occurred while fetching" +
+                    " vehicles by its location: " + location, e);
+        }
     }
 }

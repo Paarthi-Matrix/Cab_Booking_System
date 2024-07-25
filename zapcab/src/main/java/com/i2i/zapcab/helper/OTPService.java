@@ -14,23 +14,21 @@ public class OTPService {
 
         public String generateOTP(String key) {
             String otp = String.format("%06d", new Random().nextInt(999999));
-            OTPDetails otpDetails = new OTPDetails(otp, System.currentTimeMillis() + OTP_VALID_DURATION);
+            OTPDetails otpDetails = new OTPDetails(otp, System.currentTimeMillis() +
+                    OTP_VALID_DURATION);
             otpStorage.put(key, otpDetails);
-
-            // Schedule a task to remove the OTP after its expiry
             scheduler.schedule(() -> otpStorage.remove(key), OTP_VALID_DURATION, TimeUnit.MILLISECONDS);
-
             return otp;
         }
 
         public boolean validateOTP(String key, String otp) {
             OTPDetails otpDetails = otpStorage.get(key);
             if (otpDetails == null) {
-                return false; // No OTP found for the key
+                return false;
             }
             if (System.currentTimeMillis() > otpDetails.getExpiryTime()) {
-                otpStorage.remove(key); // Remove expired OTP
-                return false; // OTP expired
+                otpStorage.remove(key);
+                return false;
             }
             return otp.equals(otpDetails.getOtp());
         }

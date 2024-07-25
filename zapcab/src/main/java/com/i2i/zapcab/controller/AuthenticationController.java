@@ -80,7 +80,7 @@ public class AuthenticationController {
             authenticationResponse = authenticationService.authenticate(authenticationRequsetDto);
         } catch (NotFoundException e) {
             authenticationResponse = AuthenticationResponseDto.builder().token("").build();
-            return ApiResponseDto.statusNoContent(authenticationResponse, e);
+            return ApiResponseDto.statusNoContent(authenticationResponse);
         } catch (AuthenticationException e) {
             authenticationResponse = AuthenticationResponseDto.builder().token("").build();
             return ApiResponseDto.statusUnAuthorized(authenticationResponse,e);

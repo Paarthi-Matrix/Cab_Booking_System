@@ -23,8 +23,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import static com.i2i.zapcab.constant.ZapCabConstant.AUTHORIZATION_HEADER;
-import static com.i2i.zapcab.constant.ZapCabConstant.BEARER_HEADER;
+import static com.i2i.zapcab.common.ZapCabConstant.AUTHORIZATION_HEADER;
+import static com.i2i.zapcab.common.ZapCabConstant.BEARER_HEADER;
 
 /**
  * JwtAuthenticationFilter is responsible for filtering incoming requests to

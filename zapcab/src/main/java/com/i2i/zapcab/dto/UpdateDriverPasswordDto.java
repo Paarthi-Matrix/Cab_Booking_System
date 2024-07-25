@@ -6,13 +6,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
-import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_NOT_BLANK;
-import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_PATTERN_MESSAGE;
-import static com.i2i.zapcab.constant.ZapCabConstant.MOBILE_NUMBER_REGEX;
-import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_NOT_BLANK;
-import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_PATTERN_MESSAGE;
-import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_REGEX;
-import static com.i2i.zapcab.constant.ZapCabConstant.PASSWORD_SIZE;
+import static com.i2i.zapcab.common.ZapCabConstant.MOBILE_NUMBER_NOT_BLANK;
+import static com.i2i.zapcab.common.ZapCabConstant.MOBILE_NUMBER_PATTERN_MESSAGE;
+import static com.i2i.zapcab.common.ZapCabConstant.MOBILE_NUMBER_REGEX;
+import static com.i2i.zapcab.common.ZapCabConstant.PASSWORD_NOT_BLANK;
+import static com.i2i.zapcab.common.ZapCabConstant.PASSWORD_PATTERN_MESSAGE;
+import static com.i2i.zapcab.common.ZapCabConstant.PASSWORD_REGEX;
+import static com.i2i.zapcab.common.ZapCabConstant.PASSWORD_SIZE;
 
 @Builder
 @Data

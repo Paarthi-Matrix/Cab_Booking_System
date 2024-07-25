@@ -7,13 +7,16 @@ import com.i2i.zapcab.dto.RequestedRideDto;
 import com.i2i.zapcab.dto.RideDetailsDto;
 import com.i2i.zapcab.dto.UpdateDriverStatusDto;
 import com.i2i.zapcab.exception.NotFoundException;
+import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.helper.RideRequestStatusEnum;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.model.User;
 import com.i2i.zapcab.repository.DriverRepository;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -21,7 +24,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.Optional;
 
 @Service
-public class DriverServiceImpl implements DriverService{
+public class DriverServiceImpl implements DriverService {
     @Autowired
     DriverRepository driverRepository;
     @Autowired
@@ -51,7 +54,7 @@ public class DriverServiceImpl implements DriverService{
             vehicleService.updateVehicleStatus("Available", driver.getVehicle());
             vehicleLocationService.updateVehicleLocationByVehicleId(updateDriverStatusDto.getLocation(), driver.getVehicle());
         } else if (updateDriverStatusDto.getStatus().equalsIgnoreCase("OFFDUTY")
-                   || updateDriverStatusDto.getStatus().equalsIgnoreCase("SUSPENDED")){
+                || updateDriverStatusDto.getStatus().equalsIgnoreCase("SUSPENDED")) {
             vehicleService.updateVehicleStatus("Un Available", driver.getVehicle());
         }
         driver.setStatus(updateDriverStatusDto.getStatus());
@@ -63,21 +66,25 @@ public class DriverServiceImpl implements DriverService{
     }
 
     @Override
-    public boolean updateDriverRating(int id, int ratings){
-        Driver driver = driverRepository.findById(id).get();
-        int currentRating = driver.getRatings();
-        int updatedRating = (currentRating + ratings) / 2;
-        driver.setRatings(updatedRating);
-        Driver updatedDriver = driverRepository.save(driver);
-        return !ObjectUtils.isEmpty(updatedDriver);
+    public boolean updateDriverRating(int id, int ratings) {
+        try {
+            Driver driver = driverRepository.findById(id).get();
+            int currentRating = driver.getRatings();
+            int updatedRating = (currentRating + ratings) / 2;
+            driver.setRatings(updatedRating);
+            Driver updatedDriver = driverRepository.save(driver);
+            return !ObjectUtils.isEmpty(updatedDriver);
+        } catch (Exception e) {
+            throw new UnexpectedException("Error Occurred while updating driver rating with its id :" + id, e);
+        }
     }
 
     @Override
     public List<RequestedRideDto> getRideRequests(GetRideRequestListsDto getRideRequestListsDto) {
         List<RequestedRideDto> requestedRideDtos = new ArrayList<>();
         List<RideRequest> rideRequests = rideRequestService.getAll();
-        for(RideRequest rideRequest : rideRequests) {
-            if(rideRequest.getPickupPoint().equalsIgnoreCase(getRideRequestListsDto.getLocation())
+        for (RideRequest rideRequest : rideRequests) {
+            if (rideRequest.getPickupPoint().equalsIgnoreCase(getRideRequestListsDto.getLocation())
                     && (rideRequest.getVehicleCategory().equalsIgnoreCase(getRideRequestListsDto.getCategory()))
                     && (rideRequest.getStatus().equalsIgnoreCase(String.valueOf(RideRequestStatusEnum.PENDING)))) {
                 RequestedRideDto requestedRideDto = RequestedRideDto.builder()
@@ -98,7 +105,7 @@ public class DriverServiceImpl implements DriverService{
     public synchronized RideDetailsDto getRideDetails(DriverSelectedRideDto selectedRideDto) {//To-Do
         RideRequest request = rideRequestService.getRideByCustomerName(selectedRideDto);
         request.setStatus(String.valueOf(RideRequestStatusEnum.ASSIGNED));
-        RideDetailsDto rideDetailsDto  = RideDetailsDto.builder()
+        RideDetailsDto rideDetailsDto = RideDetailsDto.builder()
                 .customerName(request.getCustomer().getUser().getName())
                 .pickupPoint(request.getPickupPoint())
                 .distance(request.getDistance())

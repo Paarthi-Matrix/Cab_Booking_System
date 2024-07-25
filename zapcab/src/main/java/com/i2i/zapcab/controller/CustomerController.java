@@ -1,19 +1,19 @@
 package com.i2i.zapcab.controller;
 
+import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
 import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideRequestDto;
-import com.i2i.zapcab.dto.RideRequestResponseDto;
-import com.i2i.zapcab.exception.AuthenticationException;
+import com.i2i.zapcab.dto.VehicleAvailabilityResponseDto;
+import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.helper.JwtDecoder;
 import com.i2i.zapcab.service.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/customers")
@@ -23,46 +23,61 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @GetMapping("/vehicles")
-    public ResponseEntity<?> getAvailableVehiclesWithFare(
+    @GetMapping("me/vehicles")
+    public ApiResponseDto<?> getAvailableVehiclesWithFare(
             @RequestBody CheckVehicleAvailabilityDto checkVehicleAvailabilityDto) {
         try {
-            List<RideRequestResponseDto> rideRequestResponseDtos = customerService.
+            VehicleAvailabilityResponseDto vehicleAvailabilityResponseDto = customerService.
                     getAvailableVehiclesWithFare(checkVehicleAvailabilityDto);
-            if (!rideRequestResponseDtos.isEmpty()) {
-                return ResponseEntity.ok("result" + rideRequestResponseDtos);
+            if (!ObjectUtils.isEmpty(vehicleAvailabilityResponseDto)) {
+                return ApiResponseDto.statusOk(vehicleAvailabilityResponseDto);
             } else {
-                return new ResponseEntity<>("No data found", HttpStatus.NOT_FOUND);
+                return ApiResponseDto.statusOk("Same pickup and drop point not Allowed");
             }
-        } catch (AuthenticationException e) {
+        } catch (UnexpectedException e) {
             logger.error(e.getMessage(), e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ApiResponseDto.statusInternalServerError(null, e);
         }
     }
 
-    @PostMapping("/rides")
-    public ResponseEntity<?> saveRideRequest(@RequestAttribute("userId") int id, @RequestBody RideRequestDto rideRequestDto) {
+    @PostMapping("me/rideRequest")
+    public ApiResponseDto<String> saveRideRequest(@RequestBody RideRequestDto rideRequestDto) {
+        String id = JwtDecoder.extractUserIdFromToken();
         try {
-            return new ResponseEntity<>(customerService.saveRideRequest(id,rideRequestDto),
-                    HttpStatus.CREATED);
-        } catch (Exception e) {
+            if (customerService.saveRideRequest(id, rideRequestDto)) {
+                return ApiResponseDto.statusOk("Searching For Captain to Accept...");
+            } else {
+                return ApiResponseDto.statusNotFound(null);
+            }
+        } catch (UnexpectedException e) {
             logger.error(e.getMessage(), e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ApiResponseDto.statusInternalServerError(null, e);
         }
     }
 
-    @PatchMapping("drivers/{id}")
-    public ResponseEntity<?> updateDriverRating(
-            @RequestParam int id,@RequestBody RideRatingDto ratings){
-        try{
-            if (customerService.updateDriverRating(id,ratings)) {
-                return new ResponseEntity<>(HttpStatus.OK);
-            }else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PatchMapping("me/rides/{id}")
+    public ApiResponseDto<String> updateRideAndDriverRating(
+            @PathVariable int id, @RequestBody RideRatingDto ratings) {
+        try {
+            if (customerService.updateRideAndDriverRating(id, ratings)) {
+                return ApiResponseDto.statusOk("Ratings successfully");
+            } else {
+                return ApiResponseDto.statusNotFound(null);
             }
-        }catch(Exception e) {
+        } catch (UnexpectedException e) {
             logger.error(e.getMessage(), e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ApiResponseDto.statusInternalServerError(null, e);
+        }
+    }
+
+    @GetMapping("me/driver")
+    public ApiResponseDto<?> getAssignedDriverDetails() {
+        String id = JwtDecoder.extractUserIdFromToken();
+        try {
+            return ApiResponseDto.statusOk(customerService.getAssignedDriverDetails(id));
+        } catch (UnexpectedException e) {
+            logger.error(e.getMessage(), e);
+            return ApiResponseDto.statusInternalServerError(null, e);
         }
     }
 }

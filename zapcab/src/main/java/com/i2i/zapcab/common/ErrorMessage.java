@@ -80,5 +80,10 @@ public class ErrorMessage<T> {
         this.message = e.getMessage();
         this.e = e;
     }
+
+    public ErrorMessage(T data, int status) {
+        this();
+        this.status = status;
+    }
 }
 

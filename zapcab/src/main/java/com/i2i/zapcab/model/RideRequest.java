@@ -39,16 +39,17 @@ public class RideRequest {
     @Column(name = "vehicle_category", columnDefinition = "VARCHAR(15)")
     private String vehicleCategory;
     @Column(name = "drop_time", nullable = false)
-    private Date dropTime;
+    private String dropTime;
     @Column(name = "fare", nullable = false)
     private int fare;
     @Column(name = "distance", nullable = false)
     private int distance;
     @Column(name = "ride_time", nullable = false)
-    private Date rideTime;
+    private int rideTime;
     @Column(name = "request_status", columnDefinition = "VARCHAR(20)")
     private String status;
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "customer_id")
     private Customer customer;
+    private boolean isDeleted;
 }

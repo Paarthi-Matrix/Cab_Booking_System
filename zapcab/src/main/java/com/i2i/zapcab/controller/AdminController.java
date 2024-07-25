@@ -28,6 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/v1/admins")
 public class AdminController {
@@ -59,8 +62,7 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ){
-        Page<PendingRequest> fetchAllPendingRequestsDto = adminService.pendingRequestProcessing(page, size);
-        return null;
+        return ApiResponseDto.statusOk(adminService.pendingRequestProcessing(page, size));
     }
 
     /**

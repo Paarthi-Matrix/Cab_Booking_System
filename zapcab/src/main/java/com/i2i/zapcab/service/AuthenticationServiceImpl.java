@@ -27,7 +27,9 @@ import com.i2i.zapcab.model.User;
 import com.i2i.zapcab.repository.CustomerRepository;
 
 
-import static com.i2i.zapcab.constant.ZapCabConstant.*;
+import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_CUSTOMER_TIRE;
+import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_REMARKS;
+import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_STATUS_OF_DRIVER;
 
 /**
  * <p>
@@ -73,7 +75,7 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
      *     their history and frequency of rides. The INITIAL_CUSTOMER_TIRE is set in constants.
      * </p>
      * <p>
-     *     Also Refer {@link com.i2i.zapcab.constant.ZapCabConstant}
+     *     Also Refer {@link com.i2i.zapcab.common.ZapCabConstant}
      * </p>
      * @param registerRequestDto {@link RegisterDriverRequestDto}
      * @return AuthenticationResponseDto

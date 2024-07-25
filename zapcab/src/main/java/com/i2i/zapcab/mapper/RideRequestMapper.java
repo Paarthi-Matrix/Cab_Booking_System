@@ -10,6 +10,7 @@ public class RideRequestMapper {
         return RideRequest.builder().
                 pickupPoint(rideRequestDto.getPickupPoint()).
                 dropPoint(rideRequestDto.getDropPoint()).
+                distance(rideRequestDto.getDistance()).
                 vehicleCategory(rideRequestDto.getVehicleCategory()).
                 fare(rideRequestDto.getFare()).
                 dropTime(rideRequestDto.getDropTime()).build();

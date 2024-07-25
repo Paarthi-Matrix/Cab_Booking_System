@@ -5,7 +5,9 @@ import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.dto.RideRequestResponseDto;
 import com.i2i.zapcab.model.Customer;
+import com.i2i.zapcab.dto.*;
 import com.i2i.zapcab.model.RideRequest;
+import org.hibernate.id.Assigned;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,9 +23,13 @@ public interface CustomerService {
      * @param checkVehicleAvailabilityDto Data transfer object containing the pickup and drop points.
      * @return A list of RideRequestResponseDto containing the available vehicles with their respective fares.
      */
-    List<RideRequestResponseDto> getAvailableVehiclesWithFare(CheckVehicleAvailabilityDto checkVehicleAvailabilityDto);
+    VehicleAvailabilityResponseDto getAvailableVehiclesWithFare(CheckVehicleAvailabilityDto checkVehicleAvailabilityDto);
 
-    RideRequest saveRideRequest(int id,RideRequestDto rideRequestDto);
+    boolean saveRideRequest(String id,RideRequestDto rideRequestDto);
+
     void saveCustomer(Customer customer);
-    boolean updateDriverRating(int id, RideRatingDto ratings);
+
+    boolean updateRideAndDriverRating(int id, RideRatingDto ratings);
+
+    AssignedDriverDto getAssignedDriverDetails(String id);
 }

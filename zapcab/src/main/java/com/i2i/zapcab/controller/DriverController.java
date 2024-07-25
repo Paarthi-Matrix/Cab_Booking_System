@@ -61,7 +61,7 @@ public class DriverController {
         try {
             driverService.updateDriverStatusAndLocation(Userid,updateDriverStatusDto);
         } catch (NotFoundException e) {
-            return ApiResponseDto.statusNoContent("No such driver available", e);
+            return ApiResponseDto.statusNoContent("No such driver available");
         }
         return ApiResponseDto.statusOk("Driver location and status updated successfully!");
     }

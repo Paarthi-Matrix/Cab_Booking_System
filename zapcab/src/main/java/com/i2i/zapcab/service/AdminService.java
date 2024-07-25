@@ -1,6 +1,7 @@
 package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
+import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
 import com.i2i.zapcab.dto.UpdatePendingRequestDto;
 import com.i2i.zapcab.model.PendingRequest;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,7 @@ public interface AdminService {
      *
      * @return List holds all the requests
      */
-    Page<PendingRequest> pendingRequestProcessing(int page, int size);
+    Page<FetchAllPendingRequestsDto> pendingRequestProcessing(int page, int size);
 
     /**
      * Updates the requests by the admin with background verification made for each user
