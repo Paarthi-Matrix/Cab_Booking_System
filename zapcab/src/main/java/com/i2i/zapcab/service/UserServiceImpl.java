@@ -1,5 +1,6 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +30,16 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void saveUsers(User user) {
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            logger.error("Un expected error happened while saving/updating user " +
+                    user.getName(), e);
+            String errorMessage = "Un expected error happened while saving/updating user " +
+                    user.getName();
+            throw new UnexpectedException(errorMessage, e);
+        }
+
     }
 
     /**
@@ -44,7 +54,13 @@ public class UserServiceImpl implements UserService{
         User user = userRepository.findById(id).orElse(null);
         assert user != null;
         user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            logger.error("Un expected error happened while updating the new password for the user");
+            String errorMessage = "Un expected error happened while updating the new password for the user";
+            throw new UnexpectedException(errorMessage, e);
+        }
         logger.info("Password changed successfully!");
     }
 
@@ -60,5 +76,4 @@ public class UserServiceImpl implements UserService{
         userRepository.save(user);
         return MaskMobileNumberResponseDto.builder().message("Updated successfully").build();
     }
-
 }

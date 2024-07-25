@@ -69,7 +69,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
-
+        String jwt = "";
+       logger.debug("Invoking JWT filter.");
         if (request.getServletPath().contains("/v1/auth") ||
         request.getServletPath().contains("/v1/admins")) {
             logger.debug("Hit endpoint for auth. Passing to next filter chain.");
@@ -77,7 +78,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         final String authHeader = request.getHeader(AUTHORIZATION_HEADER);
-        String jwt = "";
         final String userId;
         if (authHeader == null ||!authHeader.startsWith(BEARER_HEADER)) {
             logger.debug("No proper headers for HttpServletRequest. Passing to next filter chain.");
@@ -97,6 +97,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                logger.debug("User Authenticated successfully and added to the SecurityContextHolder");
             }
         }
         if (isAuthorized(request)) {

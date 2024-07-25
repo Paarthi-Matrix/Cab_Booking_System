@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 @RestController
 @RequestMapping("/v1/customers")
@@ -56,8 +57,7 @@ public class CustomerController {
     }
 
     @PatchMapping("me/rides/{id}")
-    public ApiResponseDto<String> updateRideAndDriverRating(
-            @PathVariable int id, @RequestBody RideRatingDto ratings) {
+    public ApiResponseDto<String> updateRideAndDriverRating(@PathVariable int id, @RequestBody RideRatingDto ratings) {
         try {
             if (customerService.updateRideAndDriverRating(id, ratings)) {
                 return ApiResponseDto.statusOk("Ratings successfully");

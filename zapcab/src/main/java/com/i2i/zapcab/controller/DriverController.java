@@ -1,5 +1,8 @@
 package com.i2i.zapcab.controller;
 
+import java.util.List;
+
+import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
 import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
@@ -7,10 +10,13 @@ import com.i2i.zapcab.dto.OTPResponseDto;
 import com.i2i.zapcab.dto.OtpRequestDto;
 import java.util.List;
 
+import com.i2i.zapcab.service.AuthenticationServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,8 +51,8 @@ import com.i2i.zapcab.service.DriverService;
 @RequestMapping("/v1/drivers")
 @RequiredArgsConstructor
 public class DriverController {
-    private Logger logger = LoggerFactory.getLogger(DriverController.class);
 
+    private static Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
     @Autowired
     private DriverService driverService;
 
@@ -62,7 +68,6 @@ public class DriverController {
      *         <li>SUSPENDED</li>
      *     </ol>
      * </p>
-     *
      * @param updateDriverStatusDto {@link UpdateDriverStatusDto}
      *       This must contain all the values of the `UpdateDriverStatusDto`.
      * @return ApiResponseDto<String> {@link ApiResponseDto}
@@ -106,13 +111,14 @@ public class DriverController {
      */
     @PatchMapping("/me/password")
     public ApiResponseDto<String> changePassword(@RequestBody ChangePasswordRequestDto changePasswordRequestDto) {
+
         try {
             String id = JwtDecoder.extractUserIdFromToken();
-            driverService.changePassword(id, changePasswordRequestDto.getNewPassword());
-            return ApiResponseDto.statusOk("Driver password changed successfully!");
-        } catch (NotFoundException e) {
-            return ApiResponseDto.statusNotFound("No such driver is found", e);
+            driverService.changePassword(id, changePasswordRequestDto);
+        } catch (UnexpectedException e) {
+            return ApiResponseDto.statusInternalServerError("Unexpected error occurred while changing password", e);
         }
+        return ApiResponseDto.statusOk("Driver password changed successfully!");
     }
 
     /**

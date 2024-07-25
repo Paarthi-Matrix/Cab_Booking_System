@@ -1,5 +1,7 @@
 package com.i2i.zapcab.controller;
 
+import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.service.AuthenticationServiceImpl;
 import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.AuthenticationRequestDto;
 import com.i2i.zapcab.dto.AuthenticationResponse;
@@ -13,7 +15,8 @@ import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.service.AuthenticationService;
 import com.i2i.zapcab.service.CustomerService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,10 +46,11 @@ import com.i2i.zapcab.service.AuthenticationService;
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
-    private static final Logger logger = LoggerFactory.getLogger(CustomerService.class);
 
     @Autowired
     AuthenticationService authenticationService;
+
+    private static Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
 
     /**
      * <p>
@@ -56,23 +60,41 @@ public class AuthenticationController {
      *        The request body must contain all the fields of RegisterCustomerRequestDto.
      *
      * @return ApiResponseDto<AuthenticationResponse> {@link ApiResponseDto}
+     *         Returns the JWT Token with 201 CREATED upon successful registration .
+     *         Else returns 500 INTERNAL_SERVER_ERROR.
      */
     @PostMapping("/customers/register")
     public ApiResponseDto<AuthenticationResponseDto> registerCustomer(@RequestBody RegisterCustomerRequestDto registerCustomerRequestDto) {
-        return ApiResponseDto.statusCreated(authenticationService.customerRegister(registerCustomerRequestDto));
+        AuthenticationResponseDto authenticationResponseDto = null;
+        try {
+            authenticationResponseDto = authenticationService.customerRegister(registerCustomerRequestDto);
+        } catch (UnexpectedException e) {
+            return ApiResponseDto.statusInternalServerError(authenticationResponseDto,e);
+        }
+        logger.info("Customer successfully created!.");
+        return ApiResponseDto.statusCreated(authenticationResponseDto);
     }
 
     /**
      * <p>
      *     This method is responsible for registering driver.
      * </p>
-     * @param `RegisterDriverDto` {@link DriverRegisterResponseDto}
+     * @param  RegisterDriverDto {@link DriverRegisterResponseDto}
      *         The request body must contain all the fields of the RegisterDriverDto.
      * @return ApiResponseDto<DriverRegisterRequestResponseDto> {@link ApiResponseDto}
+     *         Returns the JWT Token with 201 CREATED upon successful registration .
+     *        Else returns 500 INTERNAL_SERVER_ERROR.
      */
     @PostMapping("/drivers/register")
     public ApiResponseDto<DriverRegisterResponseDto> registerDriver(@RequestBody RegisterDriverRequestDto registerDriverRequestDto){
-       return ApiResponseDto.statusCreated(authenticationService.driverRegisterRequest(registerDriverRequestDto));
+        DriverRegisterResponseDto driverRegisterResponseDto = null;
+       try {
+           driverRegisterResponseDto = authenticationService.driverRegisterRequest(registerDriverRequestDto);
+       } catch (UnexpectedException e) {
+           return ApiResponseDto.statusInternalServerError(driverRegisterResponseDto, e);
+       }
+       logger.info("Driver successfully added to pending request!.");
+       return ApiResponseDto.statusOk(driverRegisterResponseDto);
     }
 
     /**
@@ -96,12 +118,16 @@ public class AuthenticationController {
         try {
             authenticationResponse = authenticationService.authenticate(authenticationRequsetDto);
         } catch (NotFoundException e) {
+            logger.debug("No user with mobileNumber " + authenticationRequsetDto.getPhoneNumber() +
+                    " is found in database");
             authenticationResponse = AuthenticationResponseDto.builder().token("").build();
             return ApiResponseDto.statusNoContent(authenticationResponse);
         } catch (AuthenticationException e) {
+            logger.debug("Invalid credentials given by the user");
             authenticationResponse = AuthenticationResponseDto.builder().token("").build();
             return ApiResponseDto.statusUnAuthorized(authenticationResponse,e);
         }
+        logger.info("User authenticated successfully!");
         return ApiResponseDto.statusOk(authenticationResponse);
     }
 }

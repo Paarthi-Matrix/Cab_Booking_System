@@ -36,8 +36,8 @@ public class SecurityConfiguration implements WebSecurityConfigurer {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v1/auth/**").permitAll()
-                        .requestMatchers("/v1/admin/**").permitAll()
-                        .requestMatchers("/v1/drivers/**").hasAnyRole("CUSTOMER", "DRIVER")
+                        .requestMatchers("/v1/admins/**").permitAll()
+                        .requestMatchers("/api/v1/drivers/**").hasAnyRole("CUSTOMER", "DRIVER")
                         .requestMatchers("/api/v1/customers/**").hasAnyRole("CUSTOMER", "DRIVER")
                         .anyRequest().authenticated()
                 )
@@ -48,12 +48,8 @@ public class SecurityConfiguration implements WebSecurityConfigurer {
     }
 
     @Override
-    public void init(SecurityBuilder builder) throws Exception {
-
-    }
+    public void init(SecurityBuilder builder) throws Exception {}
 
     @Override
-    public void configure(SecurityBuilder builder) throws Exception {
-
-    }
+    public void configure(SecurityBuilder builder) throws Exception {}
 }

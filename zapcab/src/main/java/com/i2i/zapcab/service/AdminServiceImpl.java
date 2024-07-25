@@ -8,16 +8,19 @@ import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.mapper.PendingRequestMapper;
 import java.util.List;
 import java.util.Optional;
+
+import com.i2i.zapcab.dto.EmailRequestDto;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.i2i.zapcab.config.JwtService;
 import com.i2i.zapcab.exception.AuthenticationException;
 import com.i2i.zapcab.helper.DriverStatusEnum;
 import com.i2i.zapcab.helper.PinGeneration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.UpdatePendingRequestDto;
 import com.i2i.zapcab.helper.RoleEnum;
@@ -31,6 +34,9 @@ import com.i2i.zapcab.model.Vehicle;
 public class AdminServiceImpl implements AdminService {
     private static final Logger logger = LogManager.getLogger(AdminServiceImpl.class);
     PendingRequestMapper pendingRequestMapper = new PendingRequestMapper();
+
+    @Autowired
+    private AuthenticationService authenticationService;
     @Autowired
     private PendingRequestService pendingRequestService;
     @Autowired
@@ -41,6 +47,7 @@ public class AdminServiceImpl implements AdminService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtService jwtService;
+    EmailSenderServiceImpl emailSenderService;
 
     @Override
     public Page<FetchAllPendingRequestsDto> getAllPendingRequest(int page, int size) {
@@ -56,6 +63,8 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+        return requests;
+    }
     @Override
     public AuthenticationResponseDto updatePendingRequest(UpdatePendingRequestDto updatePendingRequestDto) {
         logger.info("Starting to update pending request for phone number: {}",
@@ -102,10 +111,11 @@ public class AdminServiceImpl implements AdminService {
             logger.debug("Starting driver registration process for email: {}", pendingRequest.getEmail());
             List<RoleEnum> roleEnums = List.of(RoleEnum.values());
             List<Role> roles = roleService.getByRoleType(roleEnums);
+            String password = PinGeneration.driverPasswordGeneration();
             User user = User.builder().name(pendingRequest.getName()).dateOfBirth(pendingRequest.getDob())
                     .email(pendingRequest.getEmail()).gender(pendingRequest.getGender())
                     .mobileNumber(pendingRequest.getMobileNumber())
-                    .password(passwordEncoder.encode(PinGeneration.driverPasswordGeneration())).role(roles)
+                    .password(passwordEncoder.encode(password)).role(roles)
                     .build();
             Vehicle vehicle = Vehicle.builder().category(pendingRequest.getCategory()).type(pendingRequest.getType())
                     .model(pendingRequest.getModel()).licensePlate(pendingRequest.getLicensePlate())
@@ -114,6 +124,13 @@ public class AdminServiceImpl implements AdminService {
                     .licenseNo(pendingRequest.getLicenseNo()).rcBookNo(pendingRequest.getRcBookNo()).user(user)
                     .status(String.valueOf(DriverStatusEnum.OnDuty)).vehicle(vehicle).build();
             driverService.saveDriver(driver);
+            emailSenderService.sendRegistrationEmailToDriver(
+                    EmailRequestDto.builder()
+                            .toEmail(pendingRequest.getEmail())
+                            .driverName(pendingRequest.getName())
+                            .mobilNumber(pendingRequest.getMobileNumber())
+                            .password(password).build()
+            );
             logger.info("Driver registration successful for email: {}", pendingRequest.getEmail());
             String jwtToken = jwtService.generateToken(user);
             return AuthenticationResponseDto.builder()

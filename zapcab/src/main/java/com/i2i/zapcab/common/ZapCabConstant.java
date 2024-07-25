@@ -70,4 +70,9 @@ public class ZapCabConstant {
     public static final String RIDE_STARTED = "Started";
     public static final String RIDE_COMPLETED = "Completed";
     public static final String REJECTED_STATUS = "Rejected";
+
+    //EMAIL
+    public static final String EMAIL_SUBJECT_FOR_DRIVER = "Welcome to ZapCab: Your Driver Account Details";
+    public static final String EMAIL_SUBJECT_FOR_CUSTOMER = "Welcome to ZapCab: Your Journey Begins Here!";
+    public static final String APP_DOMAIN_NAME = "www.zapcab.com";
 }

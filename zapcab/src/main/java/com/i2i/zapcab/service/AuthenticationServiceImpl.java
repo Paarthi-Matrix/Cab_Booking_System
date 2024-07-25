@@ -62,6 +62,8 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
     @Autowired
     private RoleService roleService;
     @Autowired
+    private EmailSenderServiceImpl emailSenderService;
+    @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private CustomerRepository customerRepository;
@@ -77,7 +79,11 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
      * <p>
      *     Also Refer {@link com.i2i.zapcab.common.ZapCabConstant}
      * </p>
+     *
      * @param registerRequestDto {@link RegisterDriverRequestDto}
+     *
+     * @throws com.i2i.zapcab.exception.UnexpectedException
+     *         Arises while saving/updating the entity to the database.
      * @return AuthenticationResponseDto
      *         Contains JWT token upon successfull registration.
      */
@@ -100,6 +106,7 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
                 .build();
         userService.saveUsers(user);
         customerService.saveCustomer(customer);
+        emailSenderService.sendRegistrationMailtoCustomer(registerRequestDto);
         logger.info("Customer " + registerRequestDto.getName() + " registered successfully!");
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponseDto.builder()
@@ -148,7 +155,7 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
      *    The drive cannot register as driver by themselves, due to some security constrains.
      *    Due to which
      * </p>
-     * @param registerDriverRequestDto
+     * @param RegisterDriverRequestDto
      * @return
      */
     @Override

@@ -7,6 +7,7 @@ import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.dto.RideRequestResponseDto;
 import com.i2i.zapcab.exception.AuthenticationException;
+import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.dto.*;
 import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.helper.OTPService;
@@ -40,7 +41,6 @@ public class CustomerServiceImpl implements CustomerService {
     private DriverService driverService;
 
     private final FareCalculator fareCalculator = new FareCalculator();
-
     private final OTPService otpService = new OTPService();
 
     @Override
@@ -68,7 +68,8 @@ public class CustomerServiceImpl implements CustomerService {
             vehicleAvailabilityResponseDto.setRideRequestResponseDtos(rideRequestResponseDtos);
             return vehicleAvailabilityResponseDto;
         } catch (Exception e) {
-            throw new UnexpectedException("Error occurred while fetching vehicles and calculating fare", e);
+            logger.error("Error fetching available vehicles: {}", e.getMessage());
+            throw new AuthenticationException("Error occurred while fetching vehicles and calculating fare",e);
         }
     }
 
@@ -77,13 +78,22 @@ public class CustomerServiceImpl implements CustomerService {
         try {
            return rideRequestService.saveRideRequest(customerRepository.findByUserId(id), rideRequestDto);
         } catch (Exception e) {
+            logger.error("Error Occurred while adding ride request {}" , e.getMessage());
             throw new UnexpectedException("Error Occurred while saving ride request", e);
         }
     }
 
     @Override
     public void saveCustomer(Customer customer) {
-        customerRepository.save(customer);
+        try {
+            customerRepository.save(customer);
+        } catch (Exception e) {
+            logger.error("Un expected error happened while saving customer" +
+                    customer.getUser().getName(), e);
+            String errorMessage = "Un expected error happened while saving customer" +
+                    customer.getUser().getName();
+            throw new UnexpectedException(errorMessage, e);
+        }
     }
 
     @Override
@@ -110,7 +120,7 @@ public class CustomerServiceImpl implements CustomerService {
                     model(ride.getDriver().getVehicle().getModel()).
                     licensePlate(ride.getDriver().getVehicle().getLicensePlate()).build();
             return !ObjectUtils.isEmpty(rideRequest) ? assignedDriverDto : null;
-        }catch(Exception e){
+        } catch(Exception e) {
             throw new UnexpectedException("Error Occurred while fetch assigned driver for the customer with id :"+id,e);
         }
     }

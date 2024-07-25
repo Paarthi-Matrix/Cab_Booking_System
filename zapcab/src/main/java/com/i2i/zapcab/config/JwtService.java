@@ -17,6 +17,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+/**
+ * <p>
+ * JwtService is a utility service responsible for generating,
+ * validating, and parsing JSON Web Tokens (JWTs).
+ * </p>
+ * <p>
+ *   This service provides methods to:
+ * </p>
+ * <ol>
+ *     <li>Extract claims from a token.</li>
+ *     <li>Generate new tokens with specific claims and expiration times.</li>
+ *     <li>Validate tokens to ensure they are not expired and match the provided user details.</li>
+ *     <li>Handle the secret key used for signing the tokens.</li>
+ * </ol>
+ *
+ * </p>
+ * @see application.properties
+ */
 @Service
 public class JwtService {
 

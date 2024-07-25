@@ -51,23 +51,23 @@ public class ErrorMessage<T> {
     private Exception e;
     private T data;
 
-    private ErrorMessage() {
+    public ErrorMessage() {
         timestamp = LocalDateTime.now();
     }
 
-    ErrorMessage(int status) {
+    public ErrorMessage(int status) {
         this();
         this.status = status;
     }
 
-    ErrorMessage(int status, Throwable ex) {
+    public ErrorMessage(int status, Throwable ex) {
         this();
         this.status = status;
         this.message = "Unexpected error";
         this.debugMessage = ex.getLocalizedMessage();
     }
 
-    ErrorMessage(int status, String message, Throwable e) {
+    public ErrorMessage(int status, String message, Throwable e) {
         this();
         this.status = status;
         this.message = message;

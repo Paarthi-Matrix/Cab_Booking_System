@@ -3,7 +3,6 @@ package com.i2i.zapcab.config;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.i2i.zapcab.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ObjectUtils;
 
+import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.model.User;
 import com.i2i.zapcab.repository.UserRepository;
 
