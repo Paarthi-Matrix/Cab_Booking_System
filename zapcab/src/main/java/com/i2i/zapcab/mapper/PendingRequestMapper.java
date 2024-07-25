@@ -1,5 +1,6 @@
 package com.i2i.zapcab.mapper;
 
+import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
 import com.i2i.zapcab.dto.RegisterDriverRequestDto;
 import com.i2i.zapcab.model.PendingRequest;
 
@@ -35,6 +36,20 @@ public class PendingRequestMapper {
                 type(pendingRequest.getType()).
                 licensePlate(pendingRequest.getLicensePlate()).
                 licenseNumber(pendingRequest.getLicenseNo()).
+                rcBookNo(pendingRequest.getRcBookNo()).build();
+    }
+
+    public FetchAllPendingRequestsDto entityToRequestDto(PendingRequest pendingRequest){
+        return FetchAllPendingRequestsDto.builder().
+                name(pendingRequest.getName()).
+                email(pendingRequest.getEmail()).
+                mobileNumber(pendingRequest.getMobileNumber()).
+                city(pendingRequest.getCity()).
+                dob(pendingRequest.getDob()).
+                category(pendingRequest.getCategory()).
+                model(pendingRequest.getModel()).
+                licensePlate(pendingRequest.getLicensePlate()).
+                licenseNo(pendingRequest.getLicenseNo()).
                 rcBookNo(pendingRequest.getRcBookNo()).build();
     }
 }

@@ -1,22 +1,26 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.ChangePasswordRequestDto;
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.GetRideRequestListsDto;
+import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
+import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
+import com.i2i.zapcab.dto.OtpRequestDto;
 import com.i2i.zapcab.dto.RequestedRideDto;
 import com.i2i.zapcab.dto.RideDetailsDto;
 import com.i2i.zapcab.dto.UpdateDriverStatusDto;
 import com.i2i.zapcab.exception.NotFoundException;
+import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.helper.OTPService;
 import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.helper.RideRequestStatusEnum;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.model.User;
 import com.i2i.zapcab.repository.DriverRepository;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -26,17 +30,19 @@ import java.util.Optional;
 @Service
 public class DriverServiceImpl implements DriverService {
     @Autowired
-    DriverRepository driverRepository;
+    private DriverRepository driverRepository;
     @Autowired
-    UserService userService;
+    private UserService userService;
     @Autowired
-    VehicleService vehicleService;
+    private VehicleService vehicleService;
     @Autowired
-    VehicleLocationService vehicleLocationService;
+    private VehicleLocationService vehicleLocationService;
     @Autowired
-    RideRequestService rideRequestService;
+    private RideRequestService rideRequestService;
     @Autowired
-    RideService rideService;
+    private RideService rideService;
+
+    OTPService otpService = new OTPService();
 
     @Override
     public Driver saveDriver(Driver driver) {
@@ -61,8 +67,9 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public void changePassword(String id, ChangePasswordRequestDto ChangePasswordRequestDto) {
-        userService.changePassword(id, ChangePasswordRequestDto.getNewPassword());
+    public void changePassword(String id, String newPassword) {
+        userService.changePassword(id, newPassword);
+
     }
 
     @Override
@@ -78,46 +85,74 @@ public class DriverServiceImpl implements DriverService {
             throw new UnexpectedException("Error Occurred while updating driver rating with its id :" + id, e);
         }
     }
-
     @Override
     public List<RequestedRideDto> getRideRequests(GetRideRequestListsDto getRideRequestListsDto) {
-        List<RequestedRideDto> requestedRideDtos = new ArrayList<>();
-        List<RideRequest> rideRequests = rideRequestService.getAll();
-        for (RideRequest rideRequest : rideRequests) {
-            if (rideRequest.getPickupPoint().equalsIgnoreCase(getRideRequestListsDto.getLocation())
-                    && (rideRequest.getVehicleCategory().equalsIgnoreCase(getRideRequestListsDto.getCategory()))
-                    && (rideRequest.getStatus().equalsIgnoreCase(String.valueOf(RideRequestStatusEnum.PENDING)))) {
-                RequestedRideDto requestedRideDto = RequestedRideDto.builder()
-                        .rideId(rideRequest.getId())
-                        .pickUpPoint(rideRequest.getPickupPoint())
-                        .dropPoint(rideRequest.getDropPoint())
-                        .distance(rideRequest.getDistance())
-                        .customerName(rideRequest.getCustomer().getUser().getName())
-                        .mobileNumber(rideRequest.getCustomer().getUser().getMobileNumber())
-                        .build();
-                requestedRideDtos.add(requestedRideDto);
+        try {
+            List<RequestedRideDto> requestedRideDtos = new ArrayList<>();
+            List<RideRequest> rideRequests = rideRequestService.getAll();
+            for (RideRequest rideRequest : rideRequests) {
+                if (rideRequest.getPickupPoint().equalsIgnoreCase(getRideRequestListsDto.getLocation())
+                        && (rideRequest.getVehicleCategory().equalsIgnoreCase(getRideRequestListsDto.getCategory()))
+                        && (rideRequest.getStatus().equalsIgnoreCase(String.valueOf(RideRequestStatusEnum.PENDING)))) {
+                    RequestedRideDto requestedRideDto = RequestedRideDto.builder()
+                            .rideId(rideRequest.getId())
+                            .pickUpPoint(rideRequest.getPickupPoint())
+                            .dropPoint(rideRequest.getDropPoint())
+                            .distance(rideRequest.getDistance())
+                            .customerName(rideRequest.getCustomer().getUser().getName())
+                            .mobileNumber(rideRequest.getCustomer().getUser().getMobileNumber())
+                            .build();
+                    requestedRideDtos.add(requestedRideDto);
+                }
             }
+            return requestedRideDtos;
+        } catch (Exception e) {
+            throw new UnexpectedException("Unable to get the ride requests", e);
         }
-        return requestedRideDtos;
     }
 
     @Override
-    public synchronized RideDetailsDto getRideDetails(DriverSelectedRideDto selectedRideDto) {//To-Do
-        RideRequest request = rideRequestService.getRideByCustomerName(selectedRideDto);
-        request.setStatus(String.valueOf(RideRequestStatusEnum.ASSIGNED));
-        RideDetailsDto rideDetailsDto = RideDetailsDto.builder()
-                .customerName(request.getCustomer().getUser().getName())
-                .pickupPoint(request.getPickupPoint())
-                .distance(request.getDistance())
-                .mobileNumber(request.getCustomer().getUser().getMobileNumber())
-                .build();
-        rideService.saveRide(request, selectedRideDto.getMobileNumber(), getByMobileNumber(selectedRideDto.getMobileNumber()));
-        return rideDetailsDto;
+    public synchronized RideDetailsDto getRideDetails(DriverSelectedRideDto selectedRideDto) {
+        try {
+            RideRequest request = rideRequestService.getRideByCustomerName(selectedRideDto);
+            request.setStatus(String.valueOf(RideRequestStatusEnum.ASSIGNED));
+            RideDetailsDto rideDetailsDto = RideDetailsDto.builder()
+                    .customerName(request.getCustomer().getUser().getName())
+                    .pickupPoint(request.getPickupPoint())
+                    .distance(request.getDistance())
+                    .mobileNumber(request.getCustomer().getUser().getMobileNumber())
+                    .build();
+            rideService.saveRide(request, getByMobileNumber(selectedRideDto.getMobileNumber()));
+            request.setStatus("Assigned");
+            rideRequestService.updateRequest(request);
+            return rideDetailsDto;
+        } catch (Exception e) {
+            throw new UnexpectedException("Unable to fetch the ride details", e);
+        }
     }
 
     @Override
     public Driver getByMobileNumber(String mobileNumber) {
-        return driverRepository.findDriverByMobileNumber(mobileNumber);
+        try {
+            return driverRepository.findDriverByMobileNumber(mobileNumber);
+        } catch (Exception e) {
+            throw new UnexpectedException("Error occurred while retrieving the driver detail", e);
+        }
+    }
+
+    @Override
+    public MaskMobileNumberResponseDto updateMaskMobileNumber(String id, MaskMobileNumberRequestDto maskMobileNumberRequestDto) {
+        return userService.updateMaskMobileNumber(id, maskMobileNumberRequestDto.getIsMaskedMobileNumber());
+    }
+
+    @Override
+    public Boolean otpValidation(OtpRequestDto otpRequestDto) {
+        try {
+            User user = userService.getUserByMobileNumber(otpRequestDto.getCustomerMobileNumber());
+            return otpService.validateOTP(user.getId(), otpRequestDto.getOtp());
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
 

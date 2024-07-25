@@ -1,6 +1,5 @@
 package com.i2i.zapcab.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.i2i.zapcab.helper.RoleEnum;
 
 import jakarta.validation.constraints.Email;

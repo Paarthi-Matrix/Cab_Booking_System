@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 /**
- * Data Transfer Object for registering the user as a driver.
+ * Entity for registering the user as a driver.
  * This dto has the following fields :
  *    Name : Must have only Alphabets
  *    email : A valid user's email which must have @ and .com

@@ -85,6 +85,13 @@ public class ApiResponseDto<T> extends ResponseEntity<Object> {
                 HttpStatus.NO_CONTENT.value()
         ), HttpStatus.NO_CONTENT);
     }
+    public static <T> ApiResponseDto<T> statusNotFound(T data, Exception e) {
+        return new ApiResponseDto<>(new ErrorMessage<>(
+                "No records found",
+                data,
+                HttpStatus.NOT_FOUND.value(),
+                e), HttpStatus.NOT_FOUND);
+    }
 
     public static <T> ApiResponseDto<T> statusUnAuthorized(T data, Exception e) {
         return new ApiResponseDto<>(new ErrorMessage<>(

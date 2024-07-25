@@ -1,7 +1,23 @@
 package com.i2i.zapcab.controller;
 
+import com.i2i.zapcab.dto.ApiResponseDto;
+import com.i2i.zapcab.dto.AuthenticationRequestDto;
+import com.i2i.zapcab.dto.AuthenticationResponse;
+import com.i2i.zapcab.dto.AuthenticationResponseDto;
+import com.i2i.zapcab.dto.DriverRegisterResponseDto;
+import com.i2i.zapcab.dto.RegisterCustomerRequestDto;
+import com.i2i.zapcab.dto.RegisterDriverRequestDto;
+import com.i2i.zapcab.dto.RegisterUserRequestDto;
+import com.i2i.zapcab.exception.AuthenticationException;
+import com.i2i.zapcab.exception.NotFoundException;
+import com.i2i.zapcab.service.AuthenticationService;
+import com.i2i.zapcab.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +43,7 @@ import com.i2i.zapcab.service.AuthenticationService;
 @RequestMapping("/v1/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
+    private static final Logger logger = LoggerFactory.getLogger(CustomerService.class);
 
     @Autowired
     AuthenticationService authenticationService;

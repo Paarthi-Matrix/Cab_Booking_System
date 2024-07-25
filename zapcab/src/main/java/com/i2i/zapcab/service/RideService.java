@@ -1,5 +1,6 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.dto.OTPResponseDto;
 import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.Ride;
@@ -8,7 +9,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface RideService {
-    void saveRide(RideRequest rideRequest, String mobileNumber, Driver driver);
+
+    public void saveRide(RideRequest rideRequest, Driver driver);
+
     int updateRideRating(int id, RideRatingDto ratings);
+
     Ride getRideByRideRequest(int id);
 }

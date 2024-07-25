@@ -1,6 +1,12 @@
 package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.common.FareCalculator;
+import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
+import com.i2i.zapcab.dto.OTPResponseDto;
+import com.i2i.zapcab.dto.RideRatingDto;
+import com.i2i.zapcab.dto.RideRequestDto;
+import com.i2i.zapcab.dto.RideRequestResponseDto;
+import com.i2i.zapcab.exception.AuthenticationException;
 import com.i2i.zapcab.dto.*;
 import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.helper.OTPService;
@@ -67,9 +73,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public boolean saveRideRequest(String id, RideRequestDto rideRequestDto) {
+    public RideRequest saveRideRequest(String id, RideRequestDto rideRequestDto) {
         try {
-            return rideRequestService.saveRideRequest(customerRepository.findByUserId(id), rideRequestDto);
+           return rideRequestService.saveRideRequest(customerRepository.findByUserId(id), rideRequestDto);
         } catch (Exception e) {
             throw new UnexpectedException("Error Occurred while saving ride request", e);
         }

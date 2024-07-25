@@ -1,60 +1,63 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.config.JwtService;
-import com.i2i.zapcab.dto.AuthenticationResponseDto;
+import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_STATUS_OF_DRIVER;
+import static com.i2i.zapcab.common.ZapCabConstant.REQUEST_STATUS;
+import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
-import com.i2i.zapcab.dto.UpdatePendingRequestDto;
+import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.mapper.PendingRequestMapper;
+import java.util.List;
+import java.util.Optional;
+import com.i2i.zapcab.config.JwtService;
 import com.i2i.zapcab.exception.AuthenticationException;
 import com.i2i.zapcab.helper.DriverStatusEnum;
 import com.i2i.zapcab.helper.PinGeneration;
-import com.i2i.zapcab.helper.RoleEnum;
-import com.i2i.zapcab.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-
-import static com.i2i.zapcab.common.ZapCabConstant.REQUEST_STATUS;
+import com.i2i.zapcab.dto.AuthenticationResponseDto;
+import com.i2i.zapcab.dto.UpdatePendingRequestDto;
+import com.i2i.zapcab.helper.RoleEnum;
+import com.i2i.zapcab.model.Driver;
+import com.i2i.zapcab.model.PendingRequest;
+import com.i2i.zapcab.model.Role;
+import com.i2i.zapcab.model.User;
+import com.i2i.zapcab.model.Vehicle;
 
 @Service
 public class AdminServiceImpl implements AdminService {
     private static final Logger logger = LogManager.getLogger(AdminServiceImpl.class);
+    PendingRequestMapper pendingRequestMapper = new PendingRequestMapper();
     @Autowired
-    PendingRequestService pendingRequestService;
+    private PendingRequestService pendingRequestService;
     @Autowired
-    private AuthenticationService authenticationService;
+    private DriverService driverService;
     @Autowired
-    DriverService driverService;
+    private RoleService roleService;
     @Autowired
-    RoleService roleService;
+    private PasswordEncoder passwordEncoder;
     @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
-    JwtService jwtService;
+    private JwtService jwtService;
 
     @Override
-    public Page<FetchAllPendingRequestsDto> pendingRequestProcessing(int page, int size) {
-        return pendingRequestService.getAllPendingRequests(page, size).map(pendingRequest -> {
-            FetchAllPendingRequestsDto fetchAllPendingRequestsDto = FetchAllPendingRequestsDto.builder()
-                    .name(pendingRequest.getName())
-                    .dob(pendingRequest.getDob()).email(pendingRequest.getEmail())
-                    .city(pendingRequest.getCity()).mobileNumber(pendingRequest.getMobileNumber())
-                    .category(pendingRequest.getCategory()).model(pendingRequest.getModel())
-                    .licenseNo(pendingRequest.getLicenseNo()).rcBookNo(pendingRequest.getRcBookNo())
-                    .licensePlate(pendingRequest.getLicensePlate()).status(pendingRequest.getStatus())
-                    .remarks(pendingRequest.getRemarks()).build();
-            return fetchAllPendingRequestsDto;
-        });
-
+    public Page<FetchAllPendingRequestsDto> getAllPendingRequest(int page, int size) {
+        try {
+            logger.info("Retrieving the pending request");
+            return pendingRequestService.getAllPendingRequests(page, size).map(pendingRequest -> {
+                FetchAllPendingRequestsDto fetchAllPendingRequestsDto = pendingRequestMapper.entityToRequestDto(pendingRequest);
+                return fetchAllPendingRequestsDto;
+            });
+        } catch (Exception e) {
+            logger.error("Error occurred while fetching the list of requests");
+            throw new UnexpectedException("Unable to retrieve the pending requests list", e);
+        }
     }
 
     @Override
-    public AuthenticationResponseDto modifyPendingRequest(UpdatePendingRequestDto updatePendingRequestDto) {
+    public AuthenticationResponseDto updatePendingRequest(UpdatePendingRequestDto updatePendingRequestDto) {
         logger.info("Starting to update pending request for phone number: {}",
                 updatePendingRequestDto.getPhoneNumber());
         try {
@@ -62,19 +65,18 @@ public class AdminServiceImpl implements AdminService {
             Optional<PendingRequest> pendingRequest = pendingRequestService.findRequestByMobileNumber(updatePendingRequestDto.getPhoneNumber());
             if (pendingRequest.isPresent()) {
                 PendingRequest request = pendingRequest.get();
-                if (REQUEST_STATUS.equalsIgnoreCase(request.getStatus())) {
-                    logger.info("Updating pending request status for phone number: {}",
-                            updatePendingRequestDto.getPhoneNumber());
-                    request.setStatus(updatePendingRequestDto.getStatus());
-                    request.setRemarks(updatePendingRequestDto.getRemarks());
-                    authenticationResponse = driverRegister(request);
-                    pendingRequestService.savePendingRequest(request);
-                    logger.info("Pending request successfully updated for phone number: {}",
-                            updatePendingRequestDto.getPhoneNumber());
-                } else {
-                    logger.warn("Pending request status not matching for phone number: {}",
-                            updatePendingRequestDto.getPhoneNumber());
+                logger.info("Updating pending request status for phone number: {}",
+                        updatePendingRequestDto.getPhoneNumber());
+                request.setStatus(updatePendingRequestDto.getStatus());
+                request.setRemarks(updatePendingRequestDto.getRemarks());
+                pendingRequestService.savePendingRequest(request);
+                if(request.getStatus().equalsIgnoreCase("rejected")){
+                    return AuthenticationResponseDto.builder().token("Your application has been rejected with the " +
+                            "following reason : "+ request.getRemarks()).build() ;
                 }
+                authenticationResponse = driverRegister(request);
+                logger.info("Pending request successfully updated for phone number: {}",
+                        updatePendingRequestDto.getPhoneNumber());
             } else {
                 logger.warn("Pending request not found for phone number: {}",
                         updatePendingRequestDto.getPhoneNumber());
@@ -88,7 +90,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     /**
+     * <p>
      * Used to register the driver once the user is approved.
+     * </p>
      *
      * @param pendingRequest {@link PendingRequest}
      * @return AuthenticationResponse which holds a unique token for that particular user.

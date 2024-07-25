@@ -2,28 +2,37 @@ package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.mapper.RideMapper;
+import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.repository.RideRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RideServiceImpl implements RideService {
+public class RideServiceImpl implements RideService{
+    private static final Logger logger  = LogManager.getLogger(RideServiceImpl.class);
+    private RideMapper rideMapper = new RideMapper();
     @Autowired
-    RideRepository rideRepository;
+    private RideRepository rideRepository;
+
 
     @Override
-    public void saveRide(RideRequest rideRequest, String mobileNumber, Driver driver) {
-        Ride ride = Ride.builder().status("Booked")
-                .rideRequest(rideRequest)
-                .distance(rideRequest.getDistance())
-                .fare(rideRequest.getFare())
-                .dropPoint(rideRequest.getDropPoint())
-                .driver(driver)
-                .build();
-        rideRepository.save(ride);
+    public void saveRide(RideRequest rideRequest, Driver driver) {
+        try {
+            logger.info("Saving the request {} to the ride table....",rideRequest.getPickupPoint());
+            Ride ride = rideMapper.rideRequestToRide(rideRequest, driver);
+            rideRepository.save(ride);
+            logger.info("Successfully ride has been saved {}",rideRequest.getPickupPoint());
+        } catch(Exception e) {
+            logger.error("Unable to save the ride requested by the customer : {}",
+                    rideRequest.getCustomer().getUser().getName());
+            throw new UnexpectedException("Unable to save the ride for the request : "+ rideRequest.getId(), e);
+        }
     }
 
     @Override

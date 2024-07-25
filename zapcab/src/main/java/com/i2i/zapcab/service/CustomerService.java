@@ -25,7 +25,7 @@ public interface CustomerService {
      */
     VehicleAvailabilityResponseDto getAvailableVehiclesWithFare(CheckVehicleAvailabilityDto checkVehicleAvailabilityDto);
 
-    boolean saveRideRequest(String id,RideRequestDto rideRequestDto);
+    RideRequest saveRideRequest(String id,RideRequestDto rideRequestDto);
 
     void saveCustomer(Customer customer);
 

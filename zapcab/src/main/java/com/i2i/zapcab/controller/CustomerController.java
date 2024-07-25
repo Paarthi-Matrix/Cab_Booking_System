@@ -44,7 +44,7 @@ public class CustomerController {
     public ApiResponseDto<String> saveRideRequest(@RequestBody RideRequestDto rideRequestDto) {
         String id = JwtDecoder.extractUserIdFromToken();
         try {
-            if (customerService.saveRideRequest(id, rideRequestDto)) {
+            if (!ObjectUtils.isEmpty(customerService.saveRideRequest(id, rideRequestDto))) {
                 return ApiResponseDto.statusOk("Searching For Captain to Accept...");
             } else {
                 return ApiResponseDto.statusNotFound(null);

@@ -1,5 +1,10 @@
 package com.i2i.zapcab.service;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.exception.UnexpectedException;
@@ -11,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import static com.i2i.zapcab.common.ZapCabConstant.REQUEST_STATUS;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +42,12 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
-    public boolean saveRideRequest(Customer customer, RideRequestDto rideRequestDto) {
+    public void updateRequest(RideRequest rideRequest) {
+        rideRequestRepository.save(rideRequest);
+    }
+
+    @Override
+    public boolean saveRideRequests(Customer customer, RideRequestDto rideRequestDto) {
         try {
             RideRequest rideRequest = rideRequestMapper.requestDtoToEntity(rideRequestDto);
             rideRequest.setStatus(REQUEST_STATUS);
@@ -67,5 +78,11 @@ public class RideRequestServiceImpl implements RideRequestService {
         } catch (Exception e) {
             throw new UnexpectedException("Error Occurred while checking ride request status is assigned or not", e);
         }
+    }
+    public RideRequest saveRideRequest(Customer customer,RideRequestDto rideRequestDto){
+        RideRequest rideRequest = rideRequestMapper.requestDtoToEntity(rideRequestDto);
+        rideRequest.setStatus(REQUEST_STATUS);
+        rideRequest.setCustomer(customer);
+        return rideRequestRepository.save(rideRequest);
     }
 }

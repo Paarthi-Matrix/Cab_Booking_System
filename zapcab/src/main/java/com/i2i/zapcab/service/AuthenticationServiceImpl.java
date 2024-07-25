@@ -98,7 +98,7 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
                 .tier(INITIAL_CUSTOMER_TIRE)
                 .user(user)
                 .build();
-        userService.saveUser(user);
+        userService.saveUsers(user);
         customerService.saveCustomer(customer);
         logger.info("Customer " + registerRequestDto.getName() + " registered successfully!");
         String jwtToken = jwtService.generateToken(user);

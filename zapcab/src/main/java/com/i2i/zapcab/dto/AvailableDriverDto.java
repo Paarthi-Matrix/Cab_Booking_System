@@ -5,6 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * <p>
+ *     This class represents a Data Transfer Object (DTO) for searching the available nearby drivers.
+ *     It contains information about the driver, including their name, mobile number,
+ *     license plate, location, category, and type.
+ * </p>
+ */
 @Builder
 @Data
 @NoArgsConstructor

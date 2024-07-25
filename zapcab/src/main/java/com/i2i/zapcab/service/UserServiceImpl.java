@@ -1,5 +1,6 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void saveUser(User user) {
+    public void saveUsers(User user) {
         userRepository.save(user);
     }
 
@@ -50,4 +51,14 @@ public class UserServiceImpl implements UserService{
     public Optional<User> getUserById(String id) {
         return userRepository.findById(id);
     }
+
+    @Override
+    public MaskMobileNumberResponseDto updateMaskMobileNumber(String id, boolean mask) {
+        User user = userRepository.findById(id).orElse(null);
+        assert user!= null;
+        user.setMaskedMobileNumber(mask);
+        userRepository.save(user);
+        return MaskMobileNumberResponseDto.builder().message("Updated successfully").build();
+    }
+
 }
