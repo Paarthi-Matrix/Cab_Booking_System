@@ -1,7 +1,9 @@
 package com.i2i.zapcab.common;
 
 public class ZapCabConstant {
-    /**Regex*/
+    /**
+     * Regex
+     */
     public static final String STRING_REGEX = "^[A-Za-z]+$";
     public static final String EMAIL_REGEX = "^[\\w.-]+@[\\w.-]+\\.com$";
     public static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])" +
@@ -12,7 +14,9 @@ public class ZapCabConstant {
             "((19|20)[0-9][0-9])[0-9]{7}$";
     public static final String LICENSE_PLATE_REGEX = ("([A-Z]{2}[ -][0-9]{1,2}[ -][A-Z]" +
             "{1,2}[ -][0-9]{4})");
-    /**Message*/
+    /**
+     * Message
+     */
     public static final String NAME_NOT_BLANK = "Name is mandatory";
     public static final String NAME_PATTERN_MESSAGE = "Name must contain only alphabetic characters";
     public static final String REGION_NOT_BLANK = "Region is mandatory";
@@ -73,6 +77,17 @@ public class ZapCabConstant {
     public static final String RIDE_COMPLETED = "Completed";
     public static final String REJECTED_STATUS = "Rejected";
 
+    //Otp duration
+    public static final long OTP_VALID_DURATION = 30 * 60 * 1000; // 30 minutes
+
+    //Custom-Query
+    public static final String FIND_DRIVER_BY_MOBILE_NUMBER_QUERY = "SELECT d FROM Driver d JOIN d.user u WHERE u.mobileNumber = :mobileNumber";
+    public static final String FIND_BY_ROLE_TYPE_QUERY = "SELECT r FROM Role r WHERE r.roleName IN :roleEnum";
+    public static final String FIND_BY_STATUS_QUERY = "SELECT pr from PendingRequest pr WHERE pr.status =:status";
+    public static final String FIND_BY_CUSTOMER_NAME_AND_RIDE_ID = "SELECT rr FROM RideRequest rr WHERE rr.customer.user.name = :customerName AND rr.id = :rideID";
+    public static final String FIND_BY_CUSTOMER_ID = "from RideRequest r JOIN r.customer c where c.user.id = :customerId and r.isDeleted = false";
+    public static final String FIND_BY_STATUS = "SELECT pr from PendingRequest pr WHERE pr.status =:status";
+
     //EMAIL
     public static final String EMAIL_SUBJECT_FOR_DRIVER = "Welcome to ZapCab: Your Driver Account Details";
     public static final String EMAIL_SUBJECT_FOR_CUSTOMER = "Welcome to ZapCab: Your Journey Begins Here!";
@@ -83,6 +98,4 @@ public class ZapCabConstant {
     public static final String FUEL_PRICE_API_TOKEN = "8c512c599fmsh4b66d1a46eeafc7p1bfd24jsn6626bf9861fd";
 
     public static final String PAYMENT_CASH = "cash";
-
-
 }

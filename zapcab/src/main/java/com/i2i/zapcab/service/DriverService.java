@@ -1,14 +1,6 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
-import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
-import com.i2i.zapcab.dto.OtpRequestDto;
-import com.i2i.zapcab.dto.ChangePasswordRequestDto;
-import com.i2i.zapcab.dto.UpdateDriverStatusDto;
-import com.i2i.zapcab.dto.DriverSelectedRideDto;
-import com.i2i.zapcab.dto.GetRideRequestListsDto;
-import com.i2i.zapcab.dto.RequestedRideDto;
-import com.i2i.zapcab.dto.RideDetailsDto;
+import com.i2i.zapcab.dto.*;
 
 import com.i2i.zapcab.model.Driver;
 import java.util.List;
@@ -58,9 +50,8 @@ public interface DriverService {
      *
      * @param selectedRideDto {@link DriverSelectedRideDto}
      * @return RideDetailsDto Holds the ride details
-     * {@link RideDetailsDto}
      */
-    public RideDetailsDto getRideDetails(DriverSelectedRideDto selectedRideDto);
+    RideDetailsDto getRideDetails(DriverSelectedRideDto selectedRideDto);
 
     /**
      * <p>
@@ -76,6 +67,16 @@ public interface DriverService {
 
     void changePassword(String id, String newPassword);
 
+    /**
+     * <p>
+     * Updates the rating of a driver with the given ID.
+     * </p>
+     *
+     * @param id      The unique id of the driver.
+     * @param ratings The new rating to be added to the driver's current rating.
+     * @return true if the driver's rating is updated successfully, otherwise false.
+     * @throws com.i2i.zapcab.exception.UnexpectedException if an error occurs while updating the driver's rating.
+     */
     boolean updateDriverRating(String id, int ratings);
 
     /**

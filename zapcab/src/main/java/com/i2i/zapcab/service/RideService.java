@@ -1,9 +1,6 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.dto.OTPResponseDto;
-import com.i2i.zapcab.dto.PaymentModeDto;
-import com.i2i.zapcab.dto.RideInvoiceDto;
-import com.i2i.zapcab.dto.RideRatingDto;
+import com.i2i.zapcab.dto.*;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.model.RideRequest;
@@ -24,10 +21,29 @@ public interface RideService {
      * @param rideRequest
      * @param driver
      */
-    public void saveRide(RideRequest rideRequest, Driver driver);
+    void saveRide(RideRequest rideRequest, Driver driver);
 
+    /**
+     * <p>
+     * Updates the rating of a ride with the given ID and returns the driver's ID.
+     * </p>
+     *
+     * @param id      The unique id of the ride.
+     * @param ratings The data transfer object containing the new ride rating.
+     * @return The ID of the driver associated with the ride.
+     * @throws com.i2i.zapcab.exception.UnexpectedException if an error occurs while updating the ride rating.
+     */
     String updateRideRating(String id, RideRatingDto ratings);
 
+    /**
+     * <p>
+     * Retrieves a ride based on the provided ride request ID.
+     * </p>
+     *
+     * @param id The unique id of the ride request.
+     * @return The Ride object associated with the provided ride request ID.
+     * @throws com.i2i.zapcab.exception.UnexpectedException if an error occurs while retrieving the ride.
+     */
     Ride getRideByRideRequest(String id);
     /**
      * <p>

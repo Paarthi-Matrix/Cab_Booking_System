@@ -42,7 +42,7 @@ public class RideRequest extends Auditable {
     @Column(name = "drop_time", nullable = false)
     private String dropTime;
     @Column(name = "fare", nullable = false)
-    private int fare;
+    private double fare;
     @Column(name = "distance", nullable = false)
     private int distance;
     @Column(name = "ride_time", nullable = false)

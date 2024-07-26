@@ -19,5 +19,5 @@ public class RideInvoiceDto {
     private String vehicleNumber;
     private String pickupPoint;
     private String dropPoint;
-    private int fare;
+    private double fare;
 }

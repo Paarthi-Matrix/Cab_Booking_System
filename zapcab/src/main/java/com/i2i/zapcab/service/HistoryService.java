@@ -1,7 +1,11 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.dto.RideHistoryResponseDto;
+import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.dto.TierDto;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * <p>
@@ -11,6 +15,17 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public interface HistoryService {
+    /**
+     * <p>
+     * Retrieves all ride history records for a specific user by their ID.
+     * Converts the ride history entities to DTOs before returning them.
+     * </p>
+     *
+     * @param id The ID of the user whose ride history is to be retrieved.
+     * @return A list of RideHistoryResponseDto objects representing the user's ride history.
+     * @throws UnexpectedException If an error occurs while fetching the ride history.
+     */
+    List<RideHistoryResponseDto> getAllRideHistoryById(String id);
 
     /**
      * <p>

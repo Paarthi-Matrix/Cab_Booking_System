@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
+import static com.i2i.zapcab.common.ZapCabConstant.FIND_BY_ROLE_TYPE_QUERY;
+
 @Repository
-public interface RoleRepository extends JpaRepository<Role, String> {
-    @Query("SELECT r FROM Role r WHERE r.roleName IN :roleEnum")
+public interface RoleRepository extends JpaRepository<Role, Integer> {
+    @Query(FIND_BY_ROLE_TYPE_QUERY)
     List<Role> findByRoleType(@Param("roleEnum") List<RoleEnum> roleEnum);
 }

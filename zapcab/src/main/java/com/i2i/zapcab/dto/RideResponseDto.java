@@ -11,7 +11,7 @@ public class RideResponseDto {
     private String pickupPoint;
     private String dropPoint;
     private int distance;
-    private int fare;
+    private double fare;
     private Date dropTime;
     private String driverName;
     private Long driverContactNumber;

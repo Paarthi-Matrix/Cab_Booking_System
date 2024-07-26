@@ -35,7 +35,7 @@ public class Ride extends Auditable {
     @Column(name = "distance", nullable = false)
     private int distance;
     @Column(name = "fare", nullable = false)
-    private int fare;
+    private double fare;
     @Column(name = "start_time")
     private Date startTime;
     @Column(name = "end_time")
@@ -52,6 +52,8 @@ public class Ride extends Auditable {
     private Driver driver;
     @Column(name = "payment_mode", columnDefinition = "VARCHAR(20)")
     private String paymentMode;
+    @Column(name = "isDeleted")
+    private boolean isDeleted;
 
     @PrePersist
     protected void onCreate() {

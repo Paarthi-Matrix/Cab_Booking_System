@@ -11,5 +11,5 @@ public class RideRequestDto {
     private int distance;
     private String vehicleCategory;
     private String dropTime;
-    private int fare;
+    private double fare;
 }

@@ -56,7 +56,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
-    public boolean saveRideRequests(Customer customer, RideRequestDto rideRequestDto) {
+    public boolean saveRideRequest(Customer customer, RideRequestDto rideRequestDto) {
         try {
             RideRequest rideRequest = rideRequestMapper.requestDtoToEntity(rideRequestDto);
             rideRequest.setStatus(REQUEST_STATUS);
@@ -87,13 +87,6 @@ public class RideRequestServiceImpl implements RideRequestService {
         } catch (Exception e) {
             throw new UnexpectedException("Error Occurred while checking ride request status is assigned or not", e);
         }
-    }
-    @Override
-    public RideRequest saveRideRequest(Customer customer,RideRequestDto rideRequestDto){
-        RideRequest rideRequest = rideRequestMapper.requestDtoToEntity(rideRequestDto);
-        rideRequest.setStatus(REQUEST_STATUS);
-        rideRequest.setCustomer(customer);
-        return rideRequestRepository.save(rideRequest);
     }
 
     /**

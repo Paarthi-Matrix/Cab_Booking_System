@@ -10,12 +10,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.i2i.zapcab.common.ZapCabConstant.FIND_BY_CUSTOMER_ID;
+import static com.i2i.zapcab.common.ZapCabConstant.FIND_BY_CUSTOMER_NAME_AND_RIDE_ID;
+
 @Repository
 public interface RideRequestRepository extends JpaRepository<RideRequest, String> {
 
-    @Query("SELECT rr FROM RideRequest rr WHERE rr.customer.user.name = :customerName AND rr.id = :rideID")
+    @Query(FIND_BY_CUSTOMER_NAME_AND_RIDE_ID)
     RideRequest findByCustomerNameAndRideID(@Param("customerName") String customerName, @Param("rideID") int rideID);
 
-    @Query("from RideRequest r JOIN r.customer c where c.user.id = :customerId and r.isDeleted = false")
+    @Query(FIND_BY_CUSTOMER_ID)
     Optional<RideRequest> findByCustomerId(@Param("customerId") String id);
 }

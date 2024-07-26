@@ -9,9 +9,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static com.i2i.zapcab.common.ZapCabConstant.FIND_BY_STATUS;
+
 @Repository
-public interface PendingRequestsRepository extends JpaRepository<PendingRequest, String> {
-    @Query("SELECT pr from PendingRequest pr WHERE pr.status =:status")
+public interface PendingRequestsRepository extends JpaRepository<PendingRequest, Integer> {
+    @Query(FIND_BY_STATUS)
     public List<PendingRequest> findByStatus(@Param("status") String status);
 
     public Optional<PendingRequest> findByMobileNumber(String phoneNumber);

@@ -47,7 +47,6 @@ public class ErrorMessage<T> {
     private LocalDateTime timestamp;
     private String message;
     private String debugMessage;
-    @NotNull
     private Exception e;
     private T data;
 
@@ -83,6 +82,7 @@ public class ErrorMessage<T> {
 
     public ErrorMessage(T data, int status) {
         this();
+        this.data = data;
         this.status = status;
     }
 }

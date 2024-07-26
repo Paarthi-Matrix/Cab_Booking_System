@@ -1,10 +1,17 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.dto.RideHistoryResponseDto;
 import com.i2i.zapcab.dto.TierDto;
 import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.mapper.HistoryMapper;
+import com.i2i.zapcab.model.History;
+import com.i2i.zapcab.repository.HistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -12,12 +19,26 @@ import org.springframework.stereotype.Service;
  * </p>
  */
 @Service
-@RequiredArgsConstructor
 public class HistoryServiceImpl implements HistoryService {
 
     @Autowired
-    private final CustomerService customerService;
+    private HistoryRepository historyRepository;
+    @Autowired
+    private CustomerService customerService;
 
+    private HistoryMapper historyMapper = new HistoryMapper();
+
+    public List<RideHistoryResponseDto> getAllRideHistoryById(String id) {
+        try {
+            List<RideHistoryResponseDto> rideHistoryResponseDtos = new ArrayList<>();
+            historyRepository.findAllByUserId(id).
+                    forEach((history) -> rideHistoryResponseDtos.add(historyMapper.entityToDto(history)));
+            return rideHistoryResponseDtos;
+        } catch (Exception e) {
+            throw new UnexpectedException("Error Occurred while fetching" +
+                    " all rides associated to user: " + id, e);
+        }
+    }
     /**
      * <p>
      *     Updates the tier of a customer based on the user ID.

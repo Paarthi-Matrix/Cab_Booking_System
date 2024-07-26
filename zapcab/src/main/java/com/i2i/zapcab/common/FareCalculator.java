@@ -45,6 +45,7 @@ public class FareCalculator {
      * @param drop     The drop location.
      * @param category The vehicle category.
      * @return A RideRequestResponseDto containing the fare details.
+     * @throws UnexpectedException if any error occurs while calculating fare.
      */
     public RideRequestResponseDto calculateFare(String pickup, String drop, String category) {
         try {
@@ -70,6 +71,7 @@ public class FareCalculator {
      * @param currentHour The current hour of the day.
      * @param category    The vehicle category.
      * @return A RideRequestResponseDto containing the fare and estimated drop time.
+     * @throws UnexpectedException if any error occurs while calculating fare by category.
      */
     private RideRequestResponseDto fareByCategory(
             int distance, int currentHour, String category, int airportCharge) {
@@ -111,7 +113,5 @@ public class FareCalculator {
 }
 
 //TO DO
-//Query to constants
-//airport charges
 //history table
 
