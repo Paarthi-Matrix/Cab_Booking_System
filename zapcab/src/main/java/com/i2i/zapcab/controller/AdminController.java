@@ -1,5 +1,7 @@
 package com.i2i.zapcab.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import com.i2i.zapcab.service.AdminService;
 @RestController
 @RequestMapping("/v1/admins")
 public class AdminController {
+    private static final Logger logger = LogManager.getLogger(AdminController.class);
     @Autowired
     private AdminService adminService;
     /**
@@ -42,10 +45,13 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
+        logger.debug("Entering into the method to fetch all the requests..");
         Page<FetchAllPendingRequestsDto> fetchAllPendingRequestsDto = adminService.getAllPendingRequest(page, size);
         try {
+            logger.info("Fetching all the requests");
             return ApiResponseDto.statusOk(fetchAllPendingRequestsDto);
-        } catch (UnexpectedException e){
+        } catch (UnexpectedException e) {
+            logger.error("Error occurred while fetching the pending requests ");
             return ApiResponseDto.statusInternalServerError(fetchAllPendingRequestsDto,e);
         }
     }
@@ -63,13 +69,18 @@ public class AdminController {
      * @return
      */
     @PutMapping
-    public ApiResponseDto<AuthenticationResponseDto> updatePendingRequest(@RequestBody UpdatePendingRequestDto updatePendingRequestDto) {
+    public ApiResponseDto<AuthenticationResponseDto> updatePendingRequest(@RequestBody UpdatePendingRequestDto
+                                                                                      updatePendingRequestDto) {
+        logger.debug("Entering into the method to update the particular request...");
         AuthenticationResponseDto authenticationResponse = null;
         try {
+            logger.info("Updating the request for the user : {}", updatePendingRequestDto.getPhoneNumber());
             authenticationResponse = adminService.updatePendingRequest(updatePendingRequestDto);
+            logger.info("Successfully updated the {} user's status ", updatePendingRequestDto.getPhoneNumber());
         } catch (UnexpectedException e) {
            return ApiResponseDto.statusInternalServerError(authenticationResponse, e);
         }
+        logger.debug("leaving the method  updateRequest ");
         return ApiResponseDto.statusOk(authenticationResponse);
     }
 }

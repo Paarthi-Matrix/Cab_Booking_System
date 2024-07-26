@@ -13,6 +13,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Implements {@link RoleService}
+ *  A service class that provide all the operations that are applicable to the role entity
+ */
 @Service
 public class RoleServiceImpl implements RoleService {
     @Autowired

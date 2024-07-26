@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PendingRequestRepository extends JpaRepository<PendingRequest, Integer> {
+public interface PendingRequestRepository extends JpaRepository<PendingRequest, String> {
     @Query("SELECT pr from PendingRequest pr WHERE pr.status =:status")
     List<PendingRequest> findByStatus(@Param("status") String status);
     Optional<PendingRequest> findByMobileNumber(String phoneNumber);

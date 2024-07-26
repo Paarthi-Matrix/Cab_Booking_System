@@ -19,18 +19,18 @@ import com.i2i.zapcab.mapper.RideRequestMapper;
 import com.i2i.zapcab.model.Customer;
 import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.repository.RideRequestRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import static com.i2i.zapcab.common.ZapCabConstant.REQUEST_STATUS;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 
 import static com.i2i.zapcab.common.ZapCabConstant.ASSIGNED;
-import static com.i2i.zapcab.common.ZapCabConstant.REQUEST_STATUS;
 
+/**
+ * Implements {@link RideRequestService}
+ * Manages the business logic to perform operation like updating the status, assigning to the driver
+ */
 @Service
 public class RideRequestServiceImpl implements RideRequestService {
     private static final Logger logger  = LogManager.getLogger(RideRequestServiceImpl.class);
@@ -69,7 +69,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
-    public void updateRideRequestStatus(int id) {
+    public void updateRideRequestStatus(String id) {
         try {
             RideRequest rideRequest = rideRequestRepository.findById(id).get();
             rideRequest.setStatus(ASSIGNED);
@@ -88,6 +88,7 @@ public class RideRequestServiceImpl implements RideRequestService {
             throw new UnexpectedException("Error Occurred while checking ride request status is assigned or not", e);
         }
     }
+    @Override
     public RideRequest saveRideRequest(Customer customer,RideRequestDto rideRequestDto){
         RideRequest rideRequest = rideRequestMapper.requestDtoToEntity(rideRequestDto);
         rideRequest.setStatus(REQUEST_STATUS);
@@ -111,7 +112,7 @@ public class RideRequestServiceImpl implements RideRequestService {
      *         If an error occurs while updating the ride request details.
      */
 
-    public UpdateResponseDto updateRideDetails(int id, UpdateRideDto updateRideDto) {
+    public UpdateResponseDto updateRideDetails(String id, UpdateRideDto updateRideDto) {
         try {
             Optional<RideRequest> rideRequestOptional = rideRequestRepository.findById(id);
             if (!rideRequestOptional.isPresent()) {

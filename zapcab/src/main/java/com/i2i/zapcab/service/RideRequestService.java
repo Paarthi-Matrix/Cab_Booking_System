@@ -10,11 +10,18 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * An interface that manages the ride request operation made by the customer.
+ */
 @Component
 public interface RideRequestService {
+    /**
+     *
+     * @param customer
+     * @param rideRequestDto
+     * @return
+     */
     RideRequest saveRideRequest(Customer customer,RideRequestDto rideRequestDto);
-
-    boolean saveRideRequests(Customer customer,RideRequestDto rideRequestDto);
 
     public List<RideRequest> getAll();
 
@@ -22,9 +29,11 @@ public interface RideRequestService {
 
     void updateRequest(RideRequest rideRequest);
 
-    void updateRideRequestStatus(int id);
+    boolean saveRideRequests(Customer customer, RideRequestDto rideRequestDto);
+
+    void updateRideRequestStatus(String id);
 
     RideRequest checkStatusAssignedOrNot(String id);
 
-    public UpdateResponseDto updateRideDetails(int id, UpdateRideDto updateRideDto);
+    public UpdateResponseDto updateRideDetails(String id, UpdateRideDto updateRideDto);
 }

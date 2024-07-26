@@ -3,6 +3,12 @@ package com.i2i.zapcab.service;
 import com.i2i.zapcab.dto.TierDto;
 import org.springframework.stereotype.Component;
 
+/**
+ * <p>
+ *    An interface to maintain the operation that are related to the history entity
+ *    This operation includes updating the customer tier, history maintenance
+ * </p>
+ */
 @Component
 public interface HistoryService {
 

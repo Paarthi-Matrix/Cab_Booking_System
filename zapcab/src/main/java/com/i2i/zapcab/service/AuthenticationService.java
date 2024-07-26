@@ -2,7 +2,6 @@ package com.i2i.zapcab.service;
 
 
 import com.i2i.zapcab.dto.AuthenticationRequestDto;
-import com.i2i.zapcab.dto.AuthenticationResponse;
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.DriverRegisterResponseDto;
 import com.i2i.zapcab.dto.RegisterCustomerRequestDto;

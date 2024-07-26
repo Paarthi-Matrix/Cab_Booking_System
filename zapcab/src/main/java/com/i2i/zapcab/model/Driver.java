@@ -8,7 +8,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,8 +24,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "drivers")
 public class Driver extends Auditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
     @Column(name = "region", nullable = false)
     private String region;
     @Column(name = "no_of_cancellation", nullable = false)
@@ -43,4 +44,11 @@ public class Driver extends Auditable {
     private User user;
     @OneToOne(cascade = CascadeType.PERSIST)
     private Vehicle vehicle;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID().toString();
+        }
+    }
 }

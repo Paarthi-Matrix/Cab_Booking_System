@@ -74,7 +74,7 @@ public class CustomerController {
     }
 
     @PatchMapping("me/rides/{id}")
-    public ApiResponseDto<String> updateRideAndDriverRating(@PathVariable int id, @RequestBody RideRatingDto ratings) {
+    public ApiResponseDto<String> updateRideAndDriverRating(@PathVariable String id, @RequestBody RideRatingDto ratings) {
         try {
             if (customerService.updateRideAndDriverRating(id, ratings)) {
                 return ApiResponseDto.statusOk("Ratings successfully");
@@ -128,7 +128,7 @@ public class CustomerController {
      * @return ResponseEntity<TierDto>
      *         The response entity containing the updated tier or an error message.
      */
-    @PutMapping("/me/updatetiers")
+    @PutMapping("/me/tiers")
     public ApiResponseDto<?> updateUserTier() {
         String userId = JwtDecoder.extractUserIdFromToken();
         System.out.println(userId);
@@ -157,7 +157,7 @@ public class CustomerController {
      *         The response entity containing the updated ride status or an error message.
      */
     @PatchMapping("/{id}/status")
-    public ApiResponseDto<?> updateRideStatus(@PathVariable int id, @RequestBody StatusDto statusDto) {
+    public ApiResponseDto<?> updateRideStatus(@PathVariable String id, @RequestBody StatusDto statusDto) {
         try {
             RideResponseDto rideResponseDto = rideService.updateRideStatus(id, statusDto);
             logger.info("Updated ride status for ride with ID {}", id);
@@ -181,7 +181,7 @@ public class CustomerController {
      *         The response entity containing the ride invoice or an error message.
      */
     @GetMapping("/{rideId}/invoices")
-    public ApiResponseDto<?> getRideInvoice(@PathVariable int rideId) {
+    public ApiResponseDto<?> getRideInvoice(@PathVariable String rideId) {
         try {
             RideInvoiceDto rideInvoiceDto = rideService.generateRideInvoice(rideId);
             logger.info("Generated invoice for ride ID {}", rideId);
@@ -205,7 +205,7 @@ public class CustomerController {
      *         The response entity containing the ride status or an error message.
      */
     @GetMapping("/{id}")
-    public ApiResponseDto<?> trackRideStatus(@PathVariable int id) {
+    public ApiResponseDto<?> trackRideStatus(@PathVariable String id) {
         try {
             RideResponseDto rideResponseDto = rideService.trackRideStatus(id);
             logger.info("Tracked ride status for ride with ID {}", id);
@@ -230,8 +230,8 @@ public class CustomerController {
      * @return ResponseEntity<UpdateResponseDto>
      *         The response entity containing the updated ride details or an error message.
      */
-    @PutMapping("/{id}/updates")
-    public ResponseEntity<?> updateRideDetails(@PathVariable int id, @RequestBody UpdateRideDto updateRideDto) {
+    @PutMapping("/{id}/rides")
+    public ResponseEntity<?> updateRideDetails(@PathVariable String id, @RequestBody UpdateRideDto updateRideDto) {
         try {
             UpdateResponseDto updateResponseDto = rideRequestService.updateRideDetails(id, updateRideDto);
             logger.info("Updated ride details for ride with ID {}", id);

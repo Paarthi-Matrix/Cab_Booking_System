@@ -5,7 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,8 +33,7 @@ import java.time.LocalDate;
 @Table(name = "pending_requests")
 public class PendingRequest extends Auditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
     @Column(name = "name", nullable = false, columnDefinition = "VARCHAR(20)")
     private String name;
     @Column(name="email", columnDefinition = "VARCHAR(50)")
@@ -63,4 +64,11 @@ public class PendingRequest extends Auditable {
     private String model;
     @Column(name = "license_plate", columnDefinition = "VARCHAR(20)")
     private String licensePlate;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID().toString();
+        }
+    }
 }

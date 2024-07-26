@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Integer> {
+public interface RoleRepository extends JpaRepository<Role, String> {
     @Query("SELECT r FROM Role r WHERE r.roleName IN :roleEnum")
     List<Role> findByRoleType(@Param("roleEnum") List<RoleEnum> roleEnum);
 }

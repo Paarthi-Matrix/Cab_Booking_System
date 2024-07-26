@@ -53,7 +53,6 @@ import com.i2i.zapcab.service.DriverService;
 @RequestMapping("/v1/drivers")
 @RequiredArgsConstructor
 public class DriverController {
-
     private static Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
     @Autowired
     private DriverService driverService;
@@ -72,18 +71,23 @@ public class DriverController {
      *         <li>SUSPENDED</li>
      *     </ol>
      * </p>
+     *
      * @param updateDriverStatusDto {@link UpdateDriverStatusDto}
      *       This must contain all the values of the `UpdateDriverStatusDto`.
      * @return ApiResponseDto<String> {@link ApiResponseDto}
      */
     @PatchMapping("/me/locations")
     public ApiResponseDto<String> updateDriverStatusAndLocation(@RequestBody UpdateDriverStatusDto updateDriverStatusDto) {
+        logger.debug("Entering into the method to update the driver status and location...");
         String Userid = JwtDecoder.extractUserIdFromToken();
         try {
+            logger.info("Updating the status and location for the driver {} ",Userid);
             driverService.updateDriverStatusAndLocation(Userid,updateDriverStatusDto);
         } catch (NotFoundException e) {
+            logger.error("Unale to update the details for the driver :{} ", Userid);
             return ApiResponseDto.statusNoContent("No such driver available");
         }
+        logger.debug("Exiting the method ");
         return ApiResponseDto.statusOk("Driver location and status updated successfully!");
     }
 
@@ -132,7 +136,7 @@ public class DriverController {
      * @return RideDetailsDto
      *          Holds the customer requested ride data {@link RideDetailsDto}
      */
-    @PostMapping("me/request/accept")
+    @PostMapping("/me/request/accept")
     public ApiResponseDto<RideDetailsDto> getRideDetails(@RequestBody DriverSelectedRideDto selectedRideDto) {
         RideDetailsDto rideDetailsDto = null;
         try {
@@ -157,6 +161,14 @@ public class DriverController {
         }
     }
 
+    /**
+     * <p>
+     *     Validated the otp provided by the customer to start the ride.
+     * </p>
+     * @param otpRequestDto {@link OtpRequestDto}
+     * @return OTPResponseDto
+     *        provides the successfull message if the otp is correct otherwise it returns an invalid message
+     */
     @PostMapping("/me/otp")
     ApiResponseDto<OTPResponseDto> otpValidation(@RequestBody OtpRequestDto otpRequestDto) {
         OTPResponseDto otpResponseDto = null;
@@ -174,7 +186,7 @@ public class DriverController {
     }
 
     @PatchMapping("/{id}/paymentmodes")
-    public ApiResponseDto<?> paymentMode(@PathVariable int id, @RequestBody PaymentModeDto paymentModeDto) {
+    public ApiResponseDto<?> paymentMode(@PathVariable String id, @RequestBody PaymentModeDto paymentModeDto) {
         try {
             PaymentModeDto paymentMode = rideService.paymentMode(id, paymentModeDto);
             logger.info("Updated payment mode for ride with ID {}", id);

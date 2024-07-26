@@ -14,7 +14,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
+/**
+ * <p>
+ *     Implements {@link PendingRequestService}
+ *     Provides the business logic to perform operations like fetching, finding the requests.
+ * </p>
+ */
 @Service
 public class PendingRequestServiceImpl implements PendingRequestService {
     private static final Logger logger = LogManager.getLogger(PendingRequestServiceImpl.class);

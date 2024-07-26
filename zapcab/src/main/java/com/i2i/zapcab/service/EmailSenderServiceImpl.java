@@ -15,8 +15,8 @@ import static com.i2i.zapcab.common.ZapCabConstant.EMAIL_SUBJECT_FOR_DRIVER;
 
 /**
  * <p>
- * Service class for sending emails in the ZapCab application.
- * This service provides methods to send welcome emails to drivers and customers upon registration.
+ *   Service class for sending emails in the ZapCab application.
+ *   This service provides methods to send welcome emails to drivers and customers upon registration.
  * </p>
  */
 @Service

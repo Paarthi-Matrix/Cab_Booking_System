@@ -11,6 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * <p>
+ *     Implements {@link VehicleLocationService}
+ *     A service class that manages the business logic to update the vehicle location frequently.
+ * </p>
+ */
 @Service
 public class VehicleLocationServiceImpl implements VehicleLocationService {
 

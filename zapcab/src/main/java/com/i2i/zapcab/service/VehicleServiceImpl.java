@@ -7,6 +7,12 @@ import com.i2i.zapcab.model.Vehicle;
 import com.i2i.zapcab.repository.VehicleRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * <p>
+ *     Implements {@link VehicleService}
+ *     A service class which holds the vehicle details and performs some basic functionalities.
+ * </p>
+ */
 @Service
 public class VehicleServiceImpl implements VehicleService {
 

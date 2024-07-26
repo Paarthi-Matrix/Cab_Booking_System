@@ -65,7 +65,9 @@ public class ZapCabConstant {
     public static final String INITIAL_CUSTOMER_TIRE = "Bronze";
     public static final String INITIAL_REMARKS = " ";
     public static final String INITIAL_VEHICLE_STATUS = "Unavailable";
+    public static final String VEHICLE_AVAILABLE_STATUS = "Available";
     public static final String INITIAL_DRIVER_STATUS = "OFF-DUTY";
+    public static final String DRIVER_STATUS = "ON-DUTY";
     public static final String RIDE_BOOKED = "Booked";
     public static final String RIDE_STARTED = "Started";
     public static final String RIDE_COMPLETED = "Completed";
@@ -79,5 +81,8 @@ public class ZapCabConstant {
     // URL and API Token
     public static final String FUEL_PRICE_API_URL = "https://daily-petrol-diesel-lpg-cng-fuel-prices-in-india.p.rapidapi.com/v1/fuel-prices/today/india/tamil-nadu/chennai";
     public static final String FUEL_PRICE_API_TOKEN = "8c512c599fmsh4b66d1a46eeafc7p1bfd24jsn6626bf9861fd";
+
+    public static final String PAYMENT_CASH = "cash";
+
 
 }

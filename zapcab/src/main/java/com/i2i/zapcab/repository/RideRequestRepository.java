@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface RideRequestRepository extends JpaRepository<RideRequest, Integer> {
+public interface RideRequestRepository extends JpaRepository<RideRequest, String> {
 
     @Query("SELECT rr FROM RideRequest rr WHERE rr.customer.user.name = :customerName AND rr.id = :rideID")
     RideRequest findByCustomerNameAndRideID(@Param("customerName") String customerName, @Param("rideID") int rideID);

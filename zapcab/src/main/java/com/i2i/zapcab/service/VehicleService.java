@@ -6,6 +6,11 @@ import com.i2i.zapcab.model.VehicleLocation;
 
 import java.util.List;
 
+/**
+ * <p>
+ *     An interface provides services to the vehicle
+ * </p>
+ */
 @Component
 public interface VehicleService {
     void saveVehicle(Vehicle vehicle);

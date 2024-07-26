@@ -1,5 +1,6 @@
 package com.i2i.zapcab.model;
 
+import jakarta.persistence.PrePersist;
 import java.util.Date;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,8 +32,7 @@ import lombok.Setter;
 @Table(name = "ride_requests")
 public class RideRequest extends Auditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
     @Column(name = "pickup_point", columnDefinition = "VARCHAR(15)")
     private String pickupPoint;
     @Column(name = "drop_point", columnDefinition = "VARCHAR(15)")
@@ -51,5 +52,13 @@ public class RideRequest extends Auditable {
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "customer_id")
     private Customer customer;
+    @Column(name = "is_deleted", columnDefinition = "Boolean")
     private boolean isDeleted;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID().toString();
+        }
+    }
 }

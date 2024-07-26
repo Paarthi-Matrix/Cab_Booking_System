@@ -6,14 +6,21 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+/**
+ * <p>
+ *     An interface that manages all the user related service
+ * </p>
+ */
 @Component
 public interface UserService {
-   // User saveUser(User user);
 
     Optional<User> getUserById(String id);
+
     User getUserByMobileNumber(String mobileNumber);
+
     void saveUsers(User user);
+
     void changePassword(String id, String newPassword);
 
-    MaskMobileNumberResponseDto updateMaskMobileNumber(String id, boolean mask );
+    MaskMobileNumberResponseDto updateMaskMobileNumber(String id, boolean mask);
 }

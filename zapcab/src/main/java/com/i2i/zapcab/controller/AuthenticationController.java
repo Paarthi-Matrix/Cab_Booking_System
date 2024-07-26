@@ -26,11 +26,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.i2i.zapcab.dto.*;
-import com.i2i.zapcab.exception.AuthenticationException;
-import com.i2i.zapcab.exception.NotFoundException;
-import com.i2i.zapcab.service.AuthenticationService;
-
 /**
  * <p>
  *     The AuthenticationController class handles all authentication-related requests for the application.

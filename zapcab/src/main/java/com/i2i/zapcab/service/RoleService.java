@@ -6,6 +6,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * <p>
+ *     An interface that manages the {@link Role} entity operations
+ * </p>
+ */
 @Component
 public interface RoleService {
     List<Role> getByRoleType(List<RoleEnum> roleEnums);

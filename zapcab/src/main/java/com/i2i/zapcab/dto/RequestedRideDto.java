@@ -6,7 +6,7 @@ import lombok.Data;
 @Builder
 @Data
 public class RequestedRideDto {
-    private int rideId;
+    private String rideId;
     private String pickUpPoint;
     private String dropPoint;
     private int distance;

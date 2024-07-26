@@ -98,7 +98,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public boolean updateRideAndDriverRating(int id, RideRatingDto ratings) {
+    public boolean updateRideAndDriverRating(String id, RideRatingDto ratings) {
         try {
             return driverService.updateDriverRating(rideService.updateRideRating(id, ratings),
                     ratings.getRatings());

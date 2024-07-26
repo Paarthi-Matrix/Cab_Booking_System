@@ -16,8 +16,8 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * <p>
- * This service uses an external API to get the current petrol price for chennai, Tamil Nadu.
- * It uses RestTemplate to make an HTTP requests and jackson's ObjectMapper to parse JSON responses.
+ *    This service uses an external API to get the current petrol price for chennai, Tamil Nadu.
+ *    It uses RestTemplate to make an HTTP requests and jackson's ObjectMapper to parse JSON responses.
  * </p>
  */
 @Service

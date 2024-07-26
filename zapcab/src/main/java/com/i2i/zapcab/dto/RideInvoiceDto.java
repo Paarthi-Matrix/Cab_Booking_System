@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RideInvoiceDto {
-    private int rideId;
+    private String rideId;
     private String driverName;
     private String driverContactNumber;
     private String vehicleNumber;

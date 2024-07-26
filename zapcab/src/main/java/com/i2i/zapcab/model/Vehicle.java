@@ -1,5 +1,7 @@
 package com.i2i.zapcab.model;
 
+import jakarta.persistence.PrePersist;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,9 +21,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "vehicles")
 public class Vehicle extends Auditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private String id;
     @Column(name = "category", columnDefinition = "VARCHAR(5)")
     private String category;
     @Column(name = "type", columnDefinition = "VARCHAR(20)")
@@ -34,4 +35,11 @@ public class Vehicle extends Auditable {
     private int maxSeats;
     @Column(name="status", columnDefinition = "VARCHAR(10)")
     private String status;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID().toString();
+        }
+    }
 }

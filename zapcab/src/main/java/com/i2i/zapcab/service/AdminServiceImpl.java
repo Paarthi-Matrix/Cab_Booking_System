@@ -1,11 +1,11 @@
 package com.i2i.zapcab.service;
 
-import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_STATUS_OF_DRIVER;
-import static com.i2i.zapcab.common.ZapCabConstant.REQUEST_STATUS;
-import com.i2i.zapcab.dto.ApiResponseDto;
+import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_DRIVER_STATUS;
+import static com.i2i.zapcab.common.ZapCabConstant.VEHICLE_AVAILABLE_STATUS;
 import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
 import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.mapper.PendingRequestMapper;
+import com.i2i.zapcab.model.VehicleLocation;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,11 +17,12 @@ import com.i2i.zapcab.config.JwtService;
 import com.i2i.zapcab.exception.AuthenticationException;
 import com.i2i.zapcab.helper.DriverStatusEnum;
 import com.i2i.zapcab.helper.PinGeneration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.UpdatePendingRequestDto;
 import com.i2i.zapcab.helper.RoleEnum;
@@ -31,6 +32,17 @@ import com.i2i.zapcab.model.Role;
 import com.i2i.zapcab.model.User;
 import com.i2i.zapcab.model.Vehicle;
 
+/**
+ * <p>
+      Implements {@link AdminService}
+ *    This class provides business logic for the methods that are handled by admin.
+ *    The related operation includes :
+ *    <ul>
+ *        <li>Listing all the requests</li>
+ *        <li>Updating the user's request status</li>
+ *    </ul>
+ * </p>
+ */
 @Service
 public class AdminServiceImpl implements AdminService {
     private static final Logger logger = LogManager.getLogger(AdminServiceImpl.class);
@@ -66,6 +78,7 @@ public class AdminServiceImpl implements AdminService {
             throw new UnexpectedException("Unable to retrieve the pending requests list", e);
         }
     }
+
     @Override
     public AuthenticationResponseDto updatePendingRequest(UpdatePendingRequestDto updatePendingRequestDto) {
         logger.info("Starting to update pending request for phone number: {}",
@@ -87,6 +100,7 @@ public class AdminServiceImpl implements AdminService {
                 authenticationResponse = driverRegister(request);
                 logger.info("Pending request successfully updated for phone number: {}",
                         updatePendingRequestDto.getPhoneNumber());
+                return driverRegister(request);
             } else {
                 logger.warn("Pending request not found for phone number: {}",
                         updatePendingRequestDto.getPhoneNumber());
@@ -120,13 +134,12 @@ public class AdminServiceImpl implements AdminService {
                     .build();
             Vehicle vehicle = Vehicle.builder().category(pendingRequest.getCategory()).type(pendingRequest.getType())
                     .model(pendingRequest.getModel()).licensePlate(pendingRequest.getLicensePlate())
-                    .maxSeats(4).status("available").build();
+                    .maxSeats(4).status(VEHICLE_AVAILABLE_STATUS).build();
             Driver driver = Driver.builder().region(pendingRequest.getRegion()).noOfCancellation(2)
                     .licenseNo(pendingRequest.getLicenseNo()).rcBookNo(pendingRequest.getRcBookNo()).user(user)
-                    .status(String.valueOf(DriverStatusEnum.OnDuty)).vehicle(vehicle).build();
+                    .status(INITIAL_DRIVER_STATUS).vehicle(vehicle).build();
             VehicleLocation vehicleLocation = VehicleLocation.builder().location(pendingRequest.getRegion())
                     .vehicle(vehicle).build();
-            vehicleLocationService.saveVehicleLocation(vehicleLocation);
             driverService.saveDriver(driver);
             emailSenderService.sendRegistrationEmailToDriver(
                     EmailRequestDto.builder()

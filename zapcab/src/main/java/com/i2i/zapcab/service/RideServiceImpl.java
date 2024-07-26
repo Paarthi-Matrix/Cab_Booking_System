@@ -21,6 +21,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * <p>
+ *     A service class that implements {@link RideService}
+ *     Manages all the business logic like updating the ride rating, ride status
+ * </p>
+ */
 @Service
 public class RideServiceImpl implements RideService{
     private static final Logger logger  = LogManager.getLogger(RideServiceImpl.class);
@@ -44,7 +50,7 @@ public class RideServiceImpl implements RideService{
     }
 
     @Override
-    public int updateRideRating(int id, RideRatingDto ratings) {
+    public String updateRideRating(String id, RideRatingDto ratings) {
         try {
             Ride ride = rideRepository.findById(id).get();
             ride.setRideRating(ratings.getRatings());
@@ -56,7 +62,7 @@ public class RideServiceImpl implements RideService{
     }
 
     @Override
-    public Ride getRideByRideRequest(int id) {
+    public Ride getRideByRideRequest(String id) {
         try {
             return rideRepository.findRideByRideRequestId(id);
         } catch (Exception e) {
@@ -77,7 +83,7 @@ public class RideServiceImpl implements RideService{
      * @throws UnexpectedException
      *         If error occurs while updating the ride status.
      */
-    public RideResponseDto updateRideStatus(int id, StatusDto statusDto) {
+    public RideResponseDto updateRideStatus(String id, StatusDto statusDto) {
         logger.debug("Updating status of ride with ID: {} to new status: {}", id, statusDto.getStatus());
         try {
             Optional<Ride> rideOptional = rideRepository.findById(id);
@@ -117,7 +123,7 @@ public class RideServiceImpl implements RideService{
      * @throws UnexpectedException
      *         If error occurs while retrieving the ride invoice.
      */
-    public RideInvoiceDto generateRideInvoice(int rideId) {
+    public RideInvoiceDto generateRideInvoice(String rideId) {
         logger.debug("Generating invoice for completed ride with ID: {}", rideId);
 
         Ride ride = rideRepository.findById(rideId)
@@ -152,7 +158,7 @@ public class RideServiceImpl implements RideService{
      * @throws UnexpectedException
      *         If error occurs while retrieving the ride details.
      */
-    public RideResponseDto trackRideStatus(int id) {
+    public RideResponseDto trackRideStatus(String id) {
         logger.debug("Tracking status for ride with ID: {}", id);
         try {
             Optional<Ride> rideOptional = rideRepository.findById(id);
@@ -189,7 +195,7 @@ public class RideServiceImpl implements RideService{
      * @throws UnexpectedException
      *         If error occurs while updating the payment mode details.
      */
-    public PaymentModeDto paymentMode(int id, PaymentModeDto paymentModeDto) {
+    public PaymentModeDto paymentMode(String id, PaymentModeDto paymentModeDto) {
         logger.debug("Updating the payment mode for ride with ID: {}", id);
         try {
             Optional<Ride> rideOptional = rideRepository.findById(id);
@@ -198,7 +204,7 @@ public class RideServiceImpl implements RideService{
                 throw new NotFoundException("Ride not found for ID : " + id);
             }
             Ride ride = rideOptional.get();
-            ride.setPaymentMode(ride.getPaymentMode());
+            ride.setPaymentMode(paymentModeDto.getPaymentMode());
             Ride updatedMode = rideRepository.save(ride);
             logger.info("Successfully updated the payment mode for ride with ID: {}", id);
             return paymentModeDto;

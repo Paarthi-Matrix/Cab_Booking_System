@@ -3,10 +3,16 @@ package com.i2i.zapcab.service;
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
 import com.i2i.zapcab.dto.UpdatePendingRequestDto;
-import com.i2i.zapcab.model.PendingRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+/**
+ * <p>
+ *     An interface for managing the user's details by admin
+ *     Defines methods to handle the user's requests and the updates the requests based on the
+ *     results from background verification
+ * </p>
+ */
 import java.util.List;
 
 @Component

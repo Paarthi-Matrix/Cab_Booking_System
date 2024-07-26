@@ -6,6 +6,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * <p>
+ *     An interface that performs operations related to the location of the vehicle.
+ * </p>
+ */
 @Component
 public interface VehicleLocationService {
     List<VehicleLocation> getVehiclesByLocation(String location);

@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * <p>
- *    This interface includes methods for saving a driver, updating a driver's status and location,
- *    and changing a driver's password. Implementations of this interface will provide the actual
- *    business logic for these operations.
+ * This interface includes methods for saving a driver, updating a driver's status and location,
+ * and changing a driver's password. Implementations of this interface will provide the actual
+ * business logic for these operations.
  * </p>
  */
 @Component
@@ -53,7 +53,7 @@ public interface DriverService {
 
     /**
      * <p>
-     * Fetches the particular ride detail which the driver selected from the list
+     *     Fetches the particular ride detail which the driver selected from the list
      * </p>
      *
      * @param selectedRideDto {@link DriverSelectedRideDto}
@@ -70,17 +70,38 @@ public interface DriverService {
      * @param mobileNumber valid 10 digit mobile number
      * @return Driver {@link Driver}
      */
-    public Driver getByMobileNumber(String mobileNumber);
-
-   // public void updateDriverStatus(UpdateDriverStatusDto updateDriverStatusDto);
+    Driver getByMobileNumber(String mobileNumber);
 
     void updateDriverStatusAndLocation(String id, UpdateDriverStatusDto updateDriverStatusDto);
 
     void changePassword(String id, String newPassword);
 
-    boolean updateDriverRating(int id, int ratings);
+    boolean updateDriverRating(String id, int ratings);
 
-    public MaskMobileNumberResponseDto updateMaskMobileNumber(String id, MaskMobileNumberRequestDto maskMobileNumberRequestDto);
+    /**
+     * <p>
+     *     This method is used to mask the driver's mobile number
+     *     if he/she wishes not to expose the mobile number.
+     * </p>
+     * @param id
+     *      User's unique id
+     * @param maskMobileNumberRequestDto {@link MaskMobileNumberResponseDto}
+     * @return
+     */
+    MaskMobileNumberResponseDto updateMaskMobileNumber(String id, MaskMobileNumberRequestDto maskMobileNumberRequestDto);
 
+    /**
+     * <p>
+     *     This method is used to verifies the otp given by the customer
+     * </p>
+     * @param otpRequestDto {@link OtpRequestDto}
+     * @return Boolean
+     *       Returns true if the otp is correct otherwise return false.
+     */
     public Boolean otpValidation(OtpRequestDto otpRequestDto);
+    /**
+     *
+     */
+    void updateDriverWallet(String id, String paymentMode, String rideStatus, int fare);
 }
+

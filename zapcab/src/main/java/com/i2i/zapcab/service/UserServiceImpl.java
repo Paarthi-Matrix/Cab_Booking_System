@@ -13,6 +13,17 @@ import com.i2i.zapcab.repository.UserRepository;
 
 import java.util.Optional;
 
+/**
+ * <p>
+ *     Implements {@link UserService}
+ *     A service class that provides all the business logic for the following operations .
+ *     <ol>
+ *         <li> Changing password </li>
+ *         <li> fetching user </li>
+ *         <li> Masking the mobile number </li>
+ *     </ol>
+ * </p>
+ */
 @Service
 public class UserServiceImpl implements UserService{
 

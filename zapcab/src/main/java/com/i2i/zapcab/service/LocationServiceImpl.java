@@ -7,6 +7,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * <p>
+ *    Implements {@link LocationService}
+ *    Provides the business logic to handles the location operations like fetching, updating,etc..
+ * </p>
+ */
 @Service
 public class LocationServiceImpl implements LocationService {
     @Autowired

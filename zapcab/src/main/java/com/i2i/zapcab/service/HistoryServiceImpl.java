@@ -1,7 +1,7 @@
 package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.TierDto;
-import com.i2i.zapcab.exception.ZapCabException;
+import com.i2i.zapcab.exception.UnexpectedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class HistoryServiceImpl implements HistoryService {
             customerService.updateCustomerTier(userId, newTier);
             return TierDto.builder().tier(newTier).build();
         } catch (Exception e) {
-            throw new ZapCabException("Error updating customer tier for userId: " + userId, e);
+            throw new UnexpectedException("Error updating customer tier for userId: " + userId, e);
         }
     }
 

@@ -29,8 +29,7 @@ import java.util.Set;
 @Table(name = "rides")
 public class Ride extends Auditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(15)")
     private String status;
     @Column(name = "distance", nullable = false)
@@ -53,10 +52,11 @@ public class Ride extends Auditable {
     private Driver driver;
     @Column(name = "payment_mode", columnDefinition = "VARCHAR(20)")
     private String paymentMode;
+
     @PrePersist
     protected void onCreate() {
-        if (this.rideRating == 0) {
-            this.rideRating = 0;
+        if (this.id == null) {
+            this.id = UUID.randomUUID().toString();
         }
     }
 }

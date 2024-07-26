@@ -6,6 +6,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+/**
+ * <p>
+ *    An interface that handles the requested that are made by the user.
+ * </p>
+ */
 @Component
 public interface PendingRequestService {
     /**

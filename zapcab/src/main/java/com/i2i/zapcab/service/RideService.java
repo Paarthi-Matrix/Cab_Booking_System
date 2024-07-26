@@ -12,14 +12,23 @@ import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.dto.RideResponseDto;
 import com.i2i.zapcab.dto.StatusDto;
 
+/**
+ * <p>
+ *     An interface that manages the operations in {@link Ride} entity
+ * </p>
+ */
 @Component
 public interface RideService {
-
+    /**
+     *
+     * @param rideRequest
+     * @param driver
+     */
     public void saveRide(RideRequest rideRequest, Driver driver);
 
-    int updateRideRating(int id, RideRatingDto ratings);
+    String updateRideRating(String id, RideRatingDto ratings);
 
-    Ride getRideByRideRequest(int id);
+    Ride getRideByRideRequest(String id);
     /**
      * <p>
      *     Updates the status of an existing ride.
@@ -31,7 +40,7 @@ public interface RideService {
      * @return RideResponseDto
      *         The response object containing the updated ride details.
      */
-    public RideResponseDto updateRideStatus(int id, StatusDto statusDto);
+    public RideResponseDto updateRideStatus(String id, StatusDto statusDto);
 
     /**
      * <p>
@@ -42,7 +51,7 @@ public interface RideService {
      * @return RideResponseDto
      *         The response object containing the current ride status.
      */
-    public RideResponseDto trackRideStatus(int id);
+    public RideResponseDto trackRideStatus(String id);
 
     /**
      * <p>
@@ -53,7 +62,7 @@ public interface RideService {
      * @return RideInvoiceDto
      *         The response object containing the ride invoice details.
      */
-    public RideInvoiceDto generateRideInvoice(int rideId);
+    public RideInvoiceDto generateRideInvoice(String rideId);
 
-    public PaymentModeDto paymentMode(int id, PaymentModeDto paymentModeDto);
+    public PaymentModeDto paymentMode(String id, PaymentModeDto paymentModeDto);
 }

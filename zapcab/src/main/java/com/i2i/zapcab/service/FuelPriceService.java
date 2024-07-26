@@ -4,9 +4,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * <p>
- * This interface defines a method for fetching the current petrol price.
- * Implementing classes should provide the logic for interacting with external APIs or data sources to get
- * the fuel price.
+ *    This interface defines a method for fetching the current petrol price.
+ *    Implementing classes should provide the logic for interacting with external APIs or data sources to get
+ *    the fuel price.
  * </p>
  */
 @Component
