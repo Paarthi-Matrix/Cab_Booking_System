@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.i2i.zapcab.dto.EmailRequestDto;
+import com.i2i.zapcab.model.VehicleLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.i2i.zapcab.config.JwtService;
@@ -47,7 +48,10 @@ public class AdminServiceImpl implements AdminService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtService jwtService;
-    EmailSenderServiceImpl emailSenderService;
+    @Autowired
+    VehicleLocationService vehicleLocationService;
+    @Autowired
+    EmailSenderService emailSenderService;
 
     @Override
     public Page<FetchAllPendingRequestsDto> getAllPendingRequest(int page, int size) {
@@ -120,6 +124,9 @@ public class AdminServiceImpl implements AdminService {
             Driver driver = Driver.builder().region(pendingRequest.getRegion()).noOfCancellation(2)
                     .licenseNo(pendingRequest.getLicenseNo()).rcBookNo(pendingRequest.getRcBookNo()).user(user)
                     .status(String.valueOf(DriverStatusEnum.OnDuty)).vehicle(vehicle).build();
+            VehicleLocation vehicleLocation = VehicleLocation.builder().location(pendingRequest.getRegion())
+                    .vehicle(vehicle).build();
+            vehicleLocationService.saveVehicleLocation(vehicleLocation);
             driverService.saveDriver(driver);
             emailSenderService.sendRegistrationEmailToDriver(
                     EmailRequestDto.builder()

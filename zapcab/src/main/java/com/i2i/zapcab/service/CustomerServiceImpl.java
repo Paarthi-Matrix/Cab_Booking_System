@@ -7,6 +7,7 @@ import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.dto.RideRequestResponseDto;
 import com.i2i.zapcab.exception.AuthenticationException;
+import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.dto.*;
 import com.i2i.zapcab.exception.UnexpectedException;
@@ -122,6 +123,72 @@ public class CustomerServiceImpl implements CustomerService {
             return !ObjectUtils.isEmpty(rideRequest) ? assignedDriverDto : null;
         } catch(Exception e) {
             throw new UnexpectedException("Error Occurred while fetch assigned driver for the customer with id :"+id,e);
+        }
+    }
+
+    /**
+     * <p>
+     *     Fetches the profile of a customer based on their user ID.
+     * </p>
+     * @param customerId
+     *        The ID of the customer
+     * @return {@link  CustomerProfileDto}
+     *         The profile information of the customer.
+     * @throws UnexpectedException
+     *         If error occurs while retrieving the customer profile.
+     */
+    @Override
+    public CustomerProfileDto getCustomerProfile(String customerId) {
+        logger.debug("Fetching profile for customer with ID: {}", customerId);
+        try {
+            Customer customer = customerRepository.findByUserId(customerId);
+            if (null != customer) {
+                logger.info("Successfully fetched profile for customer with ID: {}", customerId);
+                return CustomerProfileDto.builder()
+                        .name(customer.getUser().getName())
+                        .email(customer.getUser().getEmail())
+                        .mobileNumber(customer.getUser().getMobileNumber())
+                        .gender(customer.getUser().getGender())
+                        .tier(customer.getTier())
+                        .build();
+
+            } else {
+                logger.warn("Customer profile not found for ID: {}", customerId);
+                throw new NotFoundException("Customer profile not found for ID: " + customerId);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to fetch customer profile for ID: {}", customerId, e);
+            throw new UnexpectedException("Failed to fetch customer profile for ID: " + customerId, e);
+        }
+    }
+
+    /**
+     * <p>
+     *     Updates the tier of a customer based on the user ID.
+     * </p>
+     * @param userId
+     *        The userId of the customer.
+     * @param newTier
+     *        The newTier to be set for the customer.
+     * @throws UnexpectedException
+     *         If error occurs while updating the customer tier.
+     */
+    @Override
+    public void updateCustomerTier(String userId, String newTier) {
+        logger.debug("Updating tier for customer with userId: {} to new tier: {}", userId, newTier);
+        try {
+            Customer customer = customerRepository.findByUserId(userId);
+            if (null != customer) {
+                customer.setTier(newTier);
+                customerRepository.save(customer);
+                logger.info("Successfully updated tier for customer with userId: {}", userId);
+            } else {
+                logger.warn("Customer not found for userId: {}", userId);
+                throw new NotFoundException("Customer not found for userId: " + userId);
+            }
+        } catch (Exception e) {
+            logger.error("Error updating tier for customer with userId: {}", userId, e);
+            throw new UnexpectedException("Error updating tier for customer with userId: " + userId, e);
         }
     }
 }

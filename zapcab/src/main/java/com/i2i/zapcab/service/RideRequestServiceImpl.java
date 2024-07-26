@@ -2,6 +2,13 @@ package com.i2i.zapcab.service;
 
 import java.util.List;
 
+import com.i2i.zapcab.common.FareCalculator;
+import com.i2i.zapcab.dto.RideRequestResponseDto;
+import com.i2i.zapcab.dto.UpdateResponseDto;
+import com.i2i.zapcab.dto.UpdateRideDto;
+import com.i2i.zapcab.exception.NotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +33,10 @@ import static com.i2i.zapcab.common.ZapCabConstant.REQUEST_STATUS;
 
 @Service
 public class RideRequestServiceImpl implements RideRequestService {
+    private static final Logger logger  = LogManager.getLogger(RideRequestServiceImpl.class);
     @Autowired
     RideRequestRepository rideRequestRepository;
+    private final FareCalculator fareCalculator = new FareCalculator();
 
     private RideRequestMapper rideRequestMapper = new RideRequestMapper();
 
@@ -84,5 +93,54 @@ public class RideRequestServiceImpl implements RideRequestService {
         rideRequest.setStatus(REQUEST_STATUS);
         rideRequest.setCustomer(customer);
         return rideRequestRepository.save(rideRequest);
+    }
+
+    /**
+     * <p>
+     *     Updates the details of a ride request based on the provided updateRideDto.
+     * </p>
+     * @param id
+     *        The ID of the ride request to be updated.
+     * @param updateRideDto
+     *        The DTO containing the new details for the ride request.
+     * @return UpdateResponseDto
+     *         The response object containing the updated ride request details.
+     * @throws NotFoundException
+     *         If the ride request with the specified ID is not found.
+     * @throws UnexpectedException
+     *         If an error occurs while updating the ride request details.
+     */
+
+    public UpdateResponseDto updateRideDetails(int id, UpdateRideDto updateRideDto) {
+        try {
+            Optional<RideRequest> rideRequestOptional = rideRequestRepository.findById(id);
+            if (!rideRequestOptional.isPresent()) {
+                logger.warn("Ride with ID: {} not found.", id);
+                throw new NotFoundException("Ride not found for ID : " + id);
+            }
+            RideRequest rideRequest = rideRequestOptional.get();
+            rideRequest.setPickupPoint(updateRideDto.getPickupPoint());
+            rideRequest.setDropPoint(updateRideDto.getDropPoint());
+            rideRequest.setVehicleCategory(updateRideDto.getVehicleCategory());
+            RideRequestResponseDto fareResponse = fareCalculator.calculateFare(updateRideDto.getPickupPoint(),
+                     updateRideDto.getDropPoint(), updateRideDto.getVehicleCategory());
+            if (null != fareResponse) {
+                rideRequest.setFare((int) fareResponse.getFare());
+                rideRequest.setDistance(fareResponse.getDistance());
+            }
+            rideRequestRepository.save(rideRequest);
+            UpdateResponseDto updateResponseDto = UpdateResponseDto.builder()
+                    .pickupPoint(rideRequest.getPickupPoint())
+                    .dropPoint(rideRequest.getDropPoint())
+                    .vehicleCategory(rideRequest.getVehicleCategory())
+                    .fare(rideRequest.getFare())
+                    .distance(rideRequest.getDistance())
+                    .build();
+
+            return updateResponseDto;
+        } catch (Exception e) {
+            logger.error("Failed to update ride details for ride with ID: {}", id, e);
+            throw new UnexpectedException("Failed to update ride details. Ride ID : " + id, e);
+        }
     }
 }

@@ -5,10 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StatusDto {
-    private String status;
+public class UpdateRideDto {
+    private String pickupPoint;
+    private String dropPoint;
+    private String vehicleCategory;
 }

@@ -27,7 +27,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "rides")
-public class Ride {
+public class Ride extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -51,6 +51,8 @@ public class Ride {
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "driver_id")
     private Driver driver;
+    @Column(name = "payment_mode", columnDefinition = "VARCHAR(20)")
+    private String paymentMode;
     @PrePersist
     protected void onCreate() {
         if (this.rideRating == 0) {

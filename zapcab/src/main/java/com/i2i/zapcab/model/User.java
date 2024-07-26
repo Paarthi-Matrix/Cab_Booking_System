@@ -30,7 +30,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements UserDetails {
+public class User extends Auditable implements UserDetails {
     @Id
     private String id;
     @Column(name="name", columnDefinition = "VARCHAR(20)", nullable = false)

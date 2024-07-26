@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Table(name = "drivers")
-public class Driver {
+public class Driver extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

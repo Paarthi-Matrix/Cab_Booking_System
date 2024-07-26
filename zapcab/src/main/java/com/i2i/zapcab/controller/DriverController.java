@@ -2,6 +2,7 @@ package com.i2i.zapcab.controller;
 
 import java.util.List;
 
+import com.i2i.zapcab.dto.PaymentModeDto;
 import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
@@ -11,6 +12,7 @@ import com.i2i.zapcab.dto.OtpRequestDto;
 import java.util.List;
 
 import com.i2i.zapcab.service.AuthenticationServiceImpl;
+import com.i2i.zapcab.service.RideService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,6 +57,8 @@ public class DriverController {
     private static Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
     @Autowired
     private DriverService driverService;
+    @Autowired
+    private RideService rideService;
 
     /**
      * <p>
@@ -106,15 +110,14 @@ public class DriverController {
      * <p>
      *     This method is responsible for changing the password of the driver.
      * </p>
-     * @param ChangePasswordRequestDto {@link ChangePasswordRequestDto}
+     * @param changePasswordRequestDto {@link ChangePasswordRequestDto}
      * @return ApiResponseDto<String> {@link ApiResponseDto}
      */
     @PatchMapping("/me/password")
     public ApiResponseDto<String> changePassword(@RequestBody ChangePasswordRequestDto changePasswordRequestDto) {
-
         try {
             String id = JwtDecoder.extractUserIdFromToken();
-            driverService.changePassword(id, changePasswordRequestDto);
+            driverService.changePassword(id, changePasswordRequestDto.getNewPassword());
         } catch (UnexpectedException e) {
             return ApiResponseDto.statusInternalServerError("Unexpected error occurred while changing password", e);
         }
@@ -167,6 +170,21 @@ public class DriverController {
            }
         } catch (UnexpectedException e) {
             return ApiResponseDto.statusInternalServerError(otpResponseDto, e);
+        }
+    }
+
+    @PatchMapping("/{id}/paymentmodes")
+    public ApiResponseDto<?> paymentMode(@PathVariable int id, @RequestBody PaymentModeDto paymentModeDto) {
+        try {
+            PaymentModeDto paymentMode = rideService.paymentMode(id, paymentModeDto);
+            logger.info("Updated payment mode for ride with ID {}", id);
+            return ApiResponseDto.statusOk(paymentMode);
+        } catch (NotFoundException e) {
+            logger.warn("Ride with ID {} not found", id);
+            return ApiResponseDto.statusNotFound("Invalid ID");
+        } catch (UnexpectedException e) {
+            logger.error("Error updating ride status for ride with ID {}", id, e);
+            return ApiResponseDto.statusInternalServerError("Error updating payment mode", e);
         }
     }
 }

@@ -28,7 +28,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Data
 @Table(name = "ride_requests")
-public class RideRequest {
+public class RideRequest extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

@@ -9,8 +9,7 @@ import java.util.List;
 @Component
 public interface VehicleLocationService {
     List<VehicleLocation> getVehiclesByLocation(String location);
-
+    void saveVehicleLocation(VehicleLocation vehicleLocation);
     VehicleLocation getVehicleLocationById(int id);
-
     void updateVehicleLocationByVehicleId(String location, Vehicle vehicle);
 }

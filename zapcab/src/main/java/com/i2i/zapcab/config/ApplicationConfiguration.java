@@ -20,6 +20,7 @@ import org.springframework.util.ObjectUtils;
 import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.model.User;
 import com.i2i.zapcab.repository.UserRepository;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * <p>
@@ -46,6 +47,11 @@ public class ApplicationConfiguration {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
     @Bean
     public UserDetailsService userDetailsService() {

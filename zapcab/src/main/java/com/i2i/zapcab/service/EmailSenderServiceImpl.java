@@ -10,8 +10,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import static com.i2i.zapcab.constant.ZapCabConstant.APP_DOMAIN_NAME;
-import static com.i2i.zapcab.constant.ZapCabConstant.EMAIL_SUBJECT_FOR_DRIVER;
+import static com.i2i.zapcab.common.ZapCabConstant.APP_DOMAIN_NAME;
+import static com.i2i.zapcab.common.ZapCabConstant.EMAIL_SUBJECT_FOR_DRIVER;
 
 /**
  * <p>

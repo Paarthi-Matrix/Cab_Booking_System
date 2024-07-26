@@ -75,4 +75,9 @@ public class ZapCabConstant {
     public static final String EMAIL_SUBJECT_FOR_DRIVER = "Welcome to ZapCab: Your Driver Account Details";
     public static final String EMAIL_SUBJECT_FOR_CUSTOMER = "Welcome to ZapCab: Your Journey Begins Here!";
     public static final String APP_DOMAIN_NAME = "www.zapcab.com";
+
+    // URL and API Token
+    public static final String FUEL_PRICE_API_URL = "https://daily-petrol-diesel-lpg-cng-fuel-prices-in-india.p.rapidapi.com/v1/fuel-prices/today/india/tamil-nadu/chennai";
+    public static final String FUEL_PRICE_API_TOKEN = "8c512c599fmsh4b66d1a46eeafc7p1bfd24jsn6626bf9861fd";
+
 }

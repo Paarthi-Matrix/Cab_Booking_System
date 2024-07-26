@@ -32,4 +32,8 @@ public interface CustomerService {
     boolean updateRideAndDriverRating(int id, RideRatingDto ratings);
 
     AssignedDriverDto getAssignedDriverDetails(String id);
+
+    public CustomerProfileDto getCustomerProfile(String customerId);
+
+    public void updateCustomerTier(String userId, String newTier);
 }

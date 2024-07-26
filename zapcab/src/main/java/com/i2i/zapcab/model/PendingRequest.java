@@ -29,7 +29,7 @@ import java.time.LocalDate;
 @Data
 @Entity
 @Table(name = "pending_requests")
-public class PendingRequest {
+public class PendingRequest extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

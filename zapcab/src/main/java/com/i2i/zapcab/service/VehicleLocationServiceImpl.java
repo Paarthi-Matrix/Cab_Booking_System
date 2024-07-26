@@ -40,4 +40,9 @@ public class VehicleLocationServiceImpl implements VehicleLocationService {
                     " vehicles by its location: " + location, e);
         }
     }
+
+    @Override
+    public void saveVehicleLocation(VehicleLocation vehicleLocation) {
+        vehicleLocationRepository.save(vehicleLocation);
+    }
 }
