@@ -33,23 +33,37 @@ import static com.i2i.zapcab.common.ZapCabConstant.PASSWORD_SIZE;
 import static com.i2i.zapcab.common.ZapCabConstant.STRING_REGEX;
 
 /**
- * <p> Data Transfer Object for registering a user.
- * This class contains the necessary fields required for user registration.
- *  The required fields are  :
- *     Name : Must be in Alphabets.
- *     Email : A valid email address which must have atleast @ and .com.
- *     Mobile number : A 10 digit valid mobile number.
- *     Password : A strong password must be created which must hold Atleast 1 capital letter, 1 special character
- *     and 1 number.
- *     Role : A role must be specified either Admin, customer or driver.
- *     Date of birth : This field shoul be in a pattern yyyy-MM-dd.
- *     </p>
+ * <p>
+ * This class is responsible for managing the details required to register a new user.
+ * </p>
+ * <p>
+ * It contains:
+ *   <ol>
+ *       <li> Name of the user. </li>
+ *       <li> Mobile number of the user. </li>
+ *       <li> Email address of the user. </li>
+ *       <li> Gender of the user. </li>
+ *       <li> Password for the user's account. </li>
+ *       <li> Date of birth of the user. </li>
+ *       <li> List of roles assigned to the user. </li>
+ *   </ol>
+ * </p>
+ * <p>
+ * <b>Validation Constraints:</b>
+ *   <ul>
+ *       <li> Name: Must not be blank and should match the specified pattern. </li>
+ *       <li> Mobile Number: Must not be blank and should match the specified pattern. </li>
+ *       <li> Email: Must not be blank, must be a valid email format, and should match the specified pattern. </li>
+ *       <li> Gender: Must not be blank and should match the specified pattern. </li>
+ *       <li> Password: Must not be blank, should have a minimum length of 6 characters, and match the specified pattern. </li>
+ *       <li> Date of Birth: Must not be null and should be a past date. </li>
+ *       <li> Role: Can be a list of roles assigned to the user. </li>
+ *   </ul>
+ * </p>
  */
-
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Data
 public class RegisterUserRequestDto {
 
     @NotBlank(message = NAME_NOT_BLANK)

@@ -7,9 +7,18 @@ import lombok.NoArgsConstructor;
 
 /**
  * <p>
- *     This class represents a Data Transfer Object (DTO) for searching the available nearby drivers.
- *     It contains information about the driver, including their name, mobile number,
- *     license plate, location, category, and type.
+ * This class is responsible for managing the details of available drivers.
+ * </p>
+ * <p>
+ * It contains:
+ *   <ol>
+ *       <li> Name of the available driver. </li>
+ *       <li> Mobile number of the available driver. </li>
+ *       <li> License plate of the vehicle driven by the available driver. </li>
+ *       <li> Current location of the available driver. </li>
+ *       <li> Category of the vehicle (e.g., sedan, SUV). </li>
+ *       <li> Type of the vehicle (e.g., electric, hybrid). </li>
+ *   </ol>
  * </p>
  */
 @Builder

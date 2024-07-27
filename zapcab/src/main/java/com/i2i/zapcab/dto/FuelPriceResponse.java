@@ -5,11 +5,22 @@ import lombok.Data;
 
 /**
  * <p>
- * Data Transfer Object for capturing the response of a fuel price API.
- * This class maps the JSON response to Java objects for easy access and manipulation.
+ * This class is responsible for managing the fuel price response details.
+ * </p>
+ * <p>
+ * It contains:
+ *   <ol>
+ *       <li> City ID where the fuel prices are applicable. </li>
+ *       <li> Name of the city where the fuel prices are applicable. </li>
+ *       <li> State ID where the fuel prices are applicable. </li>
+ *       <li> Name of the state where the fuel prices are applicable. </li>
+ *       <li> Country ID where the fuel prices are applicable. </li>
+ *       <li> Name of the country where the fuel prices are applicable. </li>
+ *       <li> Date when the fuel prices are applicable. </li>
+ *       <li> Fuel pricing details including petrol, diesel, and LPG. </li>
+ *   </ol>
  * </p>
  */
-
 @Data
 public class FuelPriceResponse {
     @JsonProperty("cityId")

@@ -7,9 +7,14 @@ import lombok.NoArgsConstructor;
 
 /**
  * <p>
- *     This class represents a Data Transfer Object (DTO) for authentication requests.
- *     It contains the phone number and password required for user authentication.
- *
+ * This class is responsible for managing authentication request details.
+ * </p>
+ * <p>
+ * It contains:
+ *   <ol>
+ *       <li> Phone number of the user attempting to authenticate. </li>
+ *       <li> Password of the user attempting to authenticate. </li>
+ *   </ol>
  * </p>
  */
 @Data

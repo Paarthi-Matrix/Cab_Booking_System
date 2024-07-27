@@ -4,10 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-
 /**
- * Data transfer object for providing the token to the authorised
+ * <p>
+ * This class is responsible for managing the response details of a ride request.
+ * </p>
+ * <p>
+ * It contains:
+ *   <ol>
+ *       <li> Distance of the ride in kilometers or miles. </li>
+ *       <li> Category of the vehicle assigned to the ride (e.g., sedan, SUV). </li>
+ *       <li> Estimated drop time for the ride. </li>
+ *       <li> Estimated fare for the ride. </li>
+ *   </ol>
+ * </p>
  */
 @Data
 @Builder

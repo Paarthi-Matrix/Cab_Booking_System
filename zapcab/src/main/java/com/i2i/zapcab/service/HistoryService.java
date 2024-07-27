@@ -3,6 +3,7 @@ package com.i2i.zapcab.service;
 import com.i2i.zapcab.dto.RideHistoryResponseDto;
 import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.dto.TierDto;
+import com.i2i.zapcab.model.History;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public interface HistoryService {
      */
     List<RideHistoryResponseDto> getAllRideHistoryById(String id);
 
+    void saveHistory(History history);
     /**
      * <p>
      *     Updates the tier of a customer based on the user ID.

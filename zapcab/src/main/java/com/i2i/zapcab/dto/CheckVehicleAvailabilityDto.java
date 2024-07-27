@@ -4,8 +4,16 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * This lass represents the data transfer object
- * which shows the vehicle availability categorizing throught hte pickup point
+ * <p>
+ * This class is responsible for managing vehicle availability check request details.
+ * </p>
+ * <p>
+ * It contains:
+ *   <ol>
+ *       <li> Pickup point location. </li>
+ *       <li> Drop point location. </li>
+ *   </ol>
+ * </p>
  */
 @Builder
 @Data

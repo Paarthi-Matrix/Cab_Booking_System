@@ -14,6 +14,18 @@ import static com.i2i.zapcab.common.ZapCabConstant.PASSWORD_PATTERN_MESSAGE;
 import static com.i2i.zapcab.common.ZapCabConstant.PASSWORD_REGEX;
 import static com.i2i.zapcab.common.ZapCabConstant.PASSWORD_SIZE;
 
+/**
+ * <p>
+ * This class is responsible for managing the details of a driver password update request.
+ * </p>
+ * <p>
+ * It contains:
+ *   <ol>
+ *       <li> Contact number of the driver whose password is being updated. </li>
+ *       <li> New password to be set for the driver. </li>
+ *   </ol>
+ * </p>
+ */
 @Builder
 @Data
 public class UpdateDriverPasswordDto {

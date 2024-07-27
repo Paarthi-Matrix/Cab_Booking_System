@@ -3,6 +3,22 @@ package com.i2i.zapcab.dto;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * <p>
+ * This class is responsible for managing the details of a ride request.
+ * </p>
+ * <p>
+ * It contains:
+ *   <ol>
+ *       <li> Pickup point location for the ride. </li>
+ *       <li> Drop point location for the ride. </li>
+ *       <li> Distance of the ride in kilometers or miles. </li>
+ *       <li> Category of the vehicle requested (e.g., sedan, SUV). </li>
+ *       <li> Expected drop time for the ride. </li>
+ *       <li> Estimated fare for the ride. </li>
+ *   </ol>
+ * </p>
+ */
 @Builder
 @Data
 public class RideRequestDto {

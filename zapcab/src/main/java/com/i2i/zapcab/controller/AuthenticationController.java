@@ -4,7 +4,6 @@ import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.service.AuthenticationServiceImpl;
 import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.AuthenticationRequestDto;
-import com.i2i.zapcab.dto.AuthenticationResponse;
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.DriverRegisterResponseDto;
 import com.i2i.zapcab.dto.RegisterCustomerRequestDto;

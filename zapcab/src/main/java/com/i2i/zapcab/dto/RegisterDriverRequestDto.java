@@ -34,6 +34,44 @@ import static com.i2i.zapcab.common.ZapCabConstant.REGION_PATTERN_MESSAGE;
 import static com.i2i.zapcab.common.ZapCabConstant.STRING_REGEX;
 import static com.i2i.zapcab.common.ZapCabConstant.VALID_GENDER;
 
+/**
+ * <p>
+ * This class is responsible for managing the details required to register a new driver.
+ * </p>
+ * <p>
+ * It contains:
+ *   <ol>
+ *       <li> Name of the driver. </li>
+ *       <li> Region where the driver operates. </li>
+ *       <li> City where the driver operates. </li>
+ *       <li> Mobile number of the driver. </li>
+ *       <li> Email address of the driver. </li>
+ *       <li> License number of the driver. </li>
+ *       <li> RC book number of the vehicle. </li>
+ *       <li> Date of birth of the driver. </li>
+ *       <li> Gender of the driver. </li>
+ *       <li> License plate of the vehicle. </li>
+ *       <li> Category of the vehicle (e.g., sedan, SUV). </li>
+ *       <li> Type of the vehicle (e.g., electric, hybrid). </li>
+ *       <li> Model of the vehicle. </li>
+ *   </ol>
+ * </p>
+ * <p>
+ * <b>Validation Constraints:</b>
+ *   <ul>
+ *       <li> Name: Must not be blank and should match the specified pattern. </li>
+ *       <li> Region: Must not be blank and should match the specified pattern. </li>
+ *       <li> City: Must not be blank and should match the specified pattern. </li>
+ *       <li> Mobile Number: Must not be blank and should match the specified pattern. </li>
+ *       <li> Email: Must not be blank, must be a valid email format, and should match the specified pattern. </li>
+ *       <li> License Number: Must not be blank and should match the specified pattern. </li>
+ *       <li> RC Book Number: Must not be blank. </li>
+ *       <li> Date of Birth: Must not be null and should be a past date. </li>
+ *       <li> Gender: Must not be blank and should match the specified pattern. </li>
+ *       <li> License Plate: Must not be blank and should match the specified pattern. </li>
+ *   </ul>
+ * </p>
+ */
 @Builder
 @Data
 @NoArgsConstructor

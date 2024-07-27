@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * <p>
- *     Service implementation for managing customer history related operations.
+ * Service implementation for managing customer history related operations.
  * </p>
  */
 @Service
@@ -39,14 +39,24 @@ public class HistoryServiceImpl implements HistoryService {
                     " all rides associated to user: " + id, e);
         }
     }
+
+    public void saveHistory(History history) {
+        try {
+            historyRepository.save(history);
+        } catch (Exception e) {
+            throw new UnexpectedException("Error Occurred while saving" +
+                    " ride history of user: " + history.getUser().getId(), e);
+        }
+    }
+
     /**
      * <p>
-     *     Updates the tier of a customer based on the user ID.
+     * Updates the tier of a customer based on the user ID.
      * </p>
-     * @param userId
-     *        The userId of the customer.
+     *
+     * @param userId The userId of the customer.
      * @return TierDto
-     *         The updated tier information of the customer.
+     * The updated tier information of the customer.
      */
     @Override
     public TierDto updateCustomerTier(String userId) {
@@ -62,12 +72,12 @@ public class HistoryServiceImpl implements HistoryService {
 
     /**
      * <p>
-     *     Determines the tier of the customer based on the number of rides they have taken.
+     * Determines the tier of the customer based on the number of rides they have taken.
      * </p>
-     * @param rideCount
-     *        The number of rides of customer has taken.
+     *
+     * @param rideCount The number of rides of customer has taken.
      * @return String
-     *         The tier of the customer.
+     * The tier of the customer.
      */
     private String determineTier(int rideCount) {
         if (rideCount > 50) {
