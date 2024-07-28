@@ -3,14 +3,13 @@ package com.i2i.zapcab.service;
 import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
 import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
 import com.i2i.zapcab.dto.OtpRequestDto;
-import com.i2i.zapcab.dto.ChangePasswordRequestDto;
 import com.i2i.zapcab.dto.UpdateDriverStatusDto;
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.GetRideRequestListsDto;
 import com.i2i.zapcab.dto.RequestedRideDto;
 import com.i2i.zapcab.dto.RideDetailsDto;
 
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.model.Driver;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -85,7 +84,7 @@ public interface DriverService {
      * @param id      The unique id of the driver.
      * @param ratings The new rating to be added to the driver's current rating.
      * @return true if the driver's rating is updated successfully, otherwise false.
-     * @throws com.i2i.zapcab.exception.UnexpectedException if an error occurs while updating the driver's rating.
+     * @throws DatabaseException if an error occurs while updating the driver's rating.
      */
     boolean updateDriverRating(String id, int ratings);
 
@@ -99,7 +98,7 @@ public interface DriverService {
      * @param maskMobileNumberRequestDto {@link MaskMobileNumberResponseDto}
      * @return MaskMobileNumberResponseDto
      *      A message to the user
-     * @throws UnexpectedException
+     * @throws DatabaseException
      *      Occurs whenever if the number is not masked
      */
     MaskMobileNumberResponseDto updateMaskMobileNumber(String id, MaskMobileNumberRequestDto maskMobileNumberRequestDto);
@@ -129,5 +128,16 @@ public interface DriverService {
      *      Specifies the amount of that particular ride
      */
     void updateDriverWallet(String id, String paymentMode, String rideStatus, int fare);
-}
 
+    /**
+     * <p>
+     *     Retrieves the driver ID associated with a given user ID.
+     * </p>
+     *
+     * @param userId
+     *      The user id for whom the driver ID needs to be retrieved.
+     * @return String
+     *      The driver ID associated with the given user ID.
+     */
+    String retrieveDriverIdByUserId(String userId);
+}

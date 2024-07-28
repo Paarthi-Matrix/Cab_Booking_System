@@ -2,17 +2,13 @@ package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.common.FareCalculator;
 import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
-import com.i2i.zapcab.dto.OTPResponseDto;
 import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.dto.RideRequestResponseDto;
-import com.i2i.zapcab.exception.AuthenticationException;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.exception.NotFoundException;
-import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.dto.*;
-import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.helper.OTPService;
-import com.i2i.zapcab.mapper.RideRequestMapper;
 import com.i2i.zapcab.model.Customer;
 import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.model.RideRequest;
@@ -75,7 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
                     checkVehicleAvailabilityDto.getPickupPoint());
             return vehicleAvailabilityResponseDto;
         } catch (Exception e) {
-            throw new UnexpectedException("Error occurred while fetching vehicles" +
+            throw new DatabaseException("Error occurred while fetching vehicles" +
                     " and calculating fare", e);
         }
     }
@@ -85,7 +81,7 @@ public class CustomerServiceImpl implements CustomerService {
         try {
             return rideRequestService.saveRideRequest(customerRepository.findByUserId(id), rideRequestDto);
         } catch (Exception e) {
-            throw new UnexpectedException("Error Occurred while saving ride request", e);
+            throw new DatabaseException("Error Occurred while saving ride request", e);
         }
     }
 
@@ -96,7 +92,7 @@ public class CustomerServiceImpl implements CustomerService {
         } catch (Exception e) {
             logger.error("Un expected error happened while saving customer" +
                     customer.getUser().getName(), e);
-            throw new UnexpectedException("Un expected error happened while saving customer" +
+            throw new DatabaseException("Un expected error happened while saving customer" +
                     customer.getUser().getName(), e);
         }
     }
@@ -107,7 +103,7 @@ public class CustomerServiceImpl implements CustomerService {
             return driverService.updateDriverRating(rideService.updateRideRating(id, ratings),
                     ratings.getRatings());
         } catch (Exception e) {
-            throw new UnexpectedException("Error Occurred while Updating Ride And Driver Ratings", e);
+            throw new DatabaseException("Error Occurred while Updating Ride And Driver Ratings", e);
         }
     }
 
@@ -126,29 +122,18 @@ public class CustomerServiceImpl implements CustomerService {
                     licensePlate(ride.getDriver().getVehicle().getLicensePlate()).build();
             return !ObjectUtils.isEmpty(rideRequest) ? assignedDriverDto : null;
         } catch (Exception e) {
-            throw new UnexpectedException("Error Occurred while fetch assigned" +
+            throw new DatabaseException("Error Occurred while fetch assigned" +
                     " driver for the customer with id :" + id, e);
         }
     }
 
-    /**
-     * <p>
-     *     Fetches the profile of a customer based on their user ID.
-     * </p>
-     * @param customerId
-     *        The ID of the customer
-     * @return {@link  CustomerProfileDto}
-     *         The profile information of the customer.
-     * @throws UnexpectedException
-     *         If error occurs while retrieving the customer profile.
-     */
     @Override
-    public CustomerProfileDto getCustomerProfile(String customerId) {
-        logger.debug("Fetching profile for customer with ID: {}", customerId);
+    public CustomerProfileDto getCustomerProfile(String userId) {
+        logger.debug("Fetching profile for user with ID: {}", userId);
         try {
-            Customer customer = customerRepository.findByUserId(customerId);
+            Customer customer = customerRepository.findByUserId(userId);
             if (null != customer) {
-                logger.info("Successfully fetched profile for customer with ID: {}", customerId);
+                logger.info("Successfully fetched profile for user with ID: {}", userId);
                 return CustomerProfileDto.builder()
                         .name(customer.getUser().getName())
                         .email(customer.getUser().getEmail())
@@ -156,35 +141,23 @@ public class CustomerServiceImpl implements CustomerService {
                         .gender(customer.getUser().getGender())
                         .tier(customer.getTier())
                         .build();
-
             } else {
-                logger.warn("Customer profile not found for ID: {}", customerId);
-                throw new NotFoundException("Customer profile not found for ID: " + customerId);
+                logger.warn("User profile not found for ID: {}", userId);
+                throw new NotFoundException("User profile not found for ID: " + userId);
             }
         } catch (Exception e) {
-            logger.error("Failed to fetch customer profile for ID: {}", customerId, e);
-            throw new UnexpectedException("Failed to fetch customer profile for ID: " + customerId, e);
+            logger.error("Failed to fetch user profile for ID: {}", userId, e);
+            throw new DatabaseException("Failed to fetch user profile for ID: " + userId, e);
         }
     }
 
-    /**
-     * <p>
-     *     Updates the tier of a customer based on the user ID.
-     * </p>
-     * @param userId
-     *        The userId of the customer.
-     * @param newTier
-     *        The newTier to be set for the customer.
-     * @throws UnexpectedException
-     *         If error occurs while updating the customer tier.
-     */
     @Override
-    public void updateCustomerTier(String userId, String newTier) {
-        logger.debug("Updating tier for customer with userId: {} to new tier: {}", userId, newTier);
+    public void updateCustomerTier(String userId, TierDto tierDto) {
+        logger.debug("Updating tier for customer with userId: {} to new tier: {}", userId, tierDto.getTier());
         try {
             Customer customer = customerRepository.findByUserId(userId);
             if (null != customer) {
-                customer.setTier(newTier);
+                customer.setTier(tierDto.getTier());
                 customerRepository.save(customer);
                 logger.info("Successfully updated tier for customer with userId: {}", userId);
             } else {
@@ -193,7 +166,24 @@ public class CustomerServiceImpl implements CustomerService {
             }
         } catch (Exception e) {
             logger.error("Error updating tier for customer with userId: {}", userId, e);
-            throw new UnexpectedException("Error updating tier for customer with userId: " + userId, e);
+            throw new DatabaseException("Error updating tier for customer with userId: " + userId, e);
+        }
+    }
+
+
+    @Override
+    public String retrieveCustomerIdByUserId(String userId) {
+        try {
+            Customer customer = customerRepository.findByUserId(userId);
+            if (null == customer) {
+                logger.warn("User ID not found: {}", userId);
+                throw new NotFoundException("User ID not found " + userId);
+            }
+            logger.info("Successfully retrieved customer ID for user ID: {}", userId);
+            return customer.getId();
+        } catch (Exception e) {
+            logger.error("Failed to retrieve the customer ID for user ID: {}", userId, e);
+            throw new DatabaseException("Failed to retrieve the customer ID for user ID: " + userId, e);
         }
     }
 }

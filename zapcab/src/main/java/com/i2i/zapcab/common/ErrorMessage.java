@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
  * ErrorMessage<String> errorMessage = new ErrorMessage<>(HttpStatus.BAD_REQUEST.value(), new RuntimeException("Invalid input"));
  *
  * // Creating an error message with a status, message, and exception
- * ErrorMessage<String> detailedErrorMessage = new ErrorMessage<>(HttpStatus.NOT_FOUND.value(), "Resource not found", new UnexpectedException());
+ * ErrorMessage<String> detailedErrorMessage = new ErrorMessage<>(HttpStatus.NOT_FOUND.value(), "Resource not found", new DatabaseException());
  *
  * // Creating an error message with a message, data, status, and exception
  * ErrorMessage<String> fullErrorMessage = new ErrorMessage<>("Operation failed", "Additional error data", HttpStatus.INTERNAL_SERVER_ERROR.value(), new InternalServerErrorException());

@@ -1,6 +1,6 @@
 package com.i2i.zapcab;
 
-import com.i2i.zapcab.service.SecurityAuditorAware;
+import com.i2i.zapcab.service.SecurityAuditorAwareImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +15,7 @@ public class ZapCab {
 
     @Bean
     public AuditorAware<String> auditorProvider() {
-        return new SecurityAuditorAware();
+        return new SecurityAuditorAwareImpl();
     }
 
     public static void main(String[] args) {

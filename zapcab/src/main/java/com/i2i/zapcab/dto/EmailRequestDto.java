@@ -22,7 +22,7 @@ import lombok.*;
 @Getter
 @Setter
 public class EmailRequestDto {
-    String driverName;
+    String UserName;
     String mobilNumber;
     String password;
     String toEmail;

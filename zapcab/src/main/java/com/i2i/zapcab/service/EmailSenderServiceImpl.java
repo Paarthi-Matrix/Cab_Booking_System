@@ -1,5 +1,6 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.dto.EmailInvoiceDto;
 import com.i2i.zapcab.dto.EmailRequestDto;
 import com.i2i.zapcab.dto.RegisterCustomerDto;
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +12,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import static com.i2i.zapcab.common.ZapCabConstant.APP_DOMAIN_NAME;
+import static com.i2i.zapcab.common.ZapCabConstant.EMAIL_SUBJECT_FOR_CUSTOMER;
 import static com.i2i.zapcab.common.ZapCabConstant.EMAIL_SUBJECT_FOR_DRIVER;
 
 /**
@@ -22,7 +24,7 @@ import static com.i2i.zapcab.common.ZapCabConstant.EMAIL_SUBJECT_FOR_DRIVER;
 @Service
 public class EmailSenderServiceImpl implements EmailSenderService {
 
-    private static Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
 
     @Autowired
     private JavaMailSender mailSender;
@@ -41,7 +43,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
         message.setTo(emailRequestDto.getToEmail());
-        message.setText(" Dear "+ emailRequestDto.getDriverName() + ",\n" +
+        message.setText(" Dear "+ emailRequestDto.getUserName() + ",\n" +
                 "\n" +
                 "Welcome to ZapCab! We are excited to have you on board as a driver. Your account has been successfully created by our admin team. Below are your login details:\n" +
                 "\n" +
@@ -58,9 +60,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
                 "Note: This is an automated message. Please do not reply to this email.\n");
         message.setSubject(EMAIL_SUBJECT_FOR_DRIVER);
         mailSender.send(message);
-        logger.info("The welcome mail is sent to driver" + emailRequestDto.getDriverName() +
-                " successfully!"
-        );
+        logger.info("The welcome mail is sent to driver{} successfully!", emailRequestDto.getUserName());
     }
 
     /**
@@ -106,5 +106,28 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         mailSender.send(message);
         logger.info("The welcome mail is sent to customer" + registerCustomerDto.getName() +
                 " successfully!");
+    }
+
+    @Override
+    public void sendInvoiceMailtoCustomer(EmailInvoiceDto emailInvoiceDto) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(emailInvoiceDto.getEmail());
+        message.setText("Thank you for choosing ZapCab! Here are the details of your recent ride:\n" +
+                "\n" +
+                "Pickup Point: " + emailInvoiceDto.getPickupPoint() + "\n" +
+                "Drop Point: " + emailInvoiceDto.getDropPoint() + "\n" +
+                "Fare: Rs." + emailInvoiceDto.getFare() + "\n" +
+                "\n" +
+                "We hope you had a pleasant ride. If you have any questions or need assistance, please don't " +
+                "hesitate to reach out to our support team at www.zapcabsupport.com.\n" +
+                "\n" +
+                "Best regards,\n" +
+                "ZapCab Team\n" +
+                "\n" +
+                "Note: This is an automated message. Please do not reply to this email.");
+        message.setSubject(EMAIL_SUBJECT_FOR_CUSTOMER);
+        mailSender.send(message);
+        logger.info("The invoice mail is sent to customer successfully!");
     }
 }

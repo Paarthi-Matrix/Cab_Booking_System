@@ -1,5 +1,6 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.dto.EmailInvoiceDto;
 import com.i2i.zapcab.dto.EmailRequestDto;
 import com.i2i.zapcab.dto.RegisterCustomerDto;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,6 @@ import org.springframework.stereotype.Component;
 @Component
 public interface EmailSenderService {
     void sendRegistrationEmailToDriver(EmailRequestDto emailRequestDto);
-
+    void sendInvoiceMailtoCustomer(EmailInvoiceDto emailInvoiceDto);
     void sendRegistrationMailtoCustomer(RegisterCustomerDto registerCustomerDto);
 }

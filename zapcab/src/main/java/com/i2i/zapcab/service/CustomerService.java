@@ -1,22 +1,15 @@
 package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.*;
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.model.Customer;
-import com.i2i.zapcab.model.History;
-import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.dto.AssignedDriverDto;
 import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
 import com.i2i.zapcab.dto.CustomerProfileDto;
 import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.dto.VehicleAvailabilityResponseDto;
-import com.i2i.zapcab.model.Customer;
-import com.i2i.zapcab.model.RideRequest;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * <p>
@@ -55,7 +48,7 @@ public interface CustomerService {
      * @param id             The unique id of the user.
      * @param rideRequestDto The data transfer object containing ride request details.
      * @return true if the ride request is saved successfully, otherwise false.
-     * @throws com.i2i.zapcab.exception.UnexpectedException if an error occurs while saving the ride request.
+     * @throws DatabaseException if an error occurs while saving the ride request.
      */
     boolean saveRideRequest(String id, RideRequestDto rideRequestDto);
 
@@ -65,7 +58,7 @@ public interface CustomerService {
      * </p>
      *
      * @param customer {@link Customer}
-     * @throws UnexpectedException {@link UnexpectedException}
+     * @throws DatabaseException {@link DatabaseException}
      *                             Thrown while saving customer entity to the repository.
      */
     void saveCustomer(Customer customer);
@@ -78,7 +71,7 @@ public interface CustomerService {
      * @param id      The unique id of the ride.
      * @param ratings The data transfer object containing the ride and driver ratings.
      * @return true if the ratings are updated successfully, otherwise false.
-     * @throws com.i2i.zapcab.exception.UnexpectedException if an error occurs while updating the ratings.
+     * @throws DatabaseException if an error occurs while updating the ratings.
      */
     boolean updateRideAndDriverRating(String id, RideRatingDto ratings);
 
@@ -89,11 +82,45 @@ public interface CustomerService {
      *
      * @param id The unique id of the ride request.
      * @return An AssignedDriverDto object containing the driver's details if the ride request is assigned, otherwise null.
-     * @throws com.i2i.zapcab.exception.UnexpectedException if an error occurs while fetching the assigned driver details.
+     * @throws DatabaseException if an error occurs while fetching the assigned driver details.
      */
     AssignedDriverDto getAssignedDriverDetails(String id);
 
-    public CustomerProfileDto getCustomerProfile(String customerId);
+    /**
+     * <p>
+     *     Fetches the profile of a customer based on their user ID.
+     * </p>
+     * @param userId
+     *        The ID of the customer
+     * @return {@link  CustomerProfileDto}
+     *         The profile information of the customer.
+     * @throws DatabaseException
+     *         If error occurs while retrieving the customer profile.
+     */
+    CustomerProfileDto getCustomerProfile(String userId);
 
-    public void updateCustomerTier(String userId, String newTier);
+    /**
+     * <p>
+     *     Updates the tier of a customer based on the user ID.
+     * </p>
+     * @param userId
+     *        The userId of the customer.
+     * @param tierDto
+     *        The newTier to be set for the customer.
+     * @throws DatabaseException
+     *         If error occurs while updating the customer tier.
+     */
+    void updateCustomerTier(String userId, TierDto tierDto);
+
+    /**
+     * <p>
+     *     Retrieves the customer ID associated with a given user ID.
+     * </p>
+     *
+     * @param userId
+     *      The user id for whom the customer ID needs to be retrieved.
+     * @return String
+     *      The customer ID associated with the given user ID.
+     */
+    String retrieveCustomerIdByUserId(String userId);
 }

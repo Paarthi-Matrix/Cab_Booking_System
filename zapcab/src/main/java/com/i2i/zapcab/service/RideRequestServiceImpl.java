@@ -4,8 +4,9 @@ import java.util.List;
 
 import com.i2i.zapcab.common.FareCalculator;
 import com.i2i.zapcab.dto.RideRequestResponseDto;
-import com.i2i.zapcab.dto.UpdateResponseDto;
+import com.i2i.zapcab.dto.UpdateRideResponseDto;
 import com.i2i.zapcab.dto.UpdateRideDto;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.exception.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.RideRequestDto;
-import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.mapper.RideRequestMapper;
 import com.i2i.zapcab.model.Customer;
 import com.i2i.zapcab.model.RideRequest;
@@ -64,7 +64,7 @@ public class RideRequestServiceImpl implements RideRequestService {
             rideRequest.setCustomer(customer);
             return !ObjectUtils.isEmpty(rideRequestRepository.save(rideRequest));
         } catch (Exception e) {
-            throw new UnexpectedException("Error Occurred while saving ride request", e);
+            throw new DatabaseException("Error Occurred while saving ride request", e);
         }
     }
 
@@ -75,7 +75,7 @@ public class RideRequestServiceImpl implements RideRequestService {
             rideRequest.setStatus(ASSIGNED);
             rideRequestRepository.save(rideRequest);
         } catch (Exception e) {
-            throw new UnexpectedException("Error Occurred while updating ride request status", e);
+            throw new DatabaseException("Error Occurred while updating ride request status", e);
         }
     }
 
@@ -85,7 +85,7 @@ public class RideRequestServiceImpl implements RideRequestService {
             Optional<RideRequest> rideRequest = rideRequestRepository.findByCustomerId(id);
             return rideRequest.orElse(null);
         } catch (Exception e) {
-            throw new UnexpectedException("Error Occurred while checking ride request status is assigned or not", e);
+            throw new DatabaseException("Error Occurred while checking ride request status is assigned or not", e);
         }
     }
 
@@ -93,7 +93,7 @@ public class RideRequestServiceImpl implements RideRequestService {
      * <p>
      *     Updates the details of a ride request based on the provided updateRideDto.
      * </p>
-     * @param id
+     * @param customerId
      *        The ID of the ride request to be updated.
      * @param updateRideDto
      *        The DTO containing the new details for the ride request.
@@ -101,16 +101,16 @@ public class RideRequestServiceImpl implements RideRequestService {
      *         The response object containing the updated ride request details.
      * @throws NotFoundException
      *         If the ride request with the specified ID is not found.
-     * @throws UnexpectedException
+     * @throws DatabaseException
      *         If an error occurs while updating the ride request details.
      */
 
-    public UpdateResponseDto updateRideDetails(String id, UpdateRideDto updateRideDto) {
+    public UpdateRideResponseDto updateRideDetails(String customerId, UpdateRideDto updateRideDto) {
         try {
-            Optional<RideRequest> rideRequestOptional = rideRequestRepository.findById(id);
-            if (!rideRequestOptional.isPresent()) {
-                logger.warn("Ride with ID: {} not found.", id);
-                throw new NotFoundException("Ride not found for ID : " + id);
+            Optional<RideRequest> rideRequestOptional = rideRequestRepository.findByCustomerId(customerId);
+            if (rideRequestOptional.isEmpty()) {
+                logger.warn("Ride with customer ID: {} not found.", customerId);
+                throw new NotFoundException("Ride not found for customer ID: " + customerId);
             }
             RideRequest rideRequest = rideRequestOptional.get();
             rideRequest.setPickupPoint(updateRideDto.getPickupPoint());
@@ -119,22 +119,21 @@ public class RideRequestServiceImpl implements RideRequestService {
             RideRequestResponseDto fareResponse = fareCalculator.calculateFare(updateRideDto.getPickupPoint(),
                      updateRideDto.getDropPoint(), updateRideDto.getVehicleCategory());
             if (null != fareResponse) {
-                rideRequest.setFare((int) fareResponse.getFare());
+                rideRequest.setFare(fareResponse.getFare());
                 rideRequest.setDistance(fareResponse.getDistance());
             }
             rideRequestRepository.save(rideRequest);
-            UpdateResponseDto updateResponseDto = UpdateResponseDto.builder()
+            UpdateRideResponseDto updateRideResponseDto = UpdateRideResponseDto.builder()
                     .pickupPoint(rideRequest.getPickupPoint())
                     .dropPoint(rideRequest.getDropPoint())
                     .vehicleCategory(rideRequest.getVehicleCategory())
                     .fare(rideRequest.getFare())
                     .distance(rideRequest.getDistance())
                     .build();
-
-            return updateResponseDto;
+            return updateRideResponseDto;
         } catch (Exception e) {
-            logger.error("Failed to update ride details for ride with ID: {}", id, e);
-            throw new UnexpectedException("Failed to update ride details. Ride ID : " + id, e);
+            logger.error("Failed to update ride details for customer with ID: {}", customerId);
+            throw new DatabaseException("Failed to update ride details. Customer ID: " + customerId, e);
         }
     }
 }

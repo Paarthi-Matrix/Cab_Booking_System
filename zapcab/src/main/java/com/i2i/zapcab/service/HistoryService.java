@@ -1,7 +1,7 @@
 package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.RideHistoryResponseDto;
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.dto.TierDto;
 import com.i2i.zapcab.model.History;
 import org.springframework.stereotype.Component;
@@ -24,11 +24,12 @@ public interface HistoryService {
      *
      * @param id The ID of the user whose ride history is to be retrieved.
      * @return A list of RideHistoryResponseDto objects representing the user's ride history.
-     * @throws UnexpectedException If an error occurs while fetching the ride history.
+     * @throws DatabaseException If an error occurs while fetching the ride history.
      */
     List<RideHistoryResponseDto> getAllRideHistoryById(String id);
 
     void saveHistory(History history);
+
     /**
      * <p>
      *     Updates the tier of a customer based on the user ID.
@@ -38,5 +39,6 @@ public interface HistoryService {
      * @return TierDto
      *         The updated tier information of the customer.
      */
-    public TierDto updateCustomerTier(String userId);
+    TierDto getCustomerTier(String userId);
+
 }

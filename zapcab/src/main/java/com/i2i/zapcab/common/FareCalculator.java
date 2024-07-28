@@ -1,7 +1,7 @@
 package com.i2i.zapcab.common;
 
 import com.i2i.zapcab.dto.RideRequestResponseDto;
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +27,9 @@ import static com.i2i.zapcab.common.ZapCabConstant.XUV;
 import static com.i2i.zapcab.common.ZapCabConstant.XUV_RATE_PER_KM;
 import static com.i2i.zapcab.common.ZapCabConstant.XUV_SPEED_PER_KM;
 
+//todo comments, import order
 public class FareCalculator {
     private static final Logger logger = LoggerFactory.getLogger(FareCalculator.class);
-
     private static final Map<String, Integer> distances = new HashMap<>();
 
     static {
@@ -39,13 +39,14 @@ public class FareCalculator {
     }
 
     /**
+     * <p>
      * Calculates the fare based on the pickup and drop points and vehicle category.
-     *
+     * </p>
      * @param pickup   The pickup location.
      * @param drop     The drop location.
      * @param category The vehicle category.
      * @return A RideRequestResponseDto containing the fare details.
-     * @throws UnexpectedException if any error occurs while calculating fare.
+     * @throws DatabaseException if any error occurs while calculating fare.
      */
     public RideRequestResponseDto calculateFare(String pickup, String drop, String category) {
         try {
@@ -57,7 +58,7 @@ public class FareCalculator {
                             distances.getOrDefault(drop + "-" + pickup, 0)),
                     LocalTime.now().getHour(), category, airportCharge);
         } catch (Exception e) {
-            throw new UnexpectedException("Error occurred while Calculating fare", e);
+            throw new DatabaseException("Error occurred while Calculating fare", e);
         }
     }
 
@@ -71,12 +72,13 @@ public class FareCalculator {
      * @param currentHour The current hour of the day.
      * @param category    The vehicle category.
      * @return A RideRequestResponseDto containing the fare and estimated drop time.
-     * @throws UnexpectedException if any error occurs while calculating fare by category.
+     * @throws DatabaseException if any error occurs while calculating fare by category.
      */
     private RideRequestResponseDto fareByCategory(
             int distance, int currentHour, String category, int airportCharge) {
         RideRequestResponseDto rideRequestResponseDto = new RideRequestResponseDto();
         try {
+            //todo petrol price api hit
             Map<String, Integer> categoryRates = Map.of(
                     XUV, XUV_RATE_PER_KM,
                     SEDAN, SEDAN_RATE_PER_KM,
@@ -107,7 +109,7 @@ public class FareCalculator {
                     category, fare, estimatedTime);
             return rideRequestResponseDto;
         } catch (Exception e) {
-            throw new UnexpectedException("Error Occurred while Calculating fare by vehicle category", e);
+            throw new DatabaseException("Error Occurred while Calculating fare by vehicle category", e);
         }
     }
 }

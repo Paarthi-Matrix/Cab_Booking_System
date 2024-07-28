@@ -3,22 +3,18 @@ package com.i2i.zapcab.service;
 import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_DRIVER_STATUS;
 import static com.i2i.zapcab.common.ZapCabConstant.VEHICLE_AVAILABLE_STATUS;
 import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.mapper.PendingRequestMapper;
 import com.i2i.zapcab.model.VehicleLocation;
 import java.util.List;
 import java.util.Optional;
 
 import com.i2i.zapcab.dto.EmailRequestDto;
-import com.i2i.zapcab.model.VehicleLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.i2i.zapcab.config.JwtService;
 import com.i2i.zapcab.exception.AuthenticationException;
-import com.i2i.zapcab.helper.DriverStatusEnum;
 import com.i2i.zapcab.helper.PinGeneration;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -71,7 +67,7 @@ public class AdminServiceImpl implements AdminService {
             });
         } catch (Exception e) {
             logger.error("Error occurred while fetching the list of requests");
-            throw new UnexpectedException("Unable to retrieve the pending requests list", e);
+            throw new DatabaseException("Unable to retrieve the pending requests list", e);
         }
     }
 
@@ -140,7 +136,7 @@ public class AdminServiceImpl implements AdminService {
             emailSenderService.sendRegistrationEmailToDriver(
                     EmailRequestDto.builder()
                             .toEmail(pendingRequest.getEmail())
-                            .driverName(pendingRequest.getName())
+                            .UserName(pendingRequest.getName())
                             .mobilNumber(pendingRequest.getMobileNumber())
                             .password(password).build()
             );

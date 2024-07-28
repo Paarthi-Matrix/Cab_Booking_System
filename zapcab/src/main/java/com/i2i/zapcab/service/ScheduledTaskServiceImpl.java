@@ -1,10 +1,9 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +52,8 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
      * <p>
      * Fetches the latest petrol price and updates the {@code latestPetrolPrice} field.
      * </p>
-     * @throws UnexpectedException if there is an error fetching the petrol price from the service
+     *
+     * @throws DatabaseException if there is an error fetching the petrol price.
      */
     private void fetchPetrolPrice() {
         try {
@@ -61,16 +61,10 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
             logger.info("Successfully fetched latest petrol price.");
         } catch (Exception e) {
             logger.error("Failed to fetch petrol price", e);
-            throw new UnexpectedException("Failed to fetch petrol price");
+            throw new DatabaseException("Failed to fetch petrol price");
         }
     }
 
-    /**
-     * <p>
-     * Retrieves the latest petrol price.
-     * </p>
-     * @return the most recently fetched petrol price
-     */
     @Override
     public double getLatestPetrolPrice() {
         logger.info("Retrieving the latest petrol price: {}", latestPetrolPrice);

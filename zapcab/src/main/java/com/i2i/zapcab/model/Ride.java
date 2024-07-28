@@ -60,7 +60,5 @@ public class Ride extends Auditable {
         if (this.id == null) {
             this.id = UUID.randomUUID().toString();
         }
-
     }
-
 }

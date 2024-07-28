@@ -6,9 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.i2i.zapcab.common.ZapCabConstant.FIND_BY_CUSTOMER_ID;
 import static com.i2i.zapcab.common.ZapCabConstant.FIND_BY_CUSTOMER_NAME_AND_RIDE_ID;

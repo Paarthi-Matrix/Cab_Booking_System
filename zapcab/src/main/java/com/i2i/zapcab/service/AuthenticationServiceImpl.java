@@ -1,7 +1,7 @@
 package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.RegisterCustomerDto;
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -83,7 +83,7 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
      *
      * @param registerCustomerDto {@link RegisterDriverRequestDto}
      *
-     * @throws UnexpectedException
+     * @throws DatabaseException
      *         Arises while saving/updating the entity to the database.
      * @return AuthenticationResponseDto
      *         Contains JWT token upon successfull registration.

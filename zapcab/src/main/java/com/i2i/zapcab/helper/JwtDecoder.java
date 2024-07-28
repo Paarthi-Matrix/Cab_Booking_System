@@ -29,7 +29,7 @@ public class JwtDecoder {
      * @throws AuthenticationException
      *         If the user is not authenticated, that user will not have a SecurityContextHolder.
      *         That will pay a way to raise this exception.
-     * @return UserId
+     * @return
      *         UserId of the currently authenticated user.
      *
      */

@@ -15,4 +15,6 @@ public interface DriverRepository extends JpaRepository<Driver, String> {
 
     @Query(FIND_DRIVER_BY_MOBILE_NUMBER_QUERY)
     Driver findDriverByMobileNumber(@Param("mobileNumber") String mobileNumber);
+
+    Driver findByUserId(String userId);
 }

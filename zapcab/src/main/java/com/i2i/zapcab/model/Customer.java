@@ -17,7 +17,7 @@ import lombok.*;
  *  @see Auditable
  *  @see User
  */
- @Data
+@Data
 @Builder
 @Entity
 @NoArgsConstructor

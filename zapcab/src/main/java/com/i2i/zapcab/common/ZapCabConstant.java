@@ -90,7 +90,7 @@ public class ZapCabConstant {
 
     //EMAIL
     public static final String EMAIL_SUBJECT_FOR_DRIVER = "Welcome to ZapCab: Your Driver Account Details";
-    public static final String EMAIL_SUBJECT_FOR_CUSTOMER = "Welcome to ZapCab: Your Journey Begins Here!";
+    public static final String EMAIL_SUBJECT_FOR_CUSTOMER = "Welcome to ZapCab: Your Invoice Details";
     public static final String APP_DOMAIN_NAME = "www.zapcab.com";
 
     // URL and API Token

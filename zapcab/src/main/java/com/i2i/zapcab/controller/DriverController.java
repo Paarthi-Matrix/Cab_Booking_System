@@ -3,7 +3,7 @@ package com.i2i.zapcab.controller;
 import java.util.List;
 
 import com.i2i.zapcab.dto.PaymentModeDto;
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
 import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
 import com.i2i.zapcab.dto.OTPResponseDto;
@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +47,7 @@ import com.i2i.zapcab.service.DriverService;
 @RequestMapping("/v1/drivers")
 @RequiredArgsConstructor
 public class DriverController {
-    private static Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
     @Autowired
     private DriverService driverService;
     @Autowired
@@ -71,7 +70,7 @@ public class DriverController {
      *       This must contain all the values of the `UpdateDriverStatusDto`.
      * @return ApiResponseDto<String> {@link ApiResponseDto}
      */
-    @PatchMapping("/me/locations")
+    @PatchMapping("/me")
     public ApiResponseDto<String> updateDriverStatusAndLocation(@RequestBody UpdateDriverStatusDto updateDriverStatusDto) {
         logger.debug("Entering into the method to update the driver status and location...");
         String Userid = JwtDecoder.extractUserIdFromToken();
@@ -95,7 +94,7 @@ public class DriverController {
      * @return ApiResponseDto<List<RequestedRideDto> {@link RequestedRideDto}
      */
    @GetMapping("/me/requests")
-    public ApiResponseDto<List<RequestedRideDto>> getAvailableDrivers(@RequestBody GetRideRequestListsDto getRideRequestListsDto ){
+    public ApiResponseDto<List<RequestedRideDto>> getAvailableDrivers(@RequestBody GetRideRequestListsDto getRideRequestListsDto) {
        List<RequestedRideDto> requestedRideDtos = null;
        try {
            requestedRideDtos = driverService.getRideRequests(getRideRequestListsDto);
@@ -103,7 +102,7 @@ public class DriverController {
        } catch (NotFoundException e) {
            return ApiResponseDto.statusNotFound(requestedRideDtos, e);
        }
-   }
+   } //todo method name
 
     /**
      * <p>
@@ -117,7 +116,7 @@ public class DriverController {
         try {
             String id = JwtDecoder.extractUserIdFromToken();
             driverService.changePassword(id, changePasswordRequestDto.getNewPassword());
-        } catch (UnexpectedException e) {
+        } catch (DatabaseException e) {
             return ApiResponseDto.statusInternalServerError("Unexpected error occurred while changing password", e);
         }
         return ApiResponseDto.statusOk("Driver password changed successfully!");
@@ -131,27 +130,27 @@ public class DriverController {
      * @return RideDetailsDto
      *          Holds the customer requested ride data {@link RideDetailsDto}
      */
-    @PostMapping("/me/request/accept")
-    public ApiResponseDto<RideDetailsDto> getRideDetails(@RequestBody DriverSelectedRideDto selectedRideDto) {
+    @PostMapping("/me/accept/request")
+    public ApiResponseDto<RideDetailsDto> getRideDetails(@RequestBody DriverSelectedRideDto selectedRideDto) { //todo method name -> acceptRide
         RideDetailsDto rideDetailsDto = null;
         try {
             logger.info("Received request to get ride details for: {}", selectedRideDto);
             rideDetailsDto = driverService.getRideDetails(selectedRideDto);
             logger.info("Successfully retrieved ride details: {}", rideDetailsDto);
             return ApiResponseDto.statusOk(rideDetailsDto);
-        } catch (UnexpectedException e) {
+        } catch (DatabaseException e) {
             logger.error("Error occurred while retrieving ride details for: {}", selectedRideDto, e);
             return ApiResponseDto.statusInternalServerError(rideDetailsDto, e);
         }
     }
 
-    @PatchMapping("/me/mask")
+    @PatchMapping("/me/mask/mobilenumber")
     public ApiResponseDto<MaskMobileNumberResponseDto> maskMobileNumber(@RequestBody MaskMobileNumberRequestDto maskMobileNumberRequestDto) {
         MaskMobileNumberResponseDto maskMobileNumberResponseDto = null;
         try {
             String id = JwtDecoder.extractUserIdFromToken();
             return ApiResponseDto.statusOk(driverService.updateMaskMobileNumber(id,maskMobileNumberRequestDto));
-        } catch (UnexpectedException e) {
+        } catch (DatabaseException e) {
             return ApiResponseDto.statusInternalServerError(maskMobileNumberResponseDto, e);
         }
     }
@@ -175,22 +174,35 @@ public class DriverController {
                otpResponseDto = OTPResponseDto.builder().msg("Invalid otp !!!").build();
               return ApiResponseDto.statusOk(otpResponseDto);
            }
-        } catch (UnexpectedException e) {
+        } catch (DatabaseException e) {
             return ApiResponseDto.statusInternalServerError(otpResponseDto, e);
         }
     }
 
-    @PatchMapping("/{id}/paymentmodes")
-    public ApiResponseDto<?> paymentMode(@PathVariable String id, @RequestBody PaymentModeDto paymentModeDto) {
+    /**
+     * <p>
+     *     This method handles updating the payment mode for a driver and subsequently updating the ride status.
+     * </p>
+     *
+     * @param paymentModeDto {@link PaymentModeDto}
+     * @return ApiResponseDto<paymentMode>
+     *     The response entity containing the updated payment mode, or an error message.
+     */
+    @PatchMapping("/me/payments")
+    public ApiResponseDto<?> updatePaymentMode(@RequestBody PaymentModeDto paymentModeDto) {
+        String userId = JwtDecoder.extractUserIdFromToken();
         try {
-            PaymentModeDto paymentMode = rideService.paymentMode(id, paymentModeDto);
-            logger.info("Updated payment mode for ride with ID {}", id);
+            String driverId = driverService.retrieveDriverIdByUserId(userId);
+            PaymentModeDto paymentMode = rideService.paymentMode(driverId, paymentModeDto);
+            logger.info("Updated payment mode for user with ID {}", userId);
+            rideService.updateRideStatus(driverId);
+            logger.info("Updated ride status for user with ID {}", userId);
             return ApiResponseDto.statusOk(paymentMode);
         } catch (NotFoundException e) {
-            logger.warn("Ride with ID {} not found", id);
+            logger.warn("User with ID {} not found", userId);
             return ApiResponseDto.statusNotFound("Invalid ID");
-        } catch (UnexpectedException e) {
-            logger.error("Error updating ride status for ride with ID {}", id, e);
+        } catch (DatabaseException e) {
+            logger.error("Error updating ride status for user with ID {}", userId, e);
             return ApiResponseDto.statusInternalServerError("Error updating payment mode", e);
         }
     }

@@ -1,5 +1,6 @@
 package com.i2i.zapcab.controller;
 
+import com.i2i.zapcab.exception.DatabaseException;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +17,6 @@ import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
 import com.i2i.zapcab.dto.UpdatePendingRequestDto;
-import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.service.AdminService;
 
 @RestController
@@ -42,7 +42,7 @@ public class AdminController {
      * @return ApiResponseDto<Page<FetchAllPendingRequestsDto>> {@link FetchAllPendingRequestsDto}
      */
     @GetMapping
-    public ApiResponseDto<Page<FetchAllPendingRequestsDto>> fetchAllPendingRequests(
+    public ApiResponseDto<Page<FetchAllPendingRequestsDto>> fetchAllPendingRequests (
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         logger.debug("Entering into the method to fetch all the requests..");
@@ -50,7 +50,7 @@ public class AdminController {
         try {
             logger.info("Fetching all the requests");
             return ApiResponseDto.statusOk(fetchAllPendingRequestsDto);
-        } catch (UnexpectedException e) {
+        } catch (DatabaseException e) {
             logger.error("Error occurred while fetching the pending requests ");
             return ApiResponseDto.statusInternalServerError(fetchAllPendingRequestsDto, e);
         }
@@ -66,21 +66,22 @@ public class AdminController {
      *     <li>If the driver's back ground verification was not fair enough.</li>
      * </ul>
      * @param updatePendingRequestDto {@link UpdatePendingRequestDto}
-     * @return
+     * @return ApiResponseDto<AuthenticationResponseDto>
      */
     @PutMapping
-    public ApiResponseDto<AuthenticationResponseDto> updatePendingRequest(@Valid @RequestBody UpdatePendingRequestDto
-                                                                                      updatePendingRequestDto) {
+    public ApiResponseDto<AuthenticationResponseDto> updatePendingRequest(@Valid @RequestBody UpdatePendingRequestDto updatePendingRequestDto) {
         logger.debug("Entering into the method to update the particular request...");
         AuthenticationResponseDto authenticationResponse = null;
         try {
             logger.info("Updating the request for the user : {}", updatePendingRequestDto.getPhoneNumber());
             authenticationResponse = adminService.updatePendingRequest(updatePendingRequestDto);
             logger.info("Successfully updated the {} user's status ", updatePendingRequestDto.getPhoneNumber());
-        } catch (UnexpectedException e) {
+        } catch (DatabaseException e) {
            return ApiResponseDto.statusInternalServerError(authenticationResponse, e);
         }
         logger.debug("leaving the method  updateRequest ");
         return ApiResponseDto.statusOk(authenticationResponse);
     }
 }
+
+

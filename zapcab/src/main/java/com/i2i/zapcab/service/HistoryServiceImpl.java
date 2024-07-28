@@ -2,16 +2,16 @@ package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.RideHistoryResponseDto;
 import com.i2i.zapcab.dto.TierDto;
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.mapper.HistoryMapper;
 import com.i2i.zapcab.model.History;
 import com.i2i.zapcab.repository.HistoryRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import java.util.ArrayList;
 
 /**
  * <p>
@@ -35,7 +35,7 @@ public class HistoryServiceImpl implements HistoryService {
                     forEach((history) -> rideHistoryResponseDtos.add(historyMapper.entityToDto(history)));
             return rideHistoryResponseDtos;
         } catch (Exception e) {
-            throw new UnexpectedException("Error Occurred while fetching" +
+            throw new DatabaseException("Error Occurred while fetching" +
                     " all rides associated to user: " + id, e);
         }
     }
@@ -44,29 +44,23 @@ public class HistoryServiceImpl implements HistoryService {
         try {
             historyRepository.save(history);
         } catch (Exception e) {
-            throw new UnexpectedException("Error Occurred while saving" +
+            throw new DatabaseException("Error Occurred while saving" +
                     " ride history of user: " + history.getUser().getId(), e);
         }
     }
 
-    /**
-     * <p>
-     * Updates the tier of a customer based on the user ID.
-     * </p>
-     *
-     * @param userId The userId of the customer.
-     * @return TierDto
-     * The updated tier information of the customer.
-     */
     @Override
-    public TierDto updateCustomerTier(String userId) {
+    public TierDto getCustomerTier(String userId) {
         try {
-            int rideCount = 20;
+            int rideCount = historyRepository.countByUserId(userId);
             String newTier = determineTier(rideCount);
-            customerService.updateCustomerTier(userId, newTier);
-            return TierDto.builder().tier(newTier).build();
+            TierDto tierDto = TierDto.builder()
+                    .tier(newTier)
+                    .build();
+            customerService.updateCustomerTier(userId, tierDto);
+            return tierDto;
         } catch (Exception e) {
-            throw new UnexpectedException("Error updating customer tier for userId: " + userId, e);
+            throw new DatabaseException("Error updating customer tier for userId: " + userId, e);
         }
     }
 
@@ -74,10 +68,10 @@ public class HistoryServiceImpl implements HistoryService {
      * <p>
      * Determines the tier of the customer based on the number of rides they have taken.
      * </p>
-     *
-     * @param rideCount The number of rides of customer has taken.
+     * @param rideCount
+     *        The number of rides of customer has taken.
      * @return String
-     * The tier of the customer.
+     *         The tier of the customer.
      */
     private String determineTier(int rideCount) {
         if (rideCount > 50) {

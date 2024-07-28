@@ -11,9 +11,9 @@ import java.util.Date;
 import java.util.UUID;
 
 @Builder
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "history")
 public class History {
@@ -21,10 +21,10 @@ public class History {
     private String id;
     @Column(name = "date", nullable = false)
     private LocalDate date;
-    @Column(name = "pickup", nullable = false, columnDefinition = "VARCHAR(20)")
-    private String pickup;
-    @Column(name = "drop", nullable = false, columnDefinition = "VARCHAR(20)")
-    private String drop;
+    @Column(name = "pickup_point", nullable = false, columnDefinition = "VARCHAR(20)")
+    private String pickupPoint;
+    @Column(name = "drop_point", nullable = false, columnDefinition = "VARCHAR(20)")
+    private String dropPoint;
     @Column(name = "start_time")
     private Date startTime;
     @Column(name = "end_time")

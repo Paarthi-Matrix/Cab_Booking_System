@@ -7,8 +7,8 @@ public class HistoryMapper {
 
     public RideHistoryResponseDto entityToDto(History history){
         return RideHistoryResponseDto.builder().date(history.getDate())
-                .pickup(history.getPickup())
-                .drop(history.getDrop())
+                .pickup(history.getPickupPoint())
+                .drop(history.getDropPoint())
                 .startTime(history.getStartTime())
                 .endTime(history.getEndTime())
                 .distance(history.getDistance())

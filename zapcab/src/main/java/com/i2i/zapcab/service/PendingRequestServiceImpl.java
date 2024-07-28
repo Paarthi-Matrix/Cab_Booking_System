@@ -1,7 +1,6 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.model.PendingRequest;
 import com.i2i.zapcab.repository.PendingRequestRepository;
 import java.util.Optional;
@@ -37,7 +36,7 @@ public class PendingRequestServiceImpl implements PendingRequestService {
             String errorMessage = "Un expected error happened while updating " +
                     pendingRequest.getName() +
                     " to the pending requests";
-            throw new UnexpectedException(errorMessage, e);
+            throw new DatabaseException(errorMessage, e);
         }
     }
     @Transactional(readOnly = true)
@@ -50,7 +49,7 @@ public class PendingRequestServiceImpl implements PendingRequestService {
             return pendingRequestRepository.findAll(pageable);
         } catch (Exception e) {
             logger.error("Error occurred while fetching the request for the page {} ", page);
-            throw new UnexpectedException("Unable to retrieve the pending request in a page : "+page, e);
+            throw new DatabaseException("Unable to retrieve the pending request in a page : "+page, e);
         }
     }
     @Override
@@ -60,7 +59,7 @@ public class PendingRequestServiceImpl implements PendingRequestService {
             return pendingRequestRepository.findByMobileNumber(mobileNumber);
         } catch (Exception e) {
             logger.error("Unable to get the request for the given mobile number {}", mobileNumber, e);
-            throw new UnexpectedException("Un excepted error arise while finding the request ", e);
+            throw new DatabaseException("Un excepted error arise while finding the request ", e);
         }
     }
 }

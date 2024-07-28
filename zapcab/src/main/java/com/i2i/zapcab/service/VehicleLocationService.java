@@ -1,6 +1,6 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.model.Vehicle;
 import com.i2i.zapcab.model.VehicleLocation;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public interface VehicleLocationService {
      *
      * @param location The location to search for vehicles.
      * @return A list of VehicleLocation objects found at the specified location.
-     * @throws UnexpectedException if an error occurs while fetching the vehicle locations.
+     * @throws DatabaseException if an error occurs while fetching the vehicle locations.
      */
     List<VehicleLocation> getVehiclesByLocation(String location);
 

@@ -19,5 +19,5 @@ public interface ScheduledTaskService {
      * </p>
      * @return the most recently fetched petrol price
      */
-    public double getLatestPetrolPrice();
+     double getLatestPetrolPrice();
 }

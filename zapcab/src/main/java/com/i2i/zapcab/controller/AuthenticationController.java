@@ -1,7 +1,7 @@
 package com.i2i.zapcab.controller;
 
 import com.i2i.zapcab.dto.RegisterCustomerDto;
-import com.i2i.zapcab.exception.UnexpectedException;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.service.AuthenticationServiceImpl;
 import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.AuthenticationRequestDto;
@@ -58,7 +58,7 @@ public class AuthenticationController {
         AuthenticationResponseDto authenticationResponseDto = null;
         try {
             authenticationResponseDto = authenticationService.customerRegister(registerCustomerDto);
-        } catch (UnexpectedException e) {
+        } catch (DatabaseException e) {
             return ApiResponseDto.statusInternalServerError(authenticationResponseDto,e);
         }
         logger.info("Customer successfully created!.");
@@ -80,7 +80,7 @@ public class AuthenticationController {
         DriverRegisterResponseDto driverRegisterResponseDto = null;
        try {
            driverRegisterResponseDto = authenticationService.driverRegisterRequest(registerDriverRequestDto);
-       } catch (UnexpectedException e) {
+       } catch (DatabaseException e) {
            return ApiResponseDto.statusInternalServerError(driverRegisterResponseDto, e);
        }
        logger.info("Driver successfully added to pending request!.");

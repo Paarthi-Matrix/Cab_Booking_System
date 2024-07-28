@@ -17,8 +17,8 @@ import com.i2i.zapcab.dto.RequestedRideDto;
 import com.i2i.zapcab.dto.RideDetailsDto;
 import com.i2i.zapcab.dto.StatusDto;
 import com.i2i.zapcab.dto.UpdateDriverStatusDto;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.exception.NotFoundException;
-import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.helper.OTPService;
 import com.i2i.zapcab.helper.RideRequestStatusEnum;
 import com.i2i.zapcab.model.Driver;
@@ -66,7 +66,7 @@ public class DriverServiceImpl implements DriverService {
             return driverRepository.save(driver);
         } catch (Exception e) {
             logger.error("Unable to save the driver {}", driver.getUser().getName());
-            throw new UnexpectedException("Error occurred while saving the driver "+ driver.getUser().getName(), e);
+            throw new DatabaseException("Error occurred while saving the driver "+ driver.getUser().getName(), e);
         }
     }
 
@@ -106,7 +106,7 @@ public class DriverServiceImpl implements DriverService {
             Driver updatedDriver = driverRepository.save(driver);
             return !ObjectUtils.isEmpty(updatedDriver);
         } catch (Exception e) {
-            throw new UnexpectedException("Error Occurred while updating driver rating with its id :" + id, e);
+            throw new DatabaseException("Error Occurred while updating driver rating with its id :" + id, e);
         }
     }
     @Override
@@ -134,7 +134,7 @@ public class DriverServiceImpl implements DriverService {
         } catch (Exception e) {
             logger.error(" Error occurred while getting the list of requests for the category {} and location {}",
                     getRideRequestListsDto.getCategory(),getRideRequestListsDto.getLocation());
-            throw new UnexpectedException("Unable to get the ride requests", e);
+            throw new DatabaseException("Unable to get the ride requests", e);
         }
     }
 
@@ -166,10 +166,10 @@ public class DriverServiceImpl implements DriverService {
             return rideDetailsDto;
         } catch (IllegalArgumentException | NotFoundException e) {
             logger.error("Validation error: {}", e.getMessage());
-            throw new UnexpectedException("Error occurred while validating the details", e);
+            throw new DatabaseException("Error occurred while validating the details", e);
         } catch (Exception e) {
             logger.error("Error occurred while retrieving the ride details of the customer: {}", selectedRideDto.getCustomerName(), e);
-            throw new UnexpectedException("Unable to fetch the ride details", e);
+            throw new DatabaseException("Unable to fetch the ride details", e);
         }
     }
 
@@ -180,7 +180,7 @@ public class DriverServiceImpl implements DriverService {
             return driverRepository.findDriverByMobileNumber(mobileNumber);
         } catch (Exception e) {
             logger.error("Unable to get the driver details");
-            throw new UnexpectedException("Error occurred while retrieving the driver detail", e);
+            throw new DatabaseException("Error occurred while retrieving the driver detail", e);
         }
     }
 
@@ -194,7 +194,7 @@ public class DriverServiceImpl implements DriverService {
             return response;
         } catch (Exception e) {
             logger.error("Unable to mask the mobile number for user ID: {}", id, e);
-            throw new UnexpectedException("Unable to mask the mobile number for the user: " + id, e);
+            throw new DatabaseException("Unable to mask the mobile number for the user: " + id, e);
         }
     }
 
@@ -211,7 +211,7 @@ public class DriverServiceImpl implements DriverService {
             return isValid;
         } catch (Exception e) {
             logger.error("Error occurred during OTP validation for mobile number: {}", otpRequestDto.getCustomerMobileNumber(), e);
-            throw new UnexpectedException("Unable to verify the given otp", e);
+            throw new DatabaseException("Unable to verify the given otp", e);
         }
     }
 
@@ -246,7 +246,23 @@ public class DriverServiceImpl implements DriverService {
             }
         } catch (Exception e) {
             logger.error("Unable to update the wallet for the driver: {}", id, e);
-            throw new UnexpectedException("Unable to update the wallet for the driver: " + id, e);
+            throw new DatabaseException("Unable to update the wallet for the driver: " + id, e);
+        }
+    }
+
+    @Override
+    public String retrieveDriverIdByUserId(String userId) {
+        try {
+            Driver driver = driverRepository.findByUserId(userId);
+            if (null == driver) {
+                logger.warn("Driver not found for user ID: {}", userId);
+                throw new NotFoundException("Driver not found for user ID: " + userId);
+            }
+            logger.info("Successfully retrieved driver ID for user ID: {}", userId);
+            return driver.getId();
+        } catch (Exception e) {
+            logger.error("Failed to retrieve the driver ID for user ID: {}", userId, e);
+            throw new DatabaseException("Failed to retrieve the driver ID for user ID: " + userId, e);
         }
     }
 }

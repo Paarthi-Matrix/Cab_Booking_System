@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateResponseDto {
+public class UpdateRideResponseDto {
     private String pickupPoint;
     private String dropPoint;
     private String vehicleCategory;
