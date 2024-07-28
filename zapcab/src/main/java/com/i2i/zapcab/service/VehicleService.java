@@ -8,12 +8,14 @@ import java.util.List;
 
 /**
  * <p>
- *     An interface provides services to the vehicle
+ * An interface provides services to the vehicle
  * </p>
  */
 @Component
 public interface VehicleService {
     void saveVehicle(Vehicle vehicle);
+
     void updateVehicleStatus(String status, Vehicle vehicle);
+
     void updateVehicleLocation(String Location, Vehicle vehicle);
 }

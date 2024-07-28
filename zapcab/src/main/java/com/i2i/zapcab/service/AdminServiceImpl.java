@@ -49,8 +49,6 @@ public class AdminServiceImpl implements AdminService {
     PendingRequestMapper pendingRequestMapper = new PendingRequestMapper();
 
     @Autowired
-    private AuthenticationService authenticationService;
-    @Autowired
     private PendingRequestService pendingRequestService;
     @Autowired
     private DriverService driverService;
@@ -60,8 +58,6 @@ public class AdminServiceImpl implements AdminService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtService jwtService;
-    @Autowired
-    VehicleLocationService vehicleLocationService;
     @Autowired
     EmailSenderService emailSenderService;
 

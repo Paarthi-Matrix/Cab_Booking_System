@@ -16,15 +16,18 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 /**
- * Entity for registering the user as a driver.
- * This dto has the following fields :
- *    Name : Must have only Alphabets
- *    email : A valid user's email which must have @ and .com
- *    mobile number : A valid 10 digit mobile number
- *    Region and city of the user
- *    Valid license number and rc book
- *    Vehicle category and type that the user holds
- */
+ * <p>
+ * The {@code PendingRequest} class represents a pending request entity with various attributes
+ * such as name, email, license number, region, city, RC book number, date of birth, mobile number,
+ * gender, status, remarks, category, type, model, and license plate.
+ * </p>
+ *
+ * <p>
+ * This class extends {@code Auditable}, which means it inherits auditing fields
+ * like createdDate and lastModifiedDate.
+ * </p>
+ * @see Auditable
+ * */
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

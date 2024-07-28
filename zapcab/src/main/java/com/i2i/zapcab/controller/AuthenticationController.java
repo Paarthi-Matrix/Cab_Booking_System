@@ -1,25 +1,21 @@
 package com.i2i.zapcab.controller;
 
+import com.i2i.zapcab.dto.RegisterCustomerDto;
 import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.service.AuthenticationServiceImpl;
 import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.AuthenticationRequestDto;
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.DriverRegisterResponseDto;
-import com.i2i.zapcab.dto.RegisterCustomerRequestDto;
 import com.i2i.zapcab.dto.RegisterDriverRequestDto;
-import com.i2i.zapcab.dto.RegisterUserRequestDto;
 import com.i2i.zapcab.exception.AuthenticationException;
 import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.service.AuthenticationService;
-import com.i2i.zapcab.service.CustomerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,7 +46,7 @@ public class AuthenticationController {
      * <p>
      *     This method is responsible for registering customer (Customer Sign up).
      * </p>
-     * @param registerCustomerRequestDto {@link RegisterCustomerRequestDto}
+     * @param registerCustomerDto {@link RegisterCustomerDto}
      *        The request body must contain all the fields of RegisterCustomerRequestDto.
      *
      * @return ApiResponseDto<AuthenticationResponse> {@link ApiResponseDto}
@@ -58,10 +54,10 @@ public class AuthenticationController {
      *         Else returns 500 INTERNAL_SERVER_ERROR.
      */
     @PostMapping("/customers/register")
-    public ApiResponseDto<AuthenticationResponseDto> registerCustomer(@RequestBody RegisterCustomerRequestDto registerCustomerRequestDto) {
+    public ApiResponseDto<AuthenticationResponseDto> registerCustomer(@Valid @RequestBody RegisterCustomerDto registerCustomerDto) {
         AuthenticationResponseDto authenticationResponseDto = null;
         try {
-            authenticationResponseDto = authenticationService.customerRegister(registerCustomerRequestDto);
+            authenticationResponseDto = authenticationService.customerRegister(registerCustomerDto);
         } catch (UnexpectedException e) {
             return ApiResponseDto.statusInternalServerError(authenticationResponseDto,e);
         }
@@ -73,14 +69,14 @@ public class AuthenticationController {
      * <p>
      *     This method is responsible for registering driver.
      * </p>
-     * @param  RegisterDriverDto {@link DriverRegisterResponseDto}
+     * @param  registerDriverRequestDto {@link DriverRegisterResponseDto}
      *         The request body must contain all the fields of the RegisterDriverDto.
      * @return ApiResponseDto<DriverRegisterRequestResponseDto> {@link ApiResponseDto}
      *         Returns the JWT Token with 201 CREATED upon successful registration .
      *        Else returns 500 INTERNAL_SERVER_ERROR.
      */
     @PostMapping("/drivers/register")
-    public ApiResponseDto<DriverRegisterResponseDto> registerDriver(@RequestBody RegisterDriverRequestDto registerDriverRequestDto){
+    public ApiResponseDto<DriverRegisterResponseDto> registerDriver(@Valid @RequestBody RegisterDriverRequestDto registerDriverRequestDto){
         DriverRegisterResponseDto driverRegisterResponseDto = null;
        try {
            driverRegisterResponseDto = authenticationService.driverRegisterRequest(registerDriverRequestDto);
@@ -107,12 +103,12 @@ public class AuthenticationController {
      *
      */
     @PostMapping
-    public ApiResponseDto<AuthenticationResponseDto> authentication(@RequestBody AuthenticationRequestDto authenticationRequsetDto) {
+    public ApiResponseDto<AuthenticationResponseDto> authentication(@Valid @RequestBody AuthenticationRequestDto authenticationRequsetDto) {
         AuthenticationResponseDto authenticationResponse = null;
         try {
             authenticationResponse = authenticationService.authenticate(authenticationRequsetDto);
         } catch (NotFoundException e) {
-            logger.debug("No user with mobileNumber " + authenticationRequsetDto.getPhoneNumber() +
+            logger.debug("No user with mobileNumber " + authenticationRequsetDto.getMobileNumber() +
                     " is found in database");
             authenticationResponse = AuthenticationResponseDto.builder().token("").build();
             return ApiResponseDto.statusNoContent(authenticationResponse);

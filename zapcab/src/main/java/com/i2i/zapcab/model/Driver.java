@@ -16,6 +16,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * <p>
+ * This class represents a driver entity with various attributes
+ * such as region, number of cancellations, license number, RC book number, status,
+ * ratings, and wallet balance. Each driver is associated with a user and a vehicle.
+ * </p>
+ *
+ * <p>
+ * This class extends {@code Auditable}, which means it inherits auditing fields
+ * like createdDate and lastModifiedDate.
+ * </p>
+ *  @see Auditable
+ *  @see User
+ *  @see Vehicle
+ */
 @Builder
 @Entity
 @NoArgsConstructor

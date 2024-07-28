@@ -1,6 +1,9 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.dto.*;
+import com.i2i.zapcab.dto.OTPResponseDto;
+import com.i2i.zapcab.dto.PaymentModeDto;
+import com.i2i.zapcab.dto.RideInvoiceDto;
+import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.model.RideRequest;
@@ -16,10 +19,11 @@ import com.i2i.zapcab.dto.StatusDto;
  */
 @Component
 public interface RideService {
+
     /**
-     *
-     * @param rideRequest
-     * @param driver
+     * This method is used to save the ride details that are requested by customer
+     * @param rideRequest {@link RideRequest}
+     * @param driver {@link Driver}
      */
     void saveRide(RideRequest rideRequest, Driver driver);
 

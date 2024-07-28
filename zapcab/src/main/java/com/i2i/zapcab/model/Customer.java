@@ -4,7 +4,20 @@ import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.*;
 
-@Data
+/**
+ * <p>
+ * This class represents a customer entity with a unique identifier,
+ * tier information, and an associated user.
+ * </p>
+ *
+ * <p>
+ * This class extends {@code Auditable}, which means it inherits auditing fields
+ * like createdDate and lastModifiedDate.
+ * </p>
+ *  @see Auditable
+ *  @see User
+ */
+ @Data
 @Builder
 @Entity
 @NoArgsConstructor

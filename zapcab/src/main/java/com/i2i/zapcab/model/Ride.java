@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import java.util.UUID;
 import lombok.Builder;
@@ -19,7 +20,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.Set;
 
 @Builder
 @Data
@@ -37,7 +37,7 @@ public class Ride extends Auditable {
     @Column(name = "fare", nullable = false)
     private double fare;
     @Column(name = "start_time")
-    private Date startTime;
+    private LocalDateTime startTime;
     @Column(name = "end_time")
     private Date endTime;
     @Column(name = "ride_rating")
@@ -60,5 +60,7 @@ public class Ride extends Auditable {
         if (this.id == null) {
             this.id = UUID.randomUUID().toString();
         }
+
     }
+
 }

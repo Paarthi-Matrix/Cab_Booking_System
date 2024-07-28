@@ -1,7 +1,7 @@
 package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.EmailRequestDto;
-import com.i2i.zapcab.dto.RegisterCustomerRequestDto;
+import com.i2i.zapcab.dto.RegisterCustomerDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,19 +67,19 @@ public class EmailSenderServiceImpl implements EmailSenderService {
      * <p>
      * Sends a welcome email to a newly registered customer with their login details.
      * </p>
-     * @param registerRequestDto {@link RegisterCustomerRequestDto}
+     * @param registerCustomerDto {@link RegisterCustomerDto}
      *       Contains the customer registration details such as name, email, and phone number.
      */
-    public void sendRegistrationMailtoCustomer(RegisterCustomerRequestDto registerRequestDto) {
+    public void sendRegistrationMailtoCustomer(RegisterCustomerDto registerCustomerDto) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
-        message.setTo(registerRequestDto.getEmail());
-        message.setText(" Dear "+ registerRequestDto.getName() +",\n" +
+        message.setTo(registerCustomerDto.getEmail());
+        message.setText(" Dear "+ registerCustomerDto.getName() +",\n" +
                 "\n" +
                 "Welcome to ZapCab! We are thrilled to have you join our community. Your account has been successfully created, and you are now ready to book your rides with ease.\n" +
                 "\n" +
                 "Here are your login details:\n" +
-                "Username(your mobile number): "+ registerRequestDto.getPhoneNumber() + " \n" +
+                "Username(your mobile number): "+ registerCustomerDto.getMobileNumber() + " \n" +
                 "\n" +
                 "To get started, please log in to your account at " + APP_DOMAIN_NAME + " \n" +
                 "\n" +
@@ -104,7 +104,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
                 "Note: This is an automated message. Please do not reply to this email.");
         message.setSubject(EMAIL_SUBJECT_FOR_DRIVER);
         mailSender.send(message);
-        logger.info("The welcome mail is sent to customer" + registerRequestDto.getName() +
+        logger.info("The welcome mail is sent to customer" + registerCustomerDto.getName() +
                 " successfully!");
     }
 }

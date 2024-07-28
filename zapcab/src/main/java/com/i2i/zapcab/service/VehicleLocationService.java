@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * <p>
- *     An interface that performs operations related to the location of the vehicle.
+ * An interface that performs operations related to the location of the vehicle.
  * </p>
  */
 @Component
@@ -24,7 +24,10 @@ public interface VehicleLocationService {
      * @throws UnexpectedException if an error occurs while fetching the vehicle locations.
      */
     List<VehicleLocation> getVehiclesByLocation(String location);
+
     void saveVehicleLocation(VehicleLocation vehicleLocation);
+
     VehicleLocation getVehicleLocationById(int id);
+
     void updateVehicleLocationByVehicleId(String location, Vehicle vehicle);
 }

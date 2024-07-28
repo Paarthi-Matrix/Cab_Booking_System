@@ -1,11 +1,13 @@
 package com.i2i.zapcab.dto;
 
+import com.i2i.zapcab.helper.RoleEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 
@@ -84,5 +86,7 @@ public class RegisterCustomerDto {
     @NotNull(message = DOB_NOT_NULL)
     @Past(message = DOB_PAST_MESSAGE)
     private LocalDate dateOfBirth;
+
+    private List<RoleEnum> role;
 }
 

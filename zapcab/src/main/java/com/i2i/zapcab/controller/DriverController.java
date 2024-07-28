@@ -4,19 +4,16 @@ import java.util.List;
 
 import com.i2i.zapcab.dto.PaymentModeDto;
 import com.i2i.zapcab.exception.UnexpectedException;
-import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
 import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
 import com.i2i.zapcab.dto.OTPResponseDto;
 import com.i2i.zapcab.dto.OtpRequestDto;
-import java.util.List;
 
 import com.i2i.zapcab.service.AuthenticationServiceImpl;
 import com.i2i.zapcab.service.RideService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.ChangePasswordRequestDto;
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
@@ -35,7 +31,6 @@ import com.i2i.zapcab.dto.RequestedRideDto;
 import com.i2i.zapcab.dto.RideDetailsDto;
 import com.i2i.zapcab.dto.UpdateDriverStatusDto;
 import com.i2i.zapcab.exception.NotFoundException;
-import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.helper.JwtDecoder;
 import com.i2i.zapcab.service.DriverService;
 

@@ -22,5 +22,15 @@ public interface UserService {
 
     void changePassword(String id, String newPassword);
 
+    /**
+     * <p>
+     *     Masks the user's mobile number according to their wish
+     * </p>
+     * @param id
+     *      User's unique id
+     * @param mask
+     * @return MaskMobileNumberResponseDto
+     *      A successful message if the mobile number is masked otherwise
+     */
     MaskMobileNumberResponseDto updateMaskMobileNumber(String id, boolean mask);
 }

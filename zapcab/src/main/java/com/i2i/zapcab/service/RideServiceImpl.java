@@ -1,5 +1,6 @@
 package com.i2i.zapcab.service;
 
+import static com.i2i.zapcab.common.ZapCabConstant.ASSIGNED;
 import com.i2i.zapcab.dto.PaymentModeDto;
 import com.i2i.zapcab.dto.RideInvoiceDto;
 import com.i2i.zapcab.dto.RideRatingDto;
@@ -14,6 +15,9 @@ import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.repository.RideRepository;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +44,7 @@ public class RideServiceImpl implements RideService{
         try {
             logger.info("Saving the request {} to the ride table....",rideRequest.getPickupPoint());
             Ride ride = rideMapper.rideRequestToRide(rideRequest, driver);
+            ride.setStartTime(LocalDateTime.now());
             rideRepository.save(ride);
             logger.info("Successfully ride has been saved {}",rideRequest.getPickupPoint());
         } catch(Exception e) {

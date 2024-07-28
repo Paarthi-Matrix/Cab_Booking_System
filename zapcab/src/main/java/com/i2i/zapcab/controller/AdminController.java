@@ -1,5 +1,6 @@
 package com.i2i.zapcab.controller;
 
+import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +44,7 @@ public class AdminController {
     @GetMapping
     public ApiResponseDto<Page<FetchAllPendingRequestsDto>> fetchAllPendingRequests(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+            @RequestParam(defaultValue = "10") int size) {
         logger.debug("Entering into the method to fetch all the requests..");
         Page<FetchAllPendingRequestsDto> fetchAllPendingRequestsDto = adminService.getAllPendingRequest(page, size);
         try {
@@ -52,7 +52,7 @@ public class AdminController {
             return ApiResponseDto.statusOk(fetchAllPendingRequestsDto);
         } catch (UnexpectedException e) {
             logger.error("Error occurred while fetching the pending requests ");
-            return ApiResponseDto.statusInternalServerError(fetchAllPendingRequestsDto,e);
+            return ApiResponseDto.statusInternalServerError(fetchAllPendingRequestsDto, e);
         }
     }
 
@@ -69,7 +69,7 @@ public class AdminController {
      * @return
      */
     @PutMapping
-    public ApiResponseDto<AuthenticationResponseDto> updatePendingRequest(@RequestBody UpdatePendingRequestDto
+    public ApiResponseDto<AuthenticationResponseDto> updatePendingRequest(@Valid @RequestBody UpdatePendingRequestDto
                                                                                       updatePendingRequestDto) {
         logger.debug("Entering into the method to update the particular request...");
         AuthenticationResponseDto authenticationResponse = null;

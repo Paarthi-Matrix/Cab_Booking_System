@@ -21,7 +21,6 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
     private final FuelPriceService fuelPriceService;
     private double latestPetrolPrice;
 
-    @Autowired
     public ScheduledTaskServiceImpl(FuelPriceService fuelPriceService) {
         this.fuelPriceService = fuelPriceService;
     }

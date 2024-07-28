@@ -3,6 +3,7 @@ package com.i2i.zapcab.service;
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
 import com.i2i.zapcab.dto.UpdatePendingRequestDto;
+import com.i2i.zapcab.exception.AuthenticationException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,9 @@ public interface AdminService {
      * @param page Page number to be fetched
      * @param size No of rows to be fetched
      * @return List
-     * holds all the requests
+     *        holds all the requests
+     * @throws AuthenticationException
+     *       throws whenever authentication get failed
      */
     Page<FetchAllPendingRequestsDto> getAllPendingRequest(int page, int size);
 
@@ -37,6 +40,8 @@ public interface AdminService {
      *
      * @param updatePendingRequestDto {@link UpdatePendingRequestDto}
      * @return AuthenticationResponse {@link AuthenticationResponseDto}
+     * @throws AuthenticationException
+     *          Whenever updating get failed
      */
     public AuthenticationResponseDto updatePendingRequest(UpdatePendingRequestDto updatePendingRequestDto);
 }

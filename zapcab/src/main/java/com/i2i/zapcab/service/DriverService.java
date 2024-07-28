@@ -1,7 +1,16 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.dto.*;
+import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
+import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
+import com.i2i.zapcab.dto.OtpRequestDto;
+import com.i2i.zapcab.dto.ChangePasswordRequestDto;
+import com.i2i.zapcab.dto.UpdateDriverStatusDto;
+import com.i2i.zapcab.dto.DriverSelectedRideDto;
+import com.i2i.zapcab.dto.GetRideRequestListsDto;
+import com.i2i.zapcab.dto.RequestedRideDto;
+import com.i2i.zapcab.dto.RideDetailsDto;
 
+import com.i2i.zapcab.exception.UnexpectedException;
 import com.i2i.zapcab.model.Driver;
 import java.util.List;
 import org.springframework.stereotype.Component;
@@ -36,7 +45,7 @@ public interface DriverService {
      *     </ol>
      * </p>
      *
-     * @param getRideRequestListsDto
+     * @param getRideRequestListsDto {@link GetRideRequestListsDto}
      * @return List<RequestedRideDto>
      * Returns the list of rides to the driver
      */
@@ -50,8 +59,9 @@ public interface DriverService {
      *
      * @param selectedRideDto {@link DriverSelectedRideDto}
      * @return RideDetailsDto Holds the ride details
+     * {@link RideDetailsDto}
      */
-    RideDetailsDto getRideDetails(DriverSelectedRideDto selectedRideDto);
+    public RideDetailsDto getRideDetails(DriverSelectedRideDto selectedRideDto);
 
     /**
      * <p>
@@ -87,7 +97,10 @@ public interface DriverService {
      * @param id
      *      User's unique id
      * @param maskMobileNumberRequestDto {@link MaskMobileNumberResponseDto}
-     * @return
+     * @return MaskMobileNumberResponseDto
+     *      A message to the user
+     * @throws UnexpectedException
+     *      Occurs whenever if the number is not masked
      */
     MaskMobileNumberResponseDto updateMaskMobileNumber(String id, MaskMobileNumberRequestDto maskMobileNumberRequestDto);
 
@@ -101,7 +114,19 @@ public interface DriverService {
      */
     public Boolean otpValidation(OtpRequestDto otpRequestDto);
     /**
-     *
+     *<p>
+     *     Updates the driver's wallet according to the following criteria
+     *     <ul>
+     *         <li> Payment Mode -  If it is cash payment, the 20% amount will be reduced from the wallet</li>
+     *         <li> If the wallet is 0 or less, the driver has to recharge</li>
+     *     </ul>
+     *</p>
+     * @param id
+     *      User's unique id
+     * @param paymentMode
+     *      Specifies the mode of the payment that customer does
+     * @param fare
+     *      Specifies the amount of that particular ride
      */
     void updateDriverWallet(String id, String paymentMode, String rideStatus, int fare);
 }

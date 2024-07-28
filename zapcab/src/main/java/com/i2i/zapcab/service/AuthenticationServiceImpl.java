@@ -1,5 +1,7 @@
 package com.i2i.zapcab.service;
 
+import com.i2i.zapcab.dto.RegisterCustomerDto;
+import com.i2i.zapcab.exception.UnexpectedException;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -16,7 +18,6 @@ import com.i2i.zapcab.config.JwtService;
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.AuthenticationRequestDto;
 import com.i2i.zapcab.dto.DriverRegisterResponseDto;
-import com.i2i.zapcab.dto.RegisterCustomerRequestDto;
 import com.i2i.zapcab.dto.RegisterDriverRequestDto;
 import com.i2i.zapcab.exception.AuthenticationException;
 import com.i2i.zapcab.exception.NotFoundException;
@@ -80,24 +81,24 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
      *     Also Refer {@link com.i2i.zapcab.common.ZapCabConstant}
      * </p>
      *
-     * @param registerRequestDto {@link RegisterDriverRequestDto}
+     * @param registerCustomerDto {@link RegisterDriverRequestDto}
      *
-     * @throws com.i2i.zapcab.exception.UnexpectedException
+     * @throws UnexpectedException
      *         Arises while saving/updating the entity to the database.
      * @return AuthenticationResponseDto
      *         Contains JWT token upon successfull registration.
      */
     @Override
     @Transactional
-    public AuthenticationResponseDto customerRegister(RegisterCustomerRequestDto registerRequestDto) {
-        List<Role> roles = roleService.getByRoleType(registerRequestDto.getRole());
+    public AuthenticationResponseDto customerRegister(RegisterCustomerDto registerCustomerDto) {
+        List<Role> roles = roleService.getByRoleType(registerCustomerDto.getRole());
         User user = User.builder()
-                .name(registerRequestDto.getName())
-                .dateOfBirth(registerRequestDto.getDateOfBirth())
-                .email(registerRequestDto.getEmail())
-                .gender(registerRequestDto.getGender())
-                .mobileNumber(registerRequestDto.getPhoneNumber())
-                .password(passwordEncoder.encode(registerRequestDto.getPassword()))
+                .name(registerCustomerDto.getName())
+                .dateOfBirth(registerCustomerDto.getDateOfBirth())
+                .email(registerCustomerDto.getEmail())
+                .gender(registerCustomerDto.getGender())
+                .mobileNumber(registerCustomerDto.getMobileNumber())
+                .password(passwordEncoder.encode(registerCustomerDto.getPassword()))
                 .role(roles)
                 .build();
         Customer customer = Customer.builder()
@@ -106,8 +107,8 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
                 .build();
         userService.saveUsers(user);
         customerService.saveCustomer(customer);
-        emailSenderService.sendRegistrationMailtoCustomer(registerRequestDto);
-        logger.info("Customer " + registerRequestDto.getName() + " registered successfully!");
+        emailSenderService.sendRegistrationMailtoCustomer(registerCustomerDto);
+        logger.info("Customer " + registerCustomerDto.getName() + " registered successfully!");
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponseDto.builder()
                 .token(jwtToken).build();
@@ -125,15 +126,15 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
      */
     @Override
     public AuthenticationResponseDto authenticate(AuthenticationRequestDto authenticationRequestDto) {
-        User user = userService.getUserByMobileNumber(authenticationRequestDto.getPhoneNumber());
+        User user = userService.getUserByMobileNumber(authenticationRequestDto.getMobileNumber());
         if (ObjectUtils.isEmpty(user)) {
             logger.info("No user with given mobile number is found in the database.");
             throw new NotFoundException("No user with phone number " +
-                    authenticationRequestDto.getPhoneNumber() + " found in database!");
+                    authenticationRequestDto.getMobileNumber() + " found in database!");
         }
         try {
             logger.debug("Authenticating phone number: " +
-                    authenticationRequestDto.getPhoneNumber() + " with password.");
+                    authenticationRequestDto.getMobileNumber() + " with password.");
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             user.getId(),
