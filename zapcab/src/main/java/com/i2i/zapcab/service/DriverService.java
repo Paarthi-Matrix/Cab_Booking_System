@@ -60,7 +60,7 @@ public interface DriverService {
      * @return RideDetailsDto Holds the ride details
      * {@link RideDetailsDto}
      */
-    public RideDetailsDto getRideDetails(DriverSelectedRideDto selectedRideDto);
+    public RideDetailsDto acceptRide(DriverSelectedRideDto selectedRideDto, String id);
 
     /**
      * <p>
@@ -111,7 +111,7 @@ public interface DriverService {
      * @return Boolean
      *       Returns true if the otp is correct otherwise return false.
      */
-    public Boolean otpValidation(OtpRequestDto otpRequestDto);
+    public Boolean otpValidation(OtpRequestDto otpRequestDto, String id);
     /**
      *<p>
      *     Updates the driver's wallet according to the following criteria

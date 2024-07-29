@@ -15,7 +15,7 @@ import static com.i2i.zapcab.common.ZapCabConstant.FIND_BY_CUSTOMER_NAME_AND_RID
 public interface RideRequestRepository extends JpaRepository<RideRequest, String> {
 
     @Query(FIND_BY_CUSTOMER_NAME_AND_RIDE_ID)
-    RideRequest findByCustomerNameAndRideID(@Param("customerName") String customerName, @Param("rideID") int rideID);
+    RideRequest findByCustomerNameAndRideID(@Param("customerName") String customerName, @Param("rideID") String rideID);
 
     @Query(FIND_BY_CUSTOMER_ID)
     Optional<RideRequest> findByCustomerId(@Param("customerId") String id);

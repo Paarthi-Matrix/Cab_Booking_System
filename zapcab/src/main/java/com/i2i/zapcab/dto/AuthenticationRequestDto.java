@@ -36,7 +36,5 @@ public class AuthenticationRequestDto {
     @Pattern(regexp = MOBILE_NUMBER_REGEX, message = MOBILE_NUMBER_PATTERN_MESSAGE)
     private String mobileNumber;
     @NotBlank(message = PASSWORD_NOT_BLANK)
-    @Size(min = 6, message = PASSWORD_SIZE)
-    @Pattern(regexp = PASSWORD_REGEX, message = PASSWORD_PATTERN_MESSAGE)
     private String password;
 }

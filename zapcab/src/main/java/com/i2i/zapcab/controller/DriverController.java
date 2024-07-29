@@ -94,7 +94,7 @@ public class DriverController {
      * @return ApiResponseDto<List<RequestedRideDto> {@link RequestedRideDto}
      */
    @GetMapping("/me/requests")
-    public ApiResponseDto<List<RequestedRideDto>> getAvailableDrivers(@RequestBody GetRideRequestListsDto getRideRequestListsDto) {
+    public ApiResponseDto<List<RequestedRideDto>> getAvailableRideRequest(@RequestBody GetRideRequestListsDto getRideRequestListsDto) {
        List<RequestedRideDto> requestedRideDtos = null;
        try {
            requestedRideDtos = driverService.getRideRequests(getRideRequestListsDto);
@@ -102,7 +102,7 @@ public class DriverController {
        } catch (NotFoundException e) {
            return ApiResponseDto.statusNotFound(requestedRideDtos, e);
        }
-   } //todo method name
+   }
 
     /**
      * <p>
@@ -130,12 +130,13 @@ public class DriverController {
      * @return RideDetailsDto
      *          Holds the customer requested ride data {@link RideDetailsDto}
      */
-    @PostMapping("/me/accept/request")
-    public ApiResponseDto<RideDetailsDto> getRideDetails(@RequestBody DriverSelectedRideDto selectedRideDto) { //todo method name -> acceptRide
+    @PostMapping("/me")
+    public ApiResponseDto<RideDetailsDto> acceptRide(@RequestBody DriverSelectedRideDto selectedRideDto) {
         RideDetailsDto rideDetailsDto = null;
         try {
+            String userId = JwtDecoder.extractUserIdFromToken();
             logger.info("Received request to get ride details for: {}", selectedRideDto);
-            rideDetailsDto = driverService.getRideDetails(selectedRideDto);
+            rideDetailsDto = driverService.acceptRide(selectedRideDto, userId);
             logger.info("Successfully retrieved ride details: {}", rideDetailsDto);
             return ApiResponseDto.statusOk(rideDetailsDto);
         } catch (DatabaseException e) {
@@ -144,7 +145,7 @@ public class DriverController {
         }
     }
 
-    @PatchMapping("/me/mask/mobilenumber")
+    @PatchMapping("/me/mask")
     public ApiResponseDto<MaskMobileNumberResponseDto> maskMobileNumber(@RequestBody MaskMobileNumberRequestDto maskMobileNumberRequestDto) {
         MaskMobileNumberResponseDto maskMobileNumberResponseDto = null;
         try {
@@ -165,9 +166,10 @@ public class DriverController {
      */
     @PostMapping("/me/otp")
     ApiResponseDto<OTPResponseDto> otpValidation(@RequestBody OtpRequestDto otpRequestDto) {
+        String id =JwtDecoder.extractUserIdFromToken();
         OTPResponseDto otpResponseDto = null;
         try {
-           if(driverService.otpValidation(otpRequestDto)) {
+           if(driverService.otpValidation(otpRequestDto,id)) {
                otpResponseDto = OTPResponseDto.builder().msg("Otp validated successfully ! Your ride has been started").build();
                return ApiResponseDto.statusOk(otpResponseDto);
            } else {

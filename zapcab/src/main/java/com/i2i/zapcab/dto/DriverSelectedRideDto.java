@@ -25,6 +25,6 @@ import lombok.Synchronized;
 @Setter
 public class DriverSelectedRideDto {
     private String mobileNumber;
-    private int rideId;
+    private String rideId;
     private String customerName;
 }

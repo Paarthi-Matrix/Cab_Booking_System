@@ -114,6 +114,3 @@ public class FareCalculator {
     }
 }
 
-//TO DO
-//history table
-

@@ -11,9 +11,9 @@ import java.util.Date;
 import java.util.UUID;
 
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "history")
 public class History {

@@ -139,7 +139,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public synchronized RideDetailsDto getRideDetails(DriverSelectedRideDto selectedRideDto) {
+    public synchronized RideDetailsDto acceptRide(DriverSelectedRideDto selectedRideDto, String id) {
         try {
             logger.info("Fetching the ride details that have been accepted by the driver");
             if (ObjectUtils.isEmpty(selectedRideDto)) {
@@ -147,6 +147,7 @@ public class DriverServiceImpl implements DriverService {
                 throw new IllegalArgumentException("Invalid ride selection details provided");
             }
             RideRequest request = rideRequestService.getRideByCustomerName(selectedRideDto);
+            Driver getDriver = driverRepository.findByUserId(id);
             if (null == request) {
                 logger.warn("No ride request found for customer: {}", selectedRideDto.getCustomerName());
                 throw new NotFoundException("Ride request not found for customer: " + selectedRideDto.getCustomerName());
@@ -158,9 +159,8 @@ public class DriverServiceImpl implements DriverService {
                     .distance(request.getDistance())
                     .mobileNumber(request.getCustomer().getUser().getMobileNumber())
                     .build();
-            rideService.saveRide(request, getByMobileNumber(selectedRideDto.getMobileNumber()));
+            rideService.saveRide(request,getDriver);
             logger.info("Updating the request status to ASSIGNED");
-            request.setStatus(String.valueOf(RideRequestStatusEnum.ASSIGNED));
             rideRequestService.updateRequest(request);
             logger.info("Ride details successfully retrieved and updated for customer: {}", selectedRideDto.getCustomerName());
             return rideDetailsDto;
@@ -199,13 +199,13 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Boolean otpValidation(OtpRequestDto otpRequestDto) {
+    public Boolean otpValidation(OtpRequestDto otpRequestDto,String id) {
         try {
             logger.info("Starting OTP validation for mobile number: {}", otpRequestDto.getCustomerMobileNumber());
             User user = userService.getUserByMobileNumber(otpRequestDto.getCustomerMobileNumber());
             boolean isValid = otpService.validateOTP(user.getId(), otpRequestDto.getOtp());
             if(isValid) {
-                rideService.updateRideStatus(user.getId(), StatusDto.builder().status(RIDE_STARTED).build());
+                rideService.updateRideStatus(id, StatusDto.builder().status(RIDE_STARTED).build());
             }
             logger.info("OTP validation result for mobile number {}: {}", otpRequestDto.getCustomerMobileNumber(), isValid);
             return isValid;

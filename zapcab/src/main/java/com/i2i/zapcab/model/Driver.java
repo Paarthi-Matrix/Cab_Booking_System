@@ -59,6 +59,8 @@ public class Driver extends Auditable {
     private User user;
     @OneToOne(cascade = CascadeType.PERSIST)
     private Vehicle vehicle;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "driver")
+    private VehicleLocation vehicleLocation;
 
     @PrePersist
     protected void onCreate() {

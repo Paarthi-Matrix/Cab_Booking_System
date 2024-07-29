@@ -78,7 +78,7 @@ public class ZapCabConstant {
     public static final String REJECTED_STATUS = "Rejected";
 
     //Otp duration
-    public static final long OTP_VALID_DURATION = 30 * 60 * 1000; // 30 minutes
+    public static final long OTP_VALID_DURATION = 5 * 60 * 1000; // 30 minutes
 
     //Custom-Query
     public static final String FIND_DRIVER_BY_MOBILE_NUMBER_QUERY = "SELECT d FROM Driver d JOIN d.user u WHERE u.mobileNumber = :mobileNumber";

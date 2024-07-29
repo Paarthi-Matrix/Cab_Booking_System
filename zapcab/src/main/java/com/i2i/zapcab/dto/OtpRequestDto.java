@@ -22,6 +22,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OtpRequestDto {
-    String customerMobileNumber;
-    String otp;
+    private String customerMobileNumber;
+    private String otp;
 }

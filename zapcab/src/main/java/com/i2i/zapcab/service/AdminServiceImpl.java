@@ -55,6 +55,8 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private JwtService jwtService;
     @Autowired
+    private VehicleLocationService vehicleLocationService;
+    @Autowired
     EmailSenderService emailSenderService;
 
     @Override
@@ -89,7 +91,6 @@ public class AdminServiceImpl implements AdminService {
                     return AuthenticationResponseDto.builder().token("Your application has been rejected with the " +
                             "following reason : "+ request.getRemarks()).build() ;
                 }
-                authenticationResponse = driverRegister(request);
                 logger.info("Pending request successfully updated for phone number: {}",
                         updatePendingRequestDto.getPhoneNumber());
                 return driverRegister(request);
@@ -133,6 +134,7 @@ public class AdminServiceImpl implements AdminService {
             VehicleLocation vehicleLocation = VehicleLocation.builder().location(pendingRequest.getRegion())
                     .vehicle(vehicle).build();
             driverService.saveDriver(driver);
+            //vehicleLocationService.saveVehicleLocation(vehicleLocation);
             emailSenderService.sendRegistrationEmailToDriver(
                     EmailRequestDto.builder()
                             .toEmail(pendingRequest.getEmail())

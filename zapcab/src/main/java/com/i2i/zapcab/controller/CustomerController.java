@@ -128,7 +128,7 @@ public class CustomerController {
         String id = JwtDecoder.extractUserIdFromToken();
         try {
             AssignedDriverDto assignedDriverDto = customerService.getAssignedDriverDetails(id);
-            if (ObjectUtils.isEmpty(assignedDriverDto)) {
+            if (!ObjectUtils.isEmpty(assignedDriverDto)) {
                 return ApiResponseDto.statusOk(assignedDriverDto);
             } else {
                 return ApiResponseDto.statusAccepted("Searching for captain to accept request");

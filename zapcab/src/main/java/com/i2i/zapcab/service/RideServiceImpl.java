@@ -70,7 +70,8 @@ public class RideServiceImpl implements RideService{
     public RideResponseDto updateRideStatus(String id, StatusDto statusDto) {
         logger.debug("Updating status of ride with ID: {} to new status: {}", id, statusDto.getStatus());
         try {
-            Optional<Ride> rideOptional = rideRepository.findById(id);
+            System.out.println(id);
+            Optional<Ride> rideOptional = rideRepository.findByDriverIdAndIsDeleted(id);
             if (!rideOptional.isPresent()) {
                 logger.warn("Ride with ID: {} not found", id);
                 throw new NotFoundException("Ride not found for ID : " + id);

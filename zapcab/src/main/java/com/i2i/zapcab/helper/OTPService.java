@@ -15,7 +15,7 @@ import static com.i2i.zapcab.common.ZapCabConstant.OTP_VALID_DURATION;
  * </p>
  */
 public class OTPService {
-    private ConcurrentMap<String, OTPDetails> otpStorage = new ConcurrentHashMap<>();
+    private final static ConcurrentMap<String, OTPDetails> otpStorage = new ConcurrentHashMap<>();
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     /**
@@ -32,6 +32,7 @@ public class OTPService {
                 OTP_VALID_DURATION);
         otpStorage.put(key, otpDetails);
         scheduler.schedule(() -> otpStorage.remove(key), OTP_VALID_DURATION, TimeUnit.MILLISECONDS);
+        System.out.println(otpStorage);
         return otp;
     }
 
@@ -47,18 +48,21 @@ public class OTPService {
     public boolean validateOTP(String key, String otp) {
         OTPDetails otpDetails = otpStorage.get(key);
         if (otpDetails == null) {
+            System.out.println("null");
             return false;
         }
         if (System.currentTimeMillis() > otpDetails.getExpiryTime()) {
+            System.out.println(otpDetails.getExpiryTime());
             otpStorage.remove(key);
             return false;
         }
+        System.out.println(otp.equals(otpDetails.getOtp()));
         return otp.equals(otpDetails.getOtp());
     }
 
     private static class OTPDetails {
-        private String otp;
-        private long expiryTime;
+        private final String otp;
+        private final long expiryTime;
 
         public OTPDetails(String otp, long expiryTime) {
             this.otp = otp;
@@ -74,3 +78,4 @@ public class OTPService {
         }
     }
 }
+

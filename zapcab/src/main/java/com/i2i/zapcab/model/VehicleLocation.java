@@ -31,6 +31,9 @@ public class VehicleLocation extends Auditable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
+    @OneToOne
+    @JoinColumn(name = "driver_id")
+    private Driver driver;
 
     @PrePersist
     protected void onCreate() {

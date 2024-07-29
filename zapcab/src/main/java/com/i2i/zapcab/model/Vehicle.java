@@ -1,5 +1,6 @@
 package com.i2i.zapcab.model;
 
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import java.util.UUID;
 import lombok.AllArgsConstructor;

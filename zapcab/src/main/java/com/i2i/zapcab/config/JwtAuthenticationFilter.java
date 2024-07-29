@@ -81,6 +81,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String userId;
         if (authHeader == null ||!authHeader.startsWith(BEARER_HEADER)) {
             logger.debug("No proper headers for HttpServletRequest. Passing to next filter chain.");
+            filterChain.doFilter(request, response);
             return;
         }
         jwt = authHeader.substring(BEARER_HEADER.length());

@@ -47,6 +47,8 @@ public class PendingRequestMapper {
                 city(pendingRequest.getCity()).
                 dob(pendingRequest.getDob()).
                 category(pendingRequest.getCategory()).
+                status(pendingRequest.getStatus()).
+                remarks(pendingRequest.getRemarks()).
                 model(pendingRequest.getModel()).
                 licensePlate(pendingRequest.getLicensePlate()).
                 licenseNo(pendingRequest.getLicenseNo()).
