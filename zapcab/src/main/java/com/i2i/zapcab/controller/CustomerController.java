@@ -230,7 +230,8 @@ public class CustomerController {
         String userId = JwtDecoder.extractUserIdFromToken();
         try {
             String customerId = customerService.retrieveCustomerIdByUserId(userId);
-            UpdateRideResponseDto updateRideResponseDto = rideRequestService.updateRideDetails(customerId, updateRideDto);
+            UpdateRideResponseDto updateRideResponseDto = rideRequestService.updateRideDetails(customerId,
+                    updateRideDto);
             logger.info("Updated ride details for ride with user ID {}", userId);
             return ApiResponseDto.statusOk(updateRideResponseDto);
         } catch (NotFoundException e) {
@@ -238,7 +239,8 @@ public class CustomerController {
             return ApiResponseDto.statusNotFound("Invalid ID");
         } catch (DatabaseException e) {
             logger.error("Error updating ride details for user with ID {}", userId, e);
-            return ApiResponseDto.statusInternalServerError("Error occurred while updating customer ride details", e);
+            return ApiResponseDto.statusInternalServerError("Error occurred while updating customer ride " +
+                    "details", e);
         }
     }
 }

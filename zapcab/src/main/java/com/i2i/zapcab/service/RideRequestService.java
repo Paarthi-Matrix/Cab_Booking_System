@@ -33,9 +33,9 @@ public interface RideRequestService {
      * @return List
      *         Contains list of requests
      */
-    public List<RideRequest> getAll();
+    List<RideRequest> getAll();
 
-    public RideRequest getRideByCustomerName(DriverSelectedRideDto selectedRideDto);
+    RideRequest getRideByCustomerName(DriverSelectedRideDto selectedRideDto);
 
     /**
      * <p>
@@ -76,7 +76,7 @@ public interface RideRequestService {
      * @param customerId   User's particular id
      * @param updateRideDto  {@link UpdateRideDto}
      * @return UpdateResponseDto
-     *      Contains the updated ride responses
+     *         Contains the updated ride responses
      */
     UpdateRideResponseDto updateRideDetails(String customerId, UpdateRideDto updateRideDto);
 

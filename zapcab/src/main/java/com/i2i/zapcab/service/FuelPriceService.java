@@ -19,5 +19,5 @@ public interface FuelPriceService {
      * </p>
      * @return the current petrol price as a double.
      */
-    public double getPetrolPrice();
+    double getPetrolPrice();
 }

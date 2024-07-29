@@ -52,10 +52,9 @@ public class HistoryServiceImpl implements HistoryService {
         try {
             int rideCount = historyRepository.countByUserId(userId);
             String newTier = determineTier(rideCount);
-            TierDto tierDto = TierDto.builder()
+            return TierDto.builder()
                     .tier(newTier)
                     .build();
-            return tierDto;
         } catch (Exception e) {
             throw new DatabaseException("Error updating customer tier for userId: " + userId, e);
         }

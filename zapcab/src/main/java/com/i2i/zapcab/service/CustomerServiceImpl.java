@@ -177,7 +177,6 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-
     @Override
     public String retrieveCustomerIdByUserId(String userId) {
         try {
