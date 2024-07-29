@@ -33,4 +33,13 @@ public interface UserService {
      *      A successful message if the mobile number is masked otherwise
      */
     MaskMobileNumberResponseDto updateMaskMobileNumber(String id, boolean mask);
+
+    /**
+     * <p>
+     * Marks a user as deleted by setting the deleted flag to true.
+     * </p>
+     * @param id The ID of the user to be marked as deleted.
+     * @return boolean - true if the user is successfully marked as deleted, false otherwise.
+     */
+    boolean deleteById(String id);
 }

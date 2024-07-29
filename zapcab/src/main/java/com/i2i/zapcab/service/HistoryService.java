@@ -1,9 +1,9 @@
 package com.i2i.zapcab.service;
 
 import com.i2i.zapcab.dto.RideHistoryResponseDto;
-import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.dto.TierDto;
-import com.i2i.zapcab.model.History;
+import com.i2i.zapcab.exception.DatabaseException;
+import com.i2i.zapcab.model.Ride;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,7 +28,15 @@ public interface HistoryService {
      */
     List<RideHistoryResponseDto> getAllRideHistoryById(String id);
 
-    void saveHistory(History history);
+    /**
+     * <p>
+     * Saves the ride history to the database.
+     * </p>
+     *
+     * @param ride the ride object containing the details of the ride to be saved
+     * @throws DatabaseException if an error occurs while saving the ride history
+     */
+    void saveHistory(Ride ride);
 
     /**
      * <p>

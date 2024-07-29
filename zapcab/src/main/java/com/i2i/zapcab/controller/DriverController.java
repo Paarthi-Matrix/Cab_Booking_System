@@ -11,16 +11,12 @@ import com.i2i.zapcab.dto.OtpRequestDto;
 
 import com.i2i.zapcab.service.AuthenticationServiceImpl;
 import com.i2i.zapcab.service.RideService;
+import com.i2i.zapcab.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.ChangePasswordRequestDto;
@@ -52,6 +48,8 @@ public class DriverController {
     private DriverService driverService;
     @Autowired
     private RideService rideService;
+    @Autowired
+    private UserService userService;
 
     /**
      * <p>
@@ -206,6 +204,25 @@ public class DriverController {
         } catch (DatabaseException e) {
             logger.error("Error updating ride status for user with ID {}", userId, e);
             return ApiResponseDto.statusInternalServerError("Error updating payment mode", e);
+        }
+    }
+
+    /**
+     * <p>
+     * Deletes the authenticated driver using the user ID from the JWT token.
+     * </p>
+     *
+     * @return {@link ApiResponseDto}
+     */
+    @DeleteMapping("me")
+    public ApiResponseDto<?> deleteDriverById(){
+        String id = JwtDecoder.extractUserIdFromToken();
+        try{
+            userService.deleteById(id);
+            return ApiResponseDto.statusOk("Deleted successfully");
+        }catch (DatabaseException e){
+            logger.error(e.getMessage(),e);
+            return ApiResponseDto.statusInternalServerError(null,e);
         }
     }
 }

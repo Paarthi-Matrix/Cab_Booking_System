@@ -11,6 +11,8 @@ import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.dto.VehicleAvailabilityResponseDto;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * <p>
  *     An interface fo managing the customer's operation
@@ -88,6 +90,18 @@ public interface CustomerService {
 
     /**
      * <p>
+     * Retrieves all ride history records for a specific user by their ID.
+     * Converts the ride history entities to DTOs before returning them.
+     * </p>
+     *
+     * @param id The ID of the user whose ride history is to be retrieved.
+     * @return A list of RideHistoryResponseDto objects representing the user's ride history.
+     * @throws DatabaseException If an error occurs while fetching the ride history.
+     */
+    List<RideHistoryResponseDto> getAllRideHistoryById(String id);
+
+    /**
+     * <p>
      *     Fetches the profile of a customer based on their user ID.
      * </p>
      * @param userId
@@ -123,4 +137,15 @@ public interface CustomerService {
      *      The customer ID associated with the given user ID.
      */
     String retrieveCustomerIdByUserId(String userId);
+
+    /**
+     * <p>
+     *     Updates the tier of a customer based on the user ID.
+     * </p>
+     * @param userId
+     *        The userId of the customer.
+     * @return TierDto
+     *         The updated tier information of the customer.
+     */
+    TierDto getCustomerTier(String userId);
 }

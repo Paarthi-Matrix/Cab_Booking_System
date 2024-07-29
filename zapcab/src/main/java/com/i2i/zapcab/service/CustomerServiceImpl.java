@@ -36,6 +36,8 @@ public class CustomerServiceImpl implements CustomerService {
     private RideService rideService;
     @Autowired
     private DriverService driverService;
+    @Autowired
+    private HistoryService historyService;
 
     private final FareCalculator fareCalculator = new FareCalculator();
 
@@ -128,6 +130,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    public List<RideHistoryResponseDto> getAllRideHistoryById(String id){
+        return historyService.getAllRideHistoryById(id);
+    }
+
+    @Override
     public CustomerProfileDto getCustomerProfile(String userId) {
         logger.debug("Fetching profile for user with ID: {}", userId);
         try {
@@ -185,5 +192,12 @@ public class CustomerServiceImpl implements CustomerService {
             logger.error("Failed to retrieve the customer ID for user ID: {}", userId, e);
             throw new DatabaseException("Failed to retrieve the customer ID for user ID: " + userId, e);
         }
+    }
+
+    @Override
+    public TierDto getCustomerTier(String userId){
+        TierDto tierDto = historyService.getCustomerTier(userId);
+        updateCustomerTier(userId,tierDto);
+        return tierDto;
     }
 }

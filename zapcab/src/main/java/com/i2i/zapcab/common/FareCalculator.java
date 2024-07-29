@@ -56,7 +56,7 @@ public class FareCalculator {
                     || drop.equalsIgnoreCase("Airport")) ? 100 : 0;
             return fareByCategory(distances.getOrDefault(pickup + "-" + drop,
                             distances.getOrDefault(drop + "-" + pickup, 0)),
-                    LocalTime.now().getHour(), category, airportCharge);
+                    LocalTime.now().getHour(), category.toUpperCase(), airportCharge);
         } catch (Exception e) {
             throw new DatabaseException("Error occurred while Calculating fare", e);
         }

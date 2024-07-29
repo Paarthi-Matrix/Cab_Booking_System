@@ -25,7 +25,7 @@ public interface RideRequestService {
      * @param id The unique id of the ride request.
      * @throws DatabaseException if an error occurs while updating the ride request status.
      */
-    void updateRideRequestStatus(String id);
+    void deleteRideRequest(String id);
     /**
      * <p>
      *     This method is used to get all the ride request despite of the status

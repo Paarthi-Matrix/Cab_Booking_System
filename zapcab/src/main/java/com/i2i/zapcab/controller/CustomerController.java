@@ -1,22 +1,10 @@
 package com.i2i.zapcab.controller;
 
 import com.i2i.zapcab.dto.*;
-import com.i2i.zapcab.dto.ApiResponseDto;
-import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
-import com.i2i.zapcab.dto.CustomerProfileDto;
-import com.i2i.zapcab.dto.RideRatingDto;
-import com.i2i.zapcab.dto.RideRequestDto;
-import com.i2i.zapcab.dto.TierDto;
-import com.i2i.zapcab.dto.UpdateRideResponseDto;
-import com.i2i.zapcab.dto.UpdateRideDto;
-import com.i2i.zapcab.dto.VehicleAvailabilityResponseDto;
 import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.helper.JwtDecoder;
-import com.i2i.zapcab.service.CustomerService;
-import com.i2i.zapcab.service.HistoryService;
-import com.i2i.zapcab.service.RideRequestService;
-import com.i2i.zapcab.service.RideService;
+import com.i2i.zapcab.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +22,9 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
     @Autowired
-    private HistoryService historyService;
-    @Autowired
-    private RideService rideService;
-    @Autowired
     private RideRequestService rideRequestService;
-
+    @Autowired
+    private UserService userService;
 
     /**
      * <p>
@@ -52,7 +37,7 @@ public class CustomerController {
      * @return A VehicleAvailabilityResponseDto containing the pickup and drop point and also containing the available vehicles with
      * their respective fares.
      */
-    @GetMapping("/me/vehicles")
+    @GetMapping("me/vehicles")
     public ApiResponseDto<?> getAvailableVehiclesWithFare(
             @RequestBody CheckVehicleAvailabilityDto checkVehicleAvailabilityDto) {
         try {
@@ -77,7 +62,7 @@ public class CustomerController {
      * @param rideRequestDto The data transfer object containing ride request details.
      * @return {@link ApiResponseDto}
      */
-    @PostMapping("/me/rideRequest")
+    @PostMapping("me/rideRequest")
     public ApiResponseDto<String> saveRideRequest(@RequestBody RideRequestDto rideRequestDto) {
         String id = JwtDecoder.extractUserIdFromToken();
         try {
@@ -141,6 +126,49 @@ public class CustomerController {
 
     /**
      * <p>
+     * This method handles the request to Retrieve all ride history records for a specific user by their ID.
+     * Converts the ride history entities to DTOs before returning them.
+     * </p>
+     *
+     * @return A list of RideHistoryResponseDto objects representing the user's ride history.
+     */
+    @GetMapping("me/rides")
+    public ApiResponseDto<?> getAllRideHistory() {
+        String id = JwtDecoder.extractUserIdFromToken();
+        try {
+            List<RideHistoryResponseDto> rideHistoryResponseDtos = customerService.getAllRideHistoryById(id);
+            if (!rideHistoryResponseDtos.isEmpty()) {
+                return ApiResponseDto.statusOk(rideHistoryResponseDtos);
+            } else {
+                return ApiResponseDto.statusNotFound("No data Found");
+            }
+        } catch (DatabaseException e) {
+            logger.error(e.getMessage(), e);
+            return ApiResponseDto.statusInternalServerError(null, e);
+        }
+    }
+
+    /**
+     * <p>
+     * Deletes the authenticated customer using the user ID from the JWT token.
+     * </p>
+     *
+     * @return {@link ApiResponseDto}
+     */
+    @DeleteMapping("me")
+    public ApiResponseDto<?> deleteCustomerById() {
+        String id = JwtDecoder.extractUserIdFromToken();
+        try {
+            userService.deleteById(id);
+            return ApiResponseDto.statusOk("Deleted successfully");
+        } catch (DatabaseException e) {
+            logger.error(e.getMessage(), e);
+            return ApiResponseDto.statusInternalServerError(null, e);
+        }
+    }
+
+    /**
+     * <p>
      *     This method is responsible for fetching the profile of the currently authenticated customer.
      * </p>
      *
@@ -175,7 +203,7 @@ public class CustomerController {
     public ApiResponseDto<?> getCustomerTier() {
         String userId = JwtDecoder.extractUserIdFromToken();
         try {
-            TierDto tierdto = historyService.getCustomerTier(userId);
+            TierDto tierdto = customerService.getCustomerTier(userId);
             logger.info("Updated tier for customer with ID {}", userId);
             return ApiResponseDto.statusOk(tierdto);
         } catch (NotFoundException e) {
@@ -189,7 +217,7 @@ public class CustomerController {
 
     /**
      * <p>
-     *     This method is responsible for updating the details of a ride.
+     *     This method is responsible for updating the status of a ride.
      * </p>
      *
      * @param updateRideDto {@link UpdateRideDto}
@@ -211,30 +239,6 @@ public class CustomerController {
         } catch (DatabaseException e) {
             logger.error("Error updating ride details for user with ID {}", userId, e);
             return ApiResponseDto.statusInternalServerError("Error occurred while updating customer ride details", e);
-        }
-    }
-
-    /**
-     * <p>
-     * This method handles the request to Retrieve all ride history records for a specific user by their ID.
-     * Converts the ride history entities to DTOs before returning them.
-     * </p>
-     *
-     * @return A list of RideHistoryResponseDto objects representing the user's ride history.
-     */
-    @GetMapping("/me/rides")
-    public ApiResponseDto<?> getAllRideHistory() {
-        String id = JwtDecoder.extractUserIdFromToken();
-        try {
-            List<RideHistoryResponseDto> rideHistoryResponseDtos = historyService.getAllRideHistoryById(id);
-            if (!rideHistoryResponseDtos.isEmpty()) {
-                return ApiResponseDto.statusOk(rideHistoryResponseDtos);
-            } else {
-                return ApiResponseDto.statusNotFound("No data Found");
-            }
-        } catch (DatabaseException e) {
-            logger.error(e.getMessage(), e);
-            return ApiResponseDto.statusInternalServerError(null, e);
         }
     }
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -26,9 +27,9 @@ public class History {
     @Column(name = "drop_point", nullable = false, columnDefinition = "VARCHAR(20)")
     private String dropPoint;
     @Column(name = "start_time")
-    private Date startTime;
+    private LocalDateTime startTime;
     @Column(name = "end_time")
-    private Date endTime;
+    private LocalDateTime endTime;
     @Column(name = "distance", nullable = false)
     private int distance;
     @Column(name = "fare", nullable = false)

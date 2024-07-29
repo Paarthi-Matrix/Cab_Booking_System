@@ -38,7 +38,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     RideRequestRepository rideRequestRepository;
     private final FareCalculator fareCalculator = new FareCalculator();
 
-    private RideRequestMapper rideRequestMapper = new RideRequestMapper();
+    private final RideRequestMapper rideRequestMapper = new RideRequestMapper();
 
     @Override
     public List<RideRequest> getAll() {
@@ -69,10 +69,10 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
-    public void updateRideRequestStatus(String id) {
+    public void deleteRideRequest(String id) {
         try {
             RideRequest rideRequest = rideRequestRepository.findById(id).get();
-            rideRequest.setStatus(ASSIGNED);
+            rideRequest.setDeleted(true);
             rideRequestRepository.save(rideRequest);
         } catch (Exception e) {
             throw new DatabaseException("Error Occurred while updating ride request status", e);
@@ -104,7 +104,6 @@ public class RideRequestServiceImpl implements RideRequestService {
      * @throws DatabaseException
      *         If an error occurs while updating the ride request details.
      */
-
     public UpdateRideResponseDto updateRideDetails(String customerId, UpdateRideDto updateRideDto) {
         try {
             Optional<RideRequest> rideRequestOptional = rideRequestRepository.findByCustomerId(customerId);

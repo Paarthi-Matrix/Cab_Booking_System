@@ -1,17 +1,17 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.dto.EmailInvoiceDto;
-import com.i2i.zapcab.dto.PaymentModeDto;
-import com.i2i.zapcab.dto.RideRatingDto;
-import com.i2i.zapcab.dto.RideResponseDto;
-import com.i2i.zapcab.dto.StatusDto;
+import com.i2i.zapcab.dto.*;
 import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.exception.NotFoundException;
+import com.i2i.zapcab.mapper.HistoryMapper;
 import com.i2i.zapcab.mapper.RideMapper;
+import com.i2i.zapcab.model.History;
 import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.repository.RideRepository;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.apache.logging.log4j.LogManager;
@@ -32,12 +32,15 @@ import static com.i2i.zapcab.common.ZapCabConstant.RIDE_COMPLETED;
 @Service
 public class RideServiceImpl implements RideService{
     private static final Logger logger  = LogManager.getLogger(RideServiceImpl.class);
-    private RideMapper rideMapper = new RideMapper();
+    private final RideMapper rideMapper = new RideMapper();
     @Autowired
     private RideRepository rideRepository;
     @Autowired
     private EmailSenderService emailSenderService;
-
+    @Autowired
+    private RideRequestService rideRequestService;
+    @Autowired
+    private HistoryService historyService;
 
     @Override
     public void saveRide(RideRequest rideRequest, Driver driver) {
@@ -70,7 +73,6 @@ public class RideServiceImpl implements RideService{
     public RideResponseDto updateRideStatus(String id, StatusDto statusDto) {
         logger.debug("Updating status of ride with ID: {} to new status: {}", id, statusDto.getStatus());
         try {
-            System.out.println(id);
             Optional<Ride> rideOptional = rideRepository.findByDriverIdAndIsDeleted(id);
             if (!rideOptional.isPresent()) {
                 logger.warn("Ride with ID: {} not found", id);
@@ -79,6 +81,7 @@ public class RideServiceImpl implements RideService{
             Ride ride = rideOptional.get();
             ride.setStatus(statusDto.getStatus());
             Ride updatedRide = rideRepository.save(ride);
+            rideRequestService.deleteRideRequest(ride.getRideRequest().getId());
             RideResponseDto rideResponseDto = RideResponseDto.builder()
                     .dropPoint(updatedRide.getDropPoint())
                     .fare(updatedRide.getFare())
@@ -95,7 +98,6 @@ public class RideServiceImpl implements RideService{
             throw new DatabaseException("Failed to update ride. Ride ID : " + id, e);
         }
     }
-
 
     @Override
     public Ride getRideByRideRequest(String id) {
@@ -143,7 +145,9 @@ public class RideServiceImpl implements RideService{
             }
             Ride ride = rideOptional.get();
             ride.setPaymentMode(paymentModeDto.getPaymentMode());
+            ride.setDeleted(true);
             rideRepository.save(ride);
+            historyService.saveHistory(ride);
             logger.info("Successfully updated the payment mode for the ride associated with " +
                     "driver ID: {}", driverId);
             return PaymentModeDto.builder()
@@ -154,5 +158,9 @@ public class RideServiceImpl implements RideService{
                     "driver ID: {}", driverId, e);
             throw new DatabaseException("Failed to update the payment mode. Driver ID : " + driverId, e);
         }
+    }
+
+    public void updateCustomerTier(String userId, TierDto tierDto){
+
     }
 }

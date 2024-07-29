@@ -12,12 +12,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
+
+import lombok.*;
+
 import java.util.UUID;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -39,7 +39,7 @@ public class Ride extends Auditable {
     @Column(name = "start_time")
     private LocalDateTime startTime;
     @Column(name = "end_time")
-    private Date endTime;
+    private LocalDateTime endTime;
     @Column(name = "ride_rating")
     private float rideRating;
     @Column(name = "drop_point", columnDefinition = "VARCHAR(20)")

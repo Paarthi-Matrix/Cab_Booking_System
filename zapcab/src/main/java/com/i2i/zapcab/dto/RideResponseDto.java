@@ -1,5 +1,6 @@
 package com.i2i.zapcab.dto;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import lombok.Builder;
@@ -31,7 +32,7 @@ public class RideResponseDto {
     private String dropPoint;
     private int distance;
     private double fare;
-    private Date dropTime;
+    private LocalDateTime dropTime;
     private String driverName;
     private Long driverContactNumber;
     private String vehicleNumber;
