@@ -1,8 +1,20 @@
 package com.i2i.zapcab.model;
 
-import jakarta.persistence.*;
 import java.util.UUID;
-import lombok.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 
 /**
  * <p>
@@ -14,8 +26,9 @@ import lombok.*;
  * This class extends {@code Auditable}, which means it inherits auditing fields
  * like createdDate and lastModifiedDate.
  * </p>
- *  @see Auditable
- *  @see User
+ *
+ * @see Auditable
+ * @see User
  */
 @Data
 @Builder
@@ -29,7 +42,7 @@ public class Customer extends Auditable {
     @Column(name = "tier", nullable = false)
     private String tier;
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id",nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @PrePersist

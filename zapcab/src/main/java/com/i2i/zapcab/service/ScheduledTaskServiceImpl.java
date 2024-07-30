@@ -1,11 +1,12 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.exception.DatabaseException;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import com.i2i.zapcab.exception.DatabaseException;
 
 /**
  * <p>

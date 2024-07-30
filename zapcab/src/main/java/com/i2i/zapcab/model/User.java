@@ -1,5 +1,11 @@
 package com.i2i.zapcab.model;
 
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,16 +16,10 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import lombok.*;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,19 +33,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class User extends Auditable implements UserDetails {
     @Id
     private String id;
-    @Column(name="name", columnDefinition = "VARCHAR(20)", nullable = false)
+    @Column(name = "name", columnDefinition = "VARCHAR(20)", nullable = false)
     private String name;
-    @Column(name="email", columnDefinition = "VARCHAR(50)")
+    @Column(name = "email", columnDefinition = "VARCHAR(50)")
     private String email;
     @Column(name = "mobile_number")
     private String mobileNumber;
     @Column(name = "gender", columnDefinition = "VARCHAR(10)")
     private String gender;
-    @Column(name="password", columnDefinition = "VARCHAR(255)")
+    @Column(name = "password", columnDefinition = "VARCHAR(255)")
     private String password;
-    @Column(name = "date_of_birth",nullable = false)
+    @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
-
+    @Column(name = "is_soft_delete", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isSoftDelete;
+    @Column
     private boolean isMaskedMobileNumber;
 
     private boolean isDeleted;

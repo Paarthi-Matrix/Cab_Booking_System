@@ -17,7 +17,8 @@ public interface ScheduledTaskService {
      * Implementing classes should provide the actual logic for fetching and returning the most recent
      * petrol price as maintained by the scheduled tasks.
      * </p>
+     *
      * @return the most recently fetched petrol price
      */
-     double getLatestPetrolPrice();
+    double getLatestPetrolPrice();
 }

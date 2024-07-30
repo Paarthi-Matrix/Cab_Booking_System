@@ -1,15 +1,22 @@
 package com.i2i.zapcab.model;
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.UUID;
 
 @Builder
 @Data
@@ -35,12 +42,12 @@ public class History {
     @Column(name = "fare", nullable = false)
     private double fare;
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name ="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @PrePersist
-    protected void onCreate(){
-        if(this.id == null){
+    protected void onCreate() {
+        if (this.id == null) {
             this.id = UUID.randomUUID().toString();
         }
     }

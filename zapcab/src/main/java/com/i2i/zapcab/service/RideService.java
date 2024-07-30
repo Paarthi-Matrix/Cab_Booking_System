@@ -1,5 +1,7 @@
 package com.i2i.zapcab.service;
 
+import org.springframework.stereotype.Component;
+
 import com.i2i.zapcab.dto.PaymentModeDto;
 import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideResponseDto;
@@ -8,11 +10,10 @@ import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.model.RideRequest;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>
- *     An interface that manages the operations in {@link Ride} entity
+ * An interface that manages the operations in {@link Ride} entity
  * </p>
  */
 @Component
@@ -20,8 +21,9 @@ public interface RideService {
 
     /**
      * This method is used to save the ride details that are requested by customer
+     *
      * @param rideRequest {@link RideRequest}
-     * @param driver {@link Driver}
+     * @param driver      {@link Driver}
      */
     void saveRide(RideRequest rideRequest, Driver driver);
 
@@ -54,21 +56,21 @@ public interface RideService {
      * <p>
      * Updates the status of an existing ride.
      * </p>
-     * @param id
-     *        The ID of the ride whose status needs to be updated.
+     *
+     * @param id The ID of the ride whose status needs to be updated.
+     * @throws DatabaseException If error occurs while updating the status.
      */
     void updateRideStatus(String id);
 
     /**
      * <p>
-     *     Tracks the status of an existing ride.
+     * Tracks the status of an existing ride.
      * </p>
-     * @param driverId
-     *        The ID of the ride whose payment mode to be updated.
+     *
+     * @param driverId The ID of the ride whose payment mode to be updated.
      * @return PaymentModeDto
-     *         The response object containing the current payment mode.
-     * @throws DatabaseException
-     *         If error occurs while updating the payment mode details.
+     * The response object containing the current payment mode.
+     * @throws DatabaseException If error occurs while updating the payment mode details.
      */
     PaymentModeDto paymentMode(String driverId, PaymentModeDto paymentModeDto);
 }

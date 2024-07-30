@@ -2,15 +2,17 @@ package com.i2i.zapcab.service;
 
 import java.util.List;
 
-import com.i2i.zapcab.exception.DatabaseException;
 import org.springframework.stereotype.Component;
 
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.RideRequestDto;
-import com.i2i.zapcab.dto.UpdateRideResponseDto;
+import com.i2i.zapcab.dto.StatusDto;
 import com.i2i.zapcab.dto.UpdateRideDto;
+import com.i2i.zapcab.dto.UpdateRideResponseDto;
+import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.model.Customer;
 import com.i2i.zapcab.model.RideRequest;
+
 
 /**
  * An interface that manages the ride request operation made by the customer.
@@ -26,12 +28,14 @@ public interface RideRequestService {
      * @throws DatabaseException if an error occurs while updating the ride request status.
      */
     void deleteRideRequest(String id);
+
     /**
      * <p>
-     *     This method is used to get all the ride request despite of the status
+     * This method is used to get all the ride request despite of the status
      * </p>
+     *
      * @return List
-     *         Contains list of requests
+     * Contains list of requests
      */
     List<RideRequest> getAll();
 
@@ -39,12 +43,15 @@ public interface RideRequestService {
 
     /**
      * <p>
-     *     Used to update the request when the driver is assigned to the customer.
+     * Used to update the request when the driver is assigned to the customer.
      * </p>
+     *
      * @param rideRequest {@link RideRequest}
-     *          Contains Request details
+     *                    Contains Request details
      */
+
     void updateRequest(RideRequest rideRequest);
+
     /**
      * <p>
      * Saves a ride request for a given customer.
@@ -55,7 +62,7 @@ public interface RideRequestService {
      * @return true if the ride request is saved successfully, otherwise false.
      * @throws DatabaseException if an error occurs while saving the ride request.
      */
-    boolean saveRideRequest(Customer customer,RideRequestDto rideRequestDto);
+    boolean saveRideRequest(Customer customer, RideRequestDto rideRequestDto);
 
     /**
      * <p>
@@ -68,16 +75,28 @@ public interface RideRequestService {
      */
     RideRequest checkStatusAssignedOrNot(String id);
 
-
     /**
      * <p>
-     *     Updates the ride details according to the location.
+     * Updates the ride details according to the location.
      * </p>
-     * @param customerId   User's particular id
-     * @param updateRideDto  {@link UpdateRideDto}
+     *
+     * @param customerId    User's particular id
+     * @param updateRideDto {@link UpdateRideDto}
      * @return UpdateResponseDto
-     *         Contains the updated ride responses
+     * Contains the updated ride responses
+     * @throws DatabaseException *        If error occurs while updating the ride details.
      */
     UpdateRideResponseDto updateRideDetails(String customerId, UpdateRideDto updateRideDto);
 
+    /**
+     * <p>
+     * This method handles the cancellation of a ride request for a given customer.
+     * </p>
+     *
+     * @param customerId User's particular id
+     * @return {@link StatusDto}
+     * Contains the updated status of the ride request.
+     * @throws DatabaseException if an error occurs while updating the ride request status.
+     */
+    StatusDto cancelRide(String customerId);
 }

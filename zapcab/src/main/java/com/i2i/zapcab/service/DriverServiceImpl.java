@@ -1,13 +1,15 @@
 package com.i2i.zapcab.service;
 
-import static com.i2i.zapcab.common.ZapCabConstant.ASSIGNED;
-import static com.i2i.zapcab.common.ZapCabConstant.DRIVER_STATUS;
-import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_DRIVER_STATUS;
-import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_VEHICLE_STATUS;
-import static com.i2i.zapcab.common.ZapCabConstant.PAYMENT_CASH;
-import static com.i2i.zapcab.common.ZapCabConstant.RIDE_COMPLETED;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-import static com.i2i.zapcab.common.ZapCabConstant.RIDE_STARTED;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.GetRideRequestListsDto;
 import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
@@ -19,26 +21,25 @@ import com.i2i.zapcab.dto.StatusDto;
 import com.i2i.zapcab.dto.UpdateDriverStatusDto;
 import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.exception.NotFoundException;
-import com.i2i.zapcab.helper.OTPService;
 import com.i2i.zapcab.helper.RideRequestStatusEnum;
+import com.i2i.zapcab.mapper.RideRequestMapper;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.model.User;
 import com.i2i.zapcab.repository.DriverRepository;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
-import java.util.Optional;
+import static com.i2i.zapcab.common.ZapCabConstant.ASSIGNED;
+import static com.i2i.zapcab.common.ZapCabConstant.DRIVER_STATUS;
+import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_DRIVER_STATUS;
+import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_VEHICLE_STATUS;
+import static com.i2i.zapcab.common.ZapCabConstant.PAYMENT_CASH;
+import static com.i2i.zapcab.common.ZapCabConstant.RIDE_COMPLETED;
+import static com.i2i.zapcab.common.ZapCabConstant.RIDE_STARTED;
 
 /**
  * Implements {@link DriverService}
  * <p>
- *     This class implements all the business logic that are related to the driver
+ * This class implements all the business logic that are related to the driver
  * </p>
  */
 @Service
@@ -56,8 +57,10 @@ public class DriverServiceImpl implements DriverService {
     private RideRequestService rideRequestService;
     @Autowired
     private RideService rideService;
+    @Autowired
+    private OtpServiceImpl otpService;
 
-    OTPService otpService = new OTPService();
+    private final RideRequestMapper rideRequestMapper = new RideRequestMapper();
 
     @Override
     public Driver saveDriver(Driver driver) {
@@ -66,7 +69,7 @@ public class DriverServiceImpl implements DriverService {
             return driverRepository.save(driver);
         } catch (Exception e) {
             logger.error("Unable to save the driver {}", driver.getUser().getName());
-            throw new DatabaseException("Error occurred while saving the driver "+ driver.getUser().getName(), e);
+            throw new DatabaseException("Error occurred while saving the driver " + driver.getUser().getName(), e);
         }
     }
 
@@ -76,24 +79,22 @@ public class DriverServiceImpl implements DriverService {
         if (user.isEmpty()) {
             throw new NotFoundException("User not found");
         }
-        Optional<Driver> driver = driverRepository.findById(user.get().getId());
-        if(!driver.isPresent()) {
-            Driver driver1 = driver.get();
+        Driver driver = driverRepository.findByUserId(id);
+        if (!ObjectUtils.isEmpty(driver)) {
             if (updateDriverStatusDto.getStatus().equalsIgnoreCase(DRIVER_STATUS)) {
-                vehicleService.updateVehicleStatus("Available", driver1.getVehicle());
-                vehicleLocationService.updateVehicleLocationByVehicleId(updateDriverStatusDto.getLocation(), driver1.getVehicle());
+                vehicleService.updateVehicleStatus("Available", driver.getVehicle());
+                vehicleLocationService.updateVehicleLocationByVehicleId(updateDriverStatusDto.getLocation(), driver.getVehicle());
             } else if (updateDriverStatusDto.getStatus().equalsIgnoreCase(INITIAL_DRIVER_STATUS)
                     || updateDriverStatusDto.getStatus().equalsIgnoreCase("SUSPENDED")) {
-                vehicleService.updateVehicleStatus("Un Available", driver1.getVehicle());
+                vehicleService.updateVehicleStatus("Un Available", driver.getVehicle());
             }
-            driver1.setStatus(updateDriverStatusDto.getStatus());
+            driver.setStatus(updateDriverStatusDto.getStatus());
         }
     }
 
     @Override
     public void changePassword(String id, String newPassword) {
         userService.changePassword(id, newPassword);
-
     }
 
     @Override
@@ -103,12 +104,12 @@ public class DriverServiceImpl implements DriverService {
             int currentRating = driver.getRatings();
             int updatedRating = (currentRating + ratings) / 2;
             driver.setRatings(updatedRating);
-            Driver updatedDriver = driverRepository.save(driver);
-            return !ObjectUtils.isEmpty(updatedDriver);
+            return !ObjectUtils.isEmpty(driverRepository.save(driver));
         } catch (Exception e) {
             throw new DatabaseException("Error Occurred while updating driver rating with its id :" + id, e);
         }
     }
+
     @Override
     public List<RequestedRideDto> getRideRequests(GetRideRequestListsDto getRideRequestListsDto) {
         try {
@@ -119,21 +120,14 @@ public class DriverServiceImpl implements DriverService {
                 if (rideRequest.getPickupPoint().equalsIgnoreCase(getRideRequestListsDto.getLocation())
                         && (rideRequest.getVehicleCategory().equalsIgnoreCase(getRideRequestListsDto.getCategory()))
                         && (rideRequest.getStatus().equalsIgnoreCase(String.valueOf(RideRequestStatusEnum.PENDING)))) {
-                    RequestedRideDto requestedRideDto = RequestedRideDto.builder()
-                            .rideId(rideRequest.getId())
-                            .pickUpPoint(rideRequest.getPickupPoint())
-                            .dropPoint(rideRequest.getDropPoint())
-                            .distance(rideRequest.getDistance())
-                            .customerName(rideRequest.getCustomer().getUser().getName())
-                            .mobileNumber(rideRequest.getCustomer().getUser().getMobileNumber())
-                            .build();
+                    RequestedRideDto requestedRideDto = rideRequestMapper.entityToDto(rideRequest);
                     requestedRideDtos.add(requestedRideDto);
                 }
             }
             return requestedRideDtos;
         } catch (Exception e) {
             logger.error(" Error occurred while getting the list of requests for the category {} and location {}",
-                    getRideRequestListsDto.getCategory(),getRideRequestListsDto.getLocation());
+                    getRideRequestListsDto.getCategory(), getRideRequestListsDto.getLocation());
             throw new DatabaseException("Unable to get the ride requests", e);
         }
     }
@@ -159,7 +153,7 @@ public class DriverServiceImpl implements DriverService {
                     .distance(request.getDistance())
                     .mobileNumber(request.getCustomer().getUser().getMobileNumber())
                     .build();
-            rideService.saveRide(request,getDriver);
+            rideService.saveRide(request, getDriver);
             logger.info("Updating the request status to ASSIGNED");
             rideRequestService.updateRequest(request);
             logger.info("Ride details successfully retrieved and updated for customer: {}", selectedRideDto.getCustomerName());
@@ -176,7 +170,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public Driver getByMobileNumber(String mobileNumber) {
         try {
-            logger.info("Finding the driver details by giving mobile number {} ",mobileNumber);
+            logger.info("Finding the driver details by giving mobile number {} ", mobileNumber);
             return driverRepository.findDriverByMobileNumber(mobileNumber);
         } catch (Exception e) {
             logger.error("Unable to get the driver details");
@@ -199,12 +193,12 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Boolean otpValidation(OtpRequestDto otpRequestDto,String id) {
+    public Boolean otpValidation(OtpRequestDto otpRequestDto, String id) {
         try {
             logger.info("Starting OTP validation for mobile number: {}", otpRequestDto.getCustomerMobileNumber());
             User user = userService.getUserByMobileNumber(otpRequestDto.getCustomerMobileNumber());
             boolean isValid = otpService.validateOTP(user.getId(), otpRequestDto.getOtp());
-            if(isValid) {
+            if (isValid) {
                 rideService.updateRideStatus(id, StatusDto.builder().status(RIDE_STARTED).build());
             }
             logger.info("OTP validation result for mobile number {}: {}", otpRequestDto.getCustomerMobileNumber(), isValid);
@@ -266,4 +260,3 @@ public class DriverServiceImpl implements DriverService {
         }
     }
 }
-

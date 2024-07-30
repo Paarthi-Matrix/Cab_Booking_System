@@ -1,21 +1,24 @@
 package com.i2i.zapcab.config;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import com.i2i.zapcab.service.UserService;
 
 /**
  * <p>
@@ -23,7 +26,7 @@ import org.springframework.stereotype.Service;
  * validating, and parsing JSON Web Tokens (JWTs).
  * </p>
  * <p>
- *   This service provides methods to:
+ * This service provides methods to:
  * </p>
  * <ol>
  *     <li>Extract claims from a token.</li>
@@ -33,6 +36,7 @@ import org.springframework.stereotype.Service;
  * </ol>
  *
  * </p>
+ *
  * @see application.properties
  */
 @Service
@@ -40,10 +44,12 @@ public class JwtService {
 
     private static final Logger logger = LogManager.getLogger(JwtAuthenticationFilter.class);
 
+    @Autowired
+    private UserService userService;
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
     @Value("${application.security.jwt.expiration}")
-    private  long jwtExpiration;
+    private long jwtExpiration;
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
 
@@ -58,7 +64,7 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        logger.debug("user  name in userdetails"+userDetails.getUsername());
+        logger.debug("user  name in userdetails" + userDetails.getUsername());
         claims.put("roles", userDetails.getAuthorities());
         return generateToken(claims, userDetails);
     }
@@ -93,7 +99,9 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return (username.equals(userDetails.getUsername()))
+                && !isTokenExpired(token)
+                && userService.checkIfUserSoftDeleted(username);
     }
 
     private boolean isTokenExpired(String token) {

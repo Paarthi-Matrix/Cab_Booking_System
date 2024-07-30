@@ -1,14 +1,18 @@
 package com.i2i.zapcab.common;
 
-import com.i2i.zapcab.dto.RideRequestResponseDto;
-import com.i2i.zapcab.exception.DatabaseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.i2i.zapcab.dto.RideRequestResponseDto;
+import com.i2i.zapcab.exception.DatabaseException;
+import com.i2i.zapcab.service.ScheduledTaskService;
+
+import static com.i2i.zapcab.common.ZapCabConstant.ASSUMED_PETROL_PRICE;
 import static com.i2i.zapcab.common.ZapCabConstant.AUTO;
 import static com.i2i.zapcab.common.ZapCabConstant.AUTO_RATE_PER_KM;
 import static com.i2i.zapcab.common.ZapCabConstant.AUTO_SPEED_PER_KM;
@@ -20,6 +24,7 @@ import static com.i2i.zapcab.common.ZapCabConstant.MINI_RATE_PER_KM;
 import static com.i2i.zapcab.common.ZapCabConstant.MINI_SPEED_PER_KM;
 import static com.i2i.zapcab.common.ZapCabConstant.NORMAL_RATE;
 import static com.i2i.zapcab.common.ZapCabConstant.PEAK_RATE;
+import static com.i2i.zapcab.common.ZapCabConstant.PETROL_CHARGES;
 import static com.i2i.zapcab.common.ZapCabConstant.SEDAN;
 import static com.i2i.zapcab.common.ZapCabConstant.SEDAN_RATE_PER_KM;
 import static com.i2i.zapcab.common.ZapCabConstant.SEDAN_SPEED_PER_KM;
@@ -27,7 +32,6 @@ import static com.i2i.zapcab.common.ZapCabConstant.XUV;
 import static com.i2i.zapcab.common.ZapCabConstant.XUV_RATE_PER_KM;
 import static com.i2i.zapcab.common.ZapCabConstant.XUV_SPEED_PER_KM;
 
-//todo comments, import order
 public class FareCalculator {
     private static final Logger logger = LoggerFactory.getLogger(FareCalculator.class);
     private static final Map<String, Integer> distances = new HashMap<>();
@@ -38,28 +42,26 @@ public class FareCalculator {
         distances.put("Velachery-Airport", 12);
     }
 
+    @Autowired
+    private ScheduledTaskService scheduledTaskService;
     /**
      * <p>
      * Calculates the fare based on the pickup and drop points and vehicle category.
      * </p>
+     *
      * @param pickup   The pickup location.
      * @param drop     The drop location.
      * @param category The vehicle category.
      * @return A RideRequestResponseDto containing the fare details.
-     * @throws DatabaseException if any error occurs while calculating fare.
      */
     public RideRequestResponseDto calculateFare(String pickup, String drop, String category) {
-        try {
-            logger.info("Calculating fare for route: {} to {}", pickup, drop);
-            int airportCharge = 0;
-            airportCharge = (pickup.equalsIgnoreCase("Airport")
-                    || drop.equalsIgnoreCase("Airport")) ? 100 : 0;
-            return fareByCategory(distances.getOrDefault(pickup + "-" + drop,
-                            distances.getOrDefault(drop + "-" + pickup, 0)),
-                    LocalTime.now().getHour(), category.toUpperCase(), airportCharge);
-        } catch (Exception e) {
-            throw new DatabaseException("Error occurred while Calculating fare", e);
-        }
+        logger.info("Calculating fare for route: {} to {}", pickup, drop);
+        int airportCharge = 0;
+        airportCharge = (pickup.equalsIgnoreCase("Airport")
+                || drop.equalsIgnoreCase("Airport")) ? 100 : 0;
+        return fareByCategory(distances.getOrDefault(pickup + "-" + drop,
+                        distances.getOrDefault(drop + "-" + pickup, 0)),
+                LocalTime.now().getHour(), category.toUpperCase(), airportCharge);
     }
 
     /**
@@ -96,6 +98,8 @@ public class FareCalculator {
             boolean peakHour = (currentHour >= 8 && currentHour <= 11)
                     || (currentHour >= 18 && currentHour <= 20);
             int categoryRate = categoryRates.getOrDefault(category, 0);
+            double petrolPrice = scheduledTaskService.getLatestPetrolPrice();
+            categoryRate = (petrolPrice > ASSUMED_PETROL_PRICE) ? categoryRate + PETROL_CHARGES : categoryRate;
             int speed = categorySpeeds.getOrDefault(category, 0);
             double fare = distance * (peakHour ? PEAK_RATE : NORMAL_RATE) * categoryRate + airportCharge;
             speed = peakHour ? speed - 30 : speed;
@@ -113,4 +117,3 @@ public class FareCalculator {
         }
     }
 }
-

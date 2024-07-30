@@ -1,10 +1,13 @@
 package com.i2i.zapcab.common;
 
+/**
+ * <p>
+ * These are the constants that are used throughout the application.
+ * </p>
+ */
 public class ZapCabConstant {
-    /**
-     * Regex
-     */
-    public static final String STRING_REGEX = "^[A-Za-z]+$";
+    //Regex
+    public static final String STRING_REGEX = "^[a-zA-Z\\s]+$";
     public static final String EMAIL_REGEX = "^[\\w.-]+@[\\w.-]+\\.com$";
     public static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])" +
             "[A-Za-z\\d@$!%*?&]+$";
@@ -14,9 +17,8 @@ public class ZapCabConstant {
             "((19|20)[0-9][0-9])[0-9]{7}$";
     public static final String LICENSE_PLATE_REGEX = ("([A-Z]{2}[ -][0-9]{1,2}[ -][A-Z]" +
             "{1,2}[ -][0-9]{4})");
-    /**
-     * Message
-     */
+
+    // Message
     public static final String NAME_NOT_BLANK = "Name is mandatory";
     public static final String NAME_PATTERN_MESSAGE = "Name must contain only alphabetic characters";
     public static final String REGION_NOT_BLANK = "Region is mandatory";
@@ -57,10 +59,12 @@ public class ZapCabConstant {
     public static final int MINI_SPEED_PER_KM = 50;
     public static final int AUTO_SPEED_PER_KM = 50;
     public static final int BIKE_SPEED_PER_KM = 50;
+
     //fare
     public static final int NORMAL_RATE = 2;
     public static final int PEAK_RATE = 3;
 
+    //Common
     public static final String REQUEST_STATUS = "Pending";
     public static final String ASSIGNED = "Assigned";
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -76,6 +80,7 @@ public class ZapCabConstant {
     public static final String RIDE_STARTED = "Started";
     public static final String RIDE_COMPLETED = "Completed";
     public static final String REJECTED_STATUS = "Rejected";
+    public static final String RIDE_CANCELLED = "Cancelled";
 
     //Otp duration
     public static final long OTP_VALID_DURATION = 5 * 60 * 1000; // 30 minutes
@@ -87,15 +92,19 @@ public class ZapCabConstant {
     public static final String FIND_BY_CUSTOMER_NAME_AND_RIDE_ID = "SELECT rr FROM RideRequest rr WHERE rr.customer.user.name = :customerName AND rr.id = :rideID";
     public static final String FIND_BY_CUSTOMER_ID = "from RideRequest r JOIN r.customer c where c.user.id = :customerId and r.isDeleted = false";
     public static final String FIND_BY_STATUS = "SELECT pr from PendingRequest pr WHERE pr.status =:status";
+    public static final String COUNT_BY_USER_ID = "SELECT COUNT(h) FROM History h WHERE h.user.id = :userId";
 
     //EMAIL
-    public static final String EMAIL_SUBJECT_FOR_DRIVER = "Welcome to ZapCab: Your Driver Account Details";
-    public static final String EMAIL_SUBJECT_FOR_CUSTOMER = "Welcome to ZapCab: Your Invoice Details";
+    public static final String EMAIL_SUBJECT_FOR_DRIVE_ON_SUCCESSFUL_REGISTRATION = "Welcome to ZapCab: Your Driver Account Details";
+    public static final String EMAIL_SUBJECT_FOR_DRIVE_ON_REJECTION = "ZapCab: Rejection of your request";
+    public static final String EMAIL_SUBJECT_FOR_CUSTOMER = "Welcome to ZapCab: Let your Journey begins here with us!";
+    public static final String EMAIL_SUBJECT_FOR_CUSTOMER_INVOICE = "ZapCab : Invoice details. Happy Journey ";
     public static final String APP_DOMAIN_NAME = "www.zapcab.com";
 
-    // URL and API Token
-    public static final String FUEL_PRICE_API_URL = "https://daily-petrol-diesel-lpg-cng-fuel-prices-in-india.p.rapidapi.com/v1/fuel-prices/today/india/tamil-nadu/chennai";
-    public static final String FUEL_PRICE_API_TOKEN = "8c512c599fmsh4b66d1a46eeafc7p1bfd24jsn6626bf9861fd";
+    //Petrol-Price
+    public static final int ASSUMED_PETROL_PRICE = 100;
+    public static final int PETROL_CHARGES = 1;
 
+    //Payment
     public static final String PAYMENT_CASH = "cash";
 }

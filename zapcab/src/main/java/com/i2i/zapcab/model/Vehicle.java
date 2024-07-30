@@ -1,18 +1,20 @@
 package com.i2i.zapcab.model;
 
+import java.util.UUID;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
-import java.util.UUID;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
+
 
 @Builder
 @Entity
@@ -34,8 +36,11 @@ public class Vehicle extends Auditable {
     private String licensePlate;
     @Column(name = "max_seat")
     private int maxSeats;
-    @Column(name="status", columnDefinition = "VARCHAR(10)")
+    @Column(name = "status", columnDefinition = "VARCHAR(10)")
     private String status;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "location_id")
+    private VehicleLocation vehicleLocation;
 
     @PrePersist
     protected void onCreate() {

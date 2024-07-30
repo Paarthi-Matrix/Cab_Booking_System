@@ -1,9 +1,7 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
-import com.i2i.zapcab.exception.DatabaseException;
-import com.i2i.zapcab.model.User;
-import com.i2i.zapcab.repository.UserRepository;
+import java.util.Optional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +9,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Optional;
+import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
+import com.i2i.zapcab.exception.DatabaseException;
+import com.i2i.zapcab.model.User;
+import com.i2i.zapcab.repository.UserRepository;
 
 /**
  * <p>
@@ -27,7 +28,7 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -36,7 +37,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByMobileNumber(String mobileNumber) {
-        return userRepository.findByMobileNumber(mobileNumber);
+        try {
+            return userRepository.findByMobileNumber(mobileNumber);
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred while fetching the user for mobile number {}", mobileNumber);
+            String errorMessage = "Unexpected error occurred while fetching the user for mobile number " + mobileNumber;
+            throw new DatabaseException(errorMessage, e);
+        }
     }
 
     @Override
@@ -50,17 +57,8 @@ public class UserServiceImpl implements UserService {
                     user.getName();
             throw new DatabaseException(errorMessage, e);
         }
-
     }
 
-    /**
-     * <p>
-     * This method is used to change the password for both the driver and customer
-     * </p>
-     *
-     * @param id
-     * @param newPassword
-     */
     @Override
     public void changePassword(String id, String newPassword) {
         User user = userRepository.findById(id).orElse(null);
@@ -102,5 +100,18 @@ public class UserServiceImpl implements UserService {
             throw new DatabaseException("Error Occurred while deleting user by id: " + id, e);
         }
         return false;
+    }
+
+
+    @Override
+    public boolean checkIfUserSoftDeleted(String userId) {
+        try {
+            Optional<User> user = userRepository.findById(userId);
+            return !user.get().isSoftDelete();
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred while fetching the user {}", userId);
+            String errorMessage = "Unexpected error occurred while fetching the user " + userId;
+            throw new DatabaseException(errorMessage, e);
+        }
     }
 }

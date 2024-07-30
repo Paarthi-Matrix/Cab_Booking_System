@@ -1,5 +1,7 @@
 package com.i2i.zapcab.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -11,16 +13,15 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 
 /**
  * <p>
- *     The Auditable class is a base class for all entities that require auditing functionality.
- *     This class leverages Spring Data JPA's auditing features to automatically populate the audit
- *     fields using the {@link AuditingEntityListener}.
+ * The Auditable class is a base class for all entities that require auditing functionality.
+ * This class leverages Spring Data JPA's auditing features to automatically populate the audit
+ * fields using the {@link AuditingEntityListener}.
  * </p>
  * <p>
- *     It includes the following audit fields:
+ * It includes the following audit fields:
  * </p>
  * <ul>
  *     <li>createdBy: The user who created the entity.</li>

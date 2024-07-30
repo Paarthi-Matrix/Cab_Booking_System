@@ -10,12 +10,16 @@ import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+/**
+ * Security configuration class for the ZapCab application.
+ * This class configures security settings, including authentication, authorization, and session management.
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -26,29 +30,31 @@ public class SecurityConfiguration implements WebSecurityConfigurer {
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        return converter;
+        return new JwtAuthenticationConverter();
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v1/auth/**").permitAll()
-                        .requestMatchers("/v1/admins/**").permitAll()
-                        .requestMatchers("/api/v1/drivers/**").hasAnyRole("CUSTOMER", "DRIVER")
-                        .requestMatchers("/api/v1/customers/**").hasAnyRole("CUSTOMER")
+                        .requestMatchers("/api/v1/drivers/**").hasAnyRole("DRIVER", "ADMIN")
+                        .requestMatchers("/api/v1/customers/**").hasAnyRole("CUSTOMER", "ADMIN")
+                        .requestMatchers("/api/v1/admins/**").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);//todo
         return http.build();
     }
 
     @Override
-    public void init(SecurityBuilder builder) throws Exception {}
+    public void init(SecurityBuilder builder) throws Exception {
+    }
 
     @Override
-    public void configure(SecurityBuilder builder) throws Exception {}
+    public void configure(SecurityBuilder builder) throws Exception {
+    }
 }

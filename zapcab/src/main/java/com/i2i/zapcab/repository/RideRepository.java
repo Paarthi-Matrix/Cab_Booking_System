@@ -1,10 +1,12 @@
 package com.i2i.zapcab.repository;
 
-import com.i2i.zapcab.model.Ride;
 import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import com.i2i.zapcab.model.Ride;
 
 public interface RideRepository extends JpaRepository<Ride, String> {
     Ride findRideByRideRequestId(String id);

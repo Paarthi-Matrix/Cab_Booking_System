@@ -1,17 +1,13 @@
 package com.i2i.zapcab.dto;
 
-import com.i2i.zapcab.helper.RoleEnum;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDate;
+import com.i2i.zapcab.helper.RoleEnum;
 
 import static com.i2i.zapcab.common.ZapCabConstant.DOB_NOT_NULL;
 import static com.i2i.zapcab.common.ZapCabConstant.DOB_PAST_MESSAGE;
@@ -62,7 +58,7 @@ import static com.i2i.zapcab.common.ZapCabConstant.STRING_REGEX;
 @Data
 public class RegisterCustomerDto {
     @NotBlank(message = NAME_NOT_BLANK)
-    @Pattern(regexp = STRING_REGEX, message =NAME_PATTERN_MESSAGE)
+    @Pattern(regexp = STRING_REGEX, message = NAME_PATTERN_MESSAGE)
     private String name;
 
     @NotBlank(message = MOBILE_NUMBER_NOT_BLANK)

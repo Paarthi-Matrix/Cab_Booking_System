@@ -1,17 +1,20 @@
 package com.i2i.zapcab.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import com.i2i.zapcab.dto.RideHistoryResponseDto;
 import com.i2i.zapcab.dto.TierDto;
 import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.model.Ride;
-import org.springframework.stereotype.Component;
 
-import java.util.List;
+
 
 /**
  * <p>
- *    An interface to maintain the operation that are related to the history entity
- *    This operation includes updating the customer tier, history maintenance
+ * An interface to maintain the operation that are related to the history entity
+ * This operation includes updating the customer tier, history maintenance
  * </p>
  */
 @Component
@@ -40,12 +43,13 @@ public interface HistoryService {
 
     /**
      * <p>
-     *     Updates the tier of a customer based on the user ID.
+     * Updates the tier of a customer based on the user ID.
      * </p>
-     * @param userId
-     *        The userId of the customer.
+     *
+     * @param userId The userId of the customer.
      * @return TierDto
-     *         The updated tier information of the customer.
+     * The updated tier information of the customer.
+     * @throws DatabaseException If error occurs while updating the customer tier.
      */
     TierDto getCustomerTier(String userId);
 

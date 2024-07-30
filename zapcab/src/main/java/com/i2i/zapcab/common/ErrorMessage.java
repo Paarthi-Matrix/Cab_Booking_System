@@ -1,10 +1,12 @@
 package com.i2i.zapcab.common;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
-import org.jetbrains.annotations.NotNull;
-
 import java.time.LocalDateTime;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 /**
  * The ErrorMessage class represents a structured error message that can be used
@@ -59,11 +61,11 @@ public class ErrorMessage<T> {
         this.status = status;
     }
 
-    public ErrorMessage(int status, Throwable ex) {
+    public ErrorMessage(int status, Throwable e) {
         this();
         this.status = status;
         this.message = "Unexpected error";
-        this.debugMessage = ex.getLocalizedMessage();
+        this.debugMessage = e.getLocalizedMessage();
     }
 
     public ErrorMessage(int status, String message, Throwable e) {
@@ -86,4 +88,3 @@ public class ErrorMessage<T> {
         this.status = status;
     }
 }
-

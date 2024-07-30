@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+
 import com.i2i.zapcab.common.ErrorMessage;
 import com.i2i.zapcab.common.SuccessMessage;
 
@@ -85,6 +86,7 @@ public class ApiResponseDto<T> extends ResponseEntity<Object> {
                 HttpStatus.NO_CONTENT.value()
         ), HttpStatus.NO_CONTENT);
     }
+
     public static <T> ApiResponseDto<T> statusNotFound(T data, Exception e) {
         return new ApiResponseDto<>(new ErrorMessage<>(
                 "No records found",
@@ -128,6 +130,6 @@ public class ApiResponseDto<T> extends ResponseEntity<Object> {
         return new ApiResponseDto<>(new ErrorMessage<>(
                 data,
                 HttpStatus.BAD_REQUEST.value()
-        ),HttpStatus.BAD_REQUEST);
+        ), HttpStatus.BAD_REQUEST);
     }
 }

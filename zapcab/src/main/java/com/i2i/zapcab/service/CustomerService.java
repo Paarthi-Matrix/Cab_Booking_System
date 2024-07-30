@@ -1,29 +1,30 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.dto.*;
-import com.i2i.zapcab.exception.DatabaseException;
-import com.i2i.zapcab.model.Customer;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import com.i2i.zapcab.dto.AssignedDriverDto;
 import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
 import com.i2i.zapcab.dto.CustomerProfileDto;
+import com.i2i.zapcab.dto.RideHistoryResponseDto;
 import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideRequestDto;
+import com.i2i.zapcab.dto.TierDto;
 import com.i2i.zapcab.dto.VehicleAvailabilityResponseDto;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
+import com.i2i.zapcab.exception.DatabaseException;
+import com.i2i.zapcab.model.Customer;
 
 /**
  * <p>
- *     An interface fo managing the customer's operation
- *     Th operation includes :
+ * An interface fo managing the customer's operation
+ * Th operation includes :
  *     <ul>
  *         <li> Fetching vehicles and calculating fare </li>
  *         <li> Updating the driver's rating </li>
  *         <li> Assigning the rides to the driver </li>
  *     </ul>
  * </p>
- *
  */
 
 @Component
@@ -61,7 +62,7 @@ public interface CustomerService {
      *
      * @param customer {@link Customer}
      * @throws DatabaseException {@link DatabaseException}
-     *                             Thrown while saving customer entity to the repository.
+     *                           Thrown while saving customer entity to the repository.
      */
     void saveCustomer(Customer customer);
 
@@ -102,50 +103,48 @@ public interface CustomerService {
 
     /**
      * <p>
-     *     Fetches the profile of a customer based on their user ID.
+     * Fetches the profile of a customer based on their user ID.
      * </p>
-     * @param userId
-     *        The ID of the customer
+     *
+     * @param userId The ID of the customer
      * @return {@link  CustomerProfileDto}
-     *         The profile information of the customer.
-     * @throws DatabaseException
-     *         If error occurs while retrieving the customer profile.
+     * The profile information of the customer.
+     * @throws DatabaseException If error occurs while retrieving the customer profile.
      */
     CustomerProfileDto getCustomerProfile(String userId);
 
     /**
      * <p>
-     *     Updates the tier of a customer based on the user ID.
+     * Updates the tier of a customer based on the user ID.
      * </p>
-     * @param userId
-     *        The userId of the customer.
-     * @param tierDto
-     *        The newTier to be set for the customer.
-     * @throws DatabaseException
-     *         If error occurs while updating the customer tier.
+     *
+     * @param userId  The userId of the customer.
+     * @param tierDto The newTier to be set for the customer.
+     * @throws DatabaseException If error occurs while updating the customer tier.
      */
     void updateCustomerTier(String userId, TierDto tierDto);
 
     /**
      * <p>
-     *     Retrieves the customer ID associated with a given user ID.
+     * Retrieves the customer ID associated with a given user ID.
      * </p>
      *
-     * @param userId
-     *      The user id for whom the customer ID needs to be retrieved.
+     * @param userId The user id for whom the customer ID needs to be retrieved.
      * @return String
-     *      The customer ID associated with the given user ID.
+     * The customer ID associated with the given user ID.
+     * @throws DatabaseException If error occurs while retrieving the customer ID.
      */
     String retrieveCustomerIdByUserId(String userId);
 
     /**
      * <p>
-     *     Updates the tier of a customer based on the user ID.
+     * Updates the tier of a customer based on the user ID.
      * </p>
-     * @param userId
-     *        The userId of the customer.
+     *
+     * @param userId The userId of the customer.
      * @return TierDto
-     *         The updated tier information of the customer.
+     * The updated tier information of the customer.
+     * @throws DatabaseException If error occurs while updating the customer tier.
      */
     TierDto getCustomerTier(String userId);
 }

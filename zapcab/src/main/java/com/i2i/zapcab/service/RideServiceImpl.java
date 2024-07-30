@@ -1,40 +1,41 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.dto.*;
-import com.i2i.zapcab.exception.DatabaseException;
-import com.i2i.zapcab.exception.NotFoundException;
-import com.i2i.zapcab.mapper.HistoryMapper;
-import com.i2i.zapcab.mapper.RideMapper;
-import com.i2i.zapcab.model.History;
-import com.i2i.zapcab.model.Ride;
-import com.i2i.zapcab.model.Driver;
-import com.i2i.zapcab.model.RideRequest;
-import com.i2i.zapcab.repository.RideRepository;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.i2i.zapcab.dto.EmailInvoiceDto;
+import com.i2i.zapcab.dto.PaymentModeDto;
+import com.i2i.zapcab.dto.RideRatingDto;
+import com.i2i.zapcab.dto.RideResponseDto;
+import com.i2i.zapcab.dto.StatusDto;
+import com.i2i.zapcab.exception.DatabaseException;
+import com.i2i.zapcab.exception.NotFoundException;
+import com.i2i.zapcab.mapper.RideMapper;
+import com.i2i.zapcab.model.Driver;
+import com.i2i.zapcab.model.Ride;
+import com.i2i.zapcab.model.RideRequest;
+import com.i2i.zapcab.repository.RideRepository;
 
 import static com.i2i.zapcab.common.ZapCabConstant.RIDE_COMPLETED;
 
 /**
  * <p>
- *     A service class that implements {@link RideService}
- *     Manages all the business logic like updating the ride rating, ride status
+ * A service class that implements {@link RideService}
+ * Manages all the business logic like updating the ride rating, ride status
  * </p>
  */
 @Service
-public class RideServiceImpl implements RideService{
-    private static final Logger logger  = LogManager.getLogger(RideServiceImpl.class);
+public class RideServiceImpl implements RideService {
+    private static final Logger logger = LogManager.getLogger(RideServiceImpl.class);
     private final RideMapper rideMapper = new RideMapper();
     @Autowired
     private RideRepository rideRepository;
+
     @Autowired
     private EmailSenderService emailSenderService;
     @Autowired
@@ -45,15 +46,15 @@ public class RideServiceImpl implements RideService{
     @Override
     public void saveRide(RideRequest rideRequest, Driver driver) {
         try {
-            logger.info("Saving the request {} to the ride table....",rideRequest.getPickupPoint());
+            logger.info("Saving the request {} to the ride table....", rideRequest.getPickupPoint());
             Ride ride = rideMapper.rideRequestToRide(rideRequest, driver);
             ride.setStartTime(LocalDateTime.now());
             rideRepository.save(ride);
-            logger.info("Successfully ride has been saved {}",rideRequest.getPickupPoint());
-        } catch(Exception e) {
+            logger.info("Successfully ride has been saved {}", rideRequest.getPickupPoint());
+        } catch (Exception e) {
             logger.error("Unable to save the ride requested by the customer : {}",
                     rideRequest.getCustomer().getUser().getName());
-            throw new DatabaseException("Unable to save the ride for the request : "+ rideRequest.getId(), e);
+            throw new DatabaseException("Unable to save the ride for the request : " + rideRequest.getId(), e);
         }
     }
 
@@ -158,9 +159,5 @@ public class RideServiceImpl implements RideService{
                     "driver ID: {}", driverId, e);
             throw new DatabaseException("Failed to update the payment mode. Driver ID : " + driverId, e);
         }
-    }
-
-    public void updateCustomerTier(String userId, TierDto tierDto){
-
     }
 }

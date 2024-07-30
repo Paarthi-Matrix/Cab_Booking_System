@@ -1,9 +1,10 @@
 package com.i2i.zapcab.mapper;
 
-import static com.i2i.zapcab.common.ZapCabConstant.RIDE_BOOKED;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.model.RideRequest;
+
+import static com.i2i.zapcab.common.ZapCabConstant.RIDE_BOOKED;
 
 public class RideMapper {
     public Ride rideRequestToRide(RideRequest rideRequest, Driver driver) {

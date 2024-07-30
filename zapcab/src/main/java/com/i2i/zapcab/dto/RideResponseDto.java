@@ -1,10 +1,10 @@
 package com.i2i.zapcab.dto;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import lombok.Builder;
 import lombok.Data;
+
 
 /**
  * <p>

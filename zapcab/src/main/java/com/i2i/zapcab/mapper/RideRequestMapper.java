@@ -17,13 +17,14 @@ public class RideRequestMapper {
     }
 
     public RequestedRideDto entityToDto(RideRequest rideRequest) {
-        return RequestedRideDto.builder().
-                rideId(rideRequest.getId()).
-                pickUpPoint(rideRequest.getPickupPoint()).
-                dropPoint(rideRequest.getDropPoint()).
-                distance(rideRequest.getDistance()).
-                customerName(rideRequest.getCustomer().getUser().getName()).
-                mobileNumber(rideRequest.getCustomer().getUser().getMobileNumber()).build();
+        return RequestedRideDto.builder()
+                .rideId(rideRequest.getId())
+                .pickUpPoint(rideRequest.getPickupPoint())
+                .dropPoint(rideRequest.getDropPoint())
+                .distance(rideRequest.getDistance())
+                .customerName(rideRequest.getCustomer().getUser().getName())
+                .mobileNumber(rideRequest.getCustomer().getUser().getMobileNumber())
+                .build();
     }
 
     public RideDetailsDto entityToResponseDto(RideRequest rideRequest) {

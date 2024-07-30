@@ -1,16 +1,18 @@
 package com.i2i.zapcab.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.i2i.zapcab.dto.RideHistoryResponseDto;
 import com.i2i.zapcab.dto.TierDto;
 import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.mapper.HistoryMapper;
 import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.repository.HistoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>

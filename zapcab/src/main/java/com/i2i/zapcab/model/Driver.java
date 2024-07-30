@@ -1,20 +1,20 @@
 package com.i2i.zapcab.model;
 
+import java.util.UUID;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 /**
  * <p>
@@ -27,9 +27,10 @@ import lombok.NoArgsConstructor;
  * This class extends {@code Auditable}, which means it inherits auditing fields
  * like createdDate and lastModifiedDate.
  * </p>
- *  @see Auditable
- *  @see User
- *  @see Vehicle
+ *
+ * @see Auditable
+ * @see User
+ * @see Vehicle
  */
 @Builder
 @Entity
@@ -59,8 +60,6 @@ public class Driver extends Auditable {
     private User user;
     @OneToOne(cascade = CascadeType.PERSIST)
     private Vehicle vehicle;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "driver")
-    private VehicleLocation vehicleLocation;
 
     @PrePersist
     protected void onCreate() {

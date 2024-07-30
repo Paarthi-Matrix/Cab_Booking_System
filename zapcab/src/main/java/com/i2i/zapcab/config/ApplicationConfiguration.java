@@ -16,11 +16,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestTemplate;
 
 import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.model.User;
 import com.i2i.zapcab.repository.UserRepository;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * <p>

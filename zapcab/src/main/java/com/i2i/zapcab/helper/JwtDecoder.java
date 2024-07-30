@@ -13,25 +13,22 @@ public class JwtDecoder {
 
     /**
      * <p>
-     *     This method is responsible for fetching username of
-     *     the currently authenticated user from the filter.
-     *     The securityContextHolder is set when the respective api hits for authentication,
-     *     which sets the username in principle of SecurityContextHolder.
+     * This method is responsible for fetching username of
+     * the currently authenticated user from the filter.
+     * The securityContextHolder is set when the respective api hits for authentication,
+     * which sets the username in principle of SecurityContextHolder.
      * </p>
      * <p>
-     *     IMPORTANT NOTE:
+     * IMPORTANT NOTE:
      * </p>
      * <ul>
      *     <li>The SecurityContextHolder of Spring 3 is used</li>
      *     <li>The behaviour of this method may differ if the Spring version is changed.</li>
      * </ul>
      *
-     * @throws AuthenticationException
-     *         If the user is not authenticated, that user will not have a SecurityContextHolder.
-     *         That will pay a way to raise this exception.
-     * @return
-     *         UserId of the currently authenticated user.
-     *
+     * @return UserId of the currently authenticated user.
+     * @throws AuthenticationException If the user is not authenticated, that user will not have a SecurityContextHolder.
+     *                                 That will pay a way to raise this exception.
      */
     public static String extractUserIdFromToken() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

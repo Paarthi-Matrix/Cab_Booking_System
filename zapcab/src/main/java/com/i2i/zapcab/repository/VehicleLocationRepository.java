@@ -1,9 +1,10 @@
 package com.i2i.zapcab.repository;
 
-import com.i2i.zapcab.model.VehicleLocation;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import com.i2i.zapcab.model.VehicleLocation;
 
 public interface VehicleLocationRepository extends JpaRepository<VehicleLocation, String> {
     VehicleLocation findByVehicleId(String id);

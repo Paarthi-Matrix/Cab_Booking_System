@@ -1,26 +1,31 @@
 package com.i2i.zapcab.service;
 
-import com.i2i.zapcab.common.FareCalculator;
-import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
-import com.i2i.zapcab.dto.RideRatingDto;
-import com.i2i.zapcab.dto.RideRequestDto;
-import com.i2i.zapcab.dto.RideRequestResponseDto;
-import com.i2i.zapcab.exception.DatabaseException;
-import com.i2i.zapcab.exception.NotFoundException;
-import com.i2i.zapcab.dto.*;
-import com.i2i.zapcab.helper.OTPService;
-import com.i2i.zapcab.model.Customer;
-import com.i2i.zapcab.model.Ride;
-import com.i2i.zapcab.model.RideRequest;
-import com.i2i.zapcab.repository.CustomerRepository;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.i2i.zapcab.common.FareCalculator;
+import com.i2i.zapcab.dto.AssignedDriverDto;
+import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
+import com.i2i.zapcab.dto.CustomerProfileDto;
+import com.i2i.zapcab.dto.RideHistoryResponseDto;
+import com.i2i.zapcab.dto.RideRatingDto;
+import com.i2i.zapcab.dto.RideRequestDto;
+import com.i2i.zapcab.dto.RideRequestResponseDto;
+import com.i2i.zapcab.dto.TierDto;
+import com.i2i.zapcab.dto.VehicleAvailabilityResponseDto;
+import com.i2i.zapcab.exception.DatabaseException;
+import com.i2i.zapcab.exception.NotFoundException;
+import com.i2i.zapcab.model.Customer;
+import com.i2i.zapcab.model.Ride;
+import com.i2i.zapcab.model.RideRequest;
+import com.i2i.zapcab.repository.CustomerRepository;
+
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -38,10 +43,10 @@ public class CustomerServiceImpl implements CustomerService {
     private DriverService driverService;
     @Autowired
     private HistoryService historyService;
+    @Autowired
+    private OtpServiceImpl otpService;
 
     private final FareCalculator fareCalculator = new FareCalculator();
-
-    private final OTPService otpService = new OTPService();
 
     @Override
     public VehicleAvailabilityResponseDto getAvailableVehiclesWithFare(
@@ -57,6 +62,8 @@ public class CustomerServiceImpl implements CustomerService {
                         checkVehicleAvailabilityDto.getPickupPoint());
                 return null;
             }
+            logger.info("Fetching vehicles for pickup point: {}",
+                    checkVehicleAvailabilityDto.getPickupPoint());
             vehicleLocationService.getVehiclesByLocation(
                             checkVehicleAvailabilityDto.getPickupPoint())
                     .forEach(vehicle -> {
@@ -83,10 +90,20 @@ public class CustomerServiceImpl implements CustomerService {
         try {
             return rideRequestService.saveRideRequest(customerRepository.findByUserId(id), rideRequestDto);
         } catch (Exception e) {
+            logger.error("Error Occurred while adding ride request {}", e.getMessage());
             throw new DatabaseException("Error Occurred while saving ride request", e);
         }
     }
 
+    /**
+     * <p>
+     * This method is used to save the customer to the repository.
+     * </p>
+     *
+     * @param customer {@link Customer}
+     * @throws DatabaseException {@link DatabaseException}
+     *                           Thrown while saving customer entity to the repository.
+     */
     @Override
     public void saveCustomer(Customer customer) {
         try {
@@ -122,15 +139,14 @@ public class CustomerServiceImpl implements CustomerService {
                     category(ride.getDriver().getVehicle().getCategory()).
                     model(ride.getDriver().getVehicle().getModel()).
                     licensePlate(ride.getDriver().getVehicle().getLicensePlate()).build();
-            return !ObjectUtils.isEmpty(rideRequest) ? assignedDriverDto : null;
+            return !ObjectUtils.isEmpty(ride) ? assignedDriverDto : null;
         } catch (Exception e) {
-            throw new DatabaseException("Error Occurred while fetch assigned" +
-                    " driver for the customer with id :" + id, e);
+            throw new DatabaseException("Error Occurred while fetch assigned driver for the customer with id :" + id, e);
         }
     }
 
     @Override
-    public List<RideHistoryResponseDto> getAllRideHistoryById(String id){
+    public List<RideHistoryResponseDto> getAllRideHistoryById(String id) {
         return historyService.getAllRideHistoryById(id);
     }
 
@@ -158,7 +174,6 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    @Override
     public void updateCustomerTier(String userId, TierDto tierDto) {
         logger.debug("Updating tier for customer with userId: {} to new tier: {}", userId, tierDto.getTier());
         try {
@@ -194,9 +209,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public TierDto getCustomerTier(String userId){
+    public TierDto getCustomerTier(String userId) {
         TierDto tierDto = historyService.getCustomerTier(userId);
-        updateCustomerTier(userId,tierDto);
+        updateCustomerTier(userId, tierDto);
         return tierDto;
     }
 }

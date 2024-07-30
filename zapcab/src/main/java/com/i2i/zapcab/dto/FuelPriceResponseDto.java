@@ -1,7 +1,8 @@
 package com.i2i.zapcab.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -21,8 +22,9 @@ import lombok.Data;
  *   </ol>
  * </p>
  */
-@Data
-public class FuelPriceResponse {
+@Getter
+@Setter
+public class FuelPriceResponseDto {
     @JsonProperty("cityId")
     private String cityId;
     @JsonProperty("cityName")
@@ -40,6 +42,8 @@ public class FuelPriceResponse {
     @JsonProperty("fuel")
     private Fuel fuel;
 
+    @Getter
+    @Setter
     public static class Fuel {
         @JsonProperty("petrol")
         private Petrol petrol;
@@ -47,34 +51,12 @@ public class FuelPriceResponse {
         @JsonProperty("diesel")
         private Diesel diesel;
 
-        public Diesel getDiesel() {
-            return diesel;
-        }
-
-        public void setDiesel(Diesel diesel) {
-            this.diesel = diesel;
-        }
-
-        public Lpg getLpg() {
-            return lpg;
-        }
-
-        public void setLpg(Lpg lpg) {
-            this.lpg = lpg;
-        }
-
         @JsonProperty("lpg")
         private Lpg lpg;
-
-        public Petrol getPetrol() {
-            return petrol;
-        }
-
-        public void setPetrol(Petrol petrol) {
-            this.petrol = petrol;
-        }
     }
 
+    @Getter
+    @Setter
     public static class Petrol {
         @JsonProperty("retailPrice")
         private double retailPrice;
@@ -90,22 +72,13 @@ public class FuelPriceResponse {
 
         @JsonProperty("retailPriceChangeInterval")
         private String retailPriceChangeInterval;
-
-
-        public double getRetailPrice() {
-            return retailPrice;
-        }
-
-
-        public void setRetailPrice(double retailPrice) {
-            this.retailPrice = retailPrice;
-        }
     }
 
+    @Getter
+    @Setter
     public static class Diesel {
         @JsonProperty("retailPrice")
         private double retailPrice;
-
 
         @JsonProperty("retailPriceChange")
         private double retailPriceChange;
@@ -124,7 +97,6 @@ public class FuelPriceResponse {
         @JsonProperty("retailPrice")
         private double retailPrice;
 
-
         @JsonProperty("retailPriceChange")
         private double retailPriceChange;
 
@@ -136,9 +108,5 @@ public class FuelPriceResponse {
 
         @JsonProperty("retailPriceChangeInterval")
         private String retailPriceChangeInterval;
-    }
-
-    public double getPetrolPrice() {
-        return this.fuel.getPetrol().getRetailPrice();
     }
 }

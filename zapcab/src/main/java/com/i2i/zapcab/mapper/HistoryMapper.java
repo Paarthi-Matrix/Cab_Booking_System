@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public class HistoryMapper {
 
-    public RideHistoryResponseDto entityToDto(History history){
+    public RideHistoryResponseDto entityToDto(History history) {
         return RideHistoryResponseDto.builder().date(history.getDate())
                 .pickup(history.getPickupPoint())
                 .drop(history.getDropPoint())
@@ -18,7 +18,7 @@ public class HistoryMapper {
                 .fare(history.getFare()).build();
     }
 
-    public History rideToHistory(Ride ride){
+    public History rideToHistory(Ride ride) {
         return History.builder().date(LocalDate.now())
                 .pickupPoint(ride.getRideRequest().getPickupPoint())
                 .dropPoint(ride.getDropPoint())

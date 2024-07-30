@@ -1,18 +1,20 @@
 package com.i2i.zapcab.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import com.i2i.zapcab.dto.DriverSelectedRideDto;
+import com.i2i.zapcab.dto.GetRideRequestListsDto;
 import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
 import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
 import com.i2i.zapcab.dto.OtpRequestDto;
-import com.i2i.zapcab.dto.UpdateDriverStatusDto;
-import com.i2i.zapcab.dto.DriverSelectedRideDto;
-import com.i2i.zapcab.dto.GetRideRequestListsDto;
 import com.i2i.zapcab.dto.RequestedRideDto;
 import com.i2i.zapcab.dto.RideDetailsDto;
-
+import com.i2i.zapcab.dto.UpdateDriverStatusDto;
 import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.model.Driver;
-import java.util.List;
-import org.springframework.stereotype.Component;
+
 
 /**
  * <p>
@@ -71,9 +73,7 @@ public interface DriverService {
      * @return Driver {@link Driver}
      */
     Driver getByMobileNumber(String mobileNumber);
-
     void updateDriverStatusAndLocation(String id, UpdateDriverStatusDto updateDriverStatusDto);
-
     void changePassword(String id, String newPassword);
 
     /**
@@ -138,6 +138,8 @@ public interface DriverService {
      *      The user id for whom the driver ID needs to be retrieved.
      * @return String
      *      The driver ID associated with the given user ID.
+     * @throws DatabaseException
+     *       If error occurs while retrieving the driver ID.
      */
     String retrieveDriverIdByUserId(String userId);
 }

@@ -1,19 +1,18 @@
 package com.i2i.zapcab.model;
 
+import java.time.LocalDate;
+import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 
 /**
  * <p>
@@ -26,8 +25,9 @@ import java.time.LocalDate;
  * This class extends {@code Auditable}, which means it inherits auditing fields
  * like createdDate and lastModifiedDate.
  * </p>
+ *
  * @see Auditable
- * */
+ */
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,7 +39,7 @@ public class PendingRequest extends Auditable {
     private String id;
     @Column(name = "name", nullable = false, columnDefinition = "VARCHAR(20)")
     private String name;
-    @Column(name="email", columnDefinition = "VARCHAR(50)")
+    @Column(name = "email", columnDefinition = "VARCHAR(50)")
     private String email;
     @Column(name = "license_no", nullable = false, columnDefinition = "VARCHAR(20)")
     private String licenseNo;

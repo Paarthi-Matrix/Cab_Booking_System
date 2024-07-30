@@ -1,8 +1,9 @@
 package com.i2i.zapcab.repository;
 
-import com.i2i.zapcab.model.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.i2i.zapcab.model.Customer;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, String> {
