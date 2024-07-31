@@ -37,7 +37,6 @@ import com.i2i.zapcab.service.UserService;
  *
  * </p>
  *
- * @see application.properties
  */
 @Service
 public class JwtService {

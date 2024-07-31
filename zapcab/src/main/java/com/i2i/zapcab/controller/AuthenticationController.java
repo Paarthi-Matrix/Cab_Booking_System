@@ -51,12 +51,15 @@ public class AuthenticationController {
             @RequestBody RegisterCustomerDto registerCustomerDto) {
         AuthenticationResponseDto authenticationResponseDto = null;
         try {
+            logger.info("Received customer registration request for: {}", registerCustomerDto.getEmail());
             authenticationResponseDto = authenticationService.customerRegister(registerCustomerDto);
+            logger.info("Customer registration successful for: {}", registerCustomerDto.getEmail());
+            return ApiResponseDto.statusCreated(authenticationResponseDto);
         } catch (DatabaseException e) {
+            logger.error("Error occurred while registering customer: {}. Error: {}", registerCustomerDto.getEmail(),
+                    e.getMessage(), e);
             return ApiResponseDto.statusInternalServerError(authenticationResponseDto, e);
         }
-        logger.info("Customer successfully created!.");
-        return ApiResponseDto.statusCreated(authenticationResponseDto);
     }
 
     /**
@@ -74,12 +77,14 @@ public class AuthenticationController {
     public ApiResponseDto<DriverRegisterResponseDto> registerDriver(@RequestBody RegisterDriverRequestDto registerDriverRequestDto) {
         DriverRegisterResponseDto driverRegisterResponseDto = null;
         try {
+            logger.info("Received driver registration request for: {}", registerDriverRequestDto.getName());
             driverRegisterResponseDto = authenticationService.driverRegisterRequest(registerDriverRequestDto);
+            logger.info("Driver registration successful for: {}", registerDriverRequestDto.getName());
+            return ApiResponseDto.statusOk(driverRegisterResponseDto);
         } catch (DatabaseException e) {
+            logger.error("Error occurred while registering driver: {}. Error: {}", registerDriverRequestDto.getName(), e.getMessage(), e);
             return ApiResponseDto.statusInternalServerError(driverRegisterResponseDto, e);
         }
-        logger.info("Driver successfully added to pending request!.");
-        return ApiResponseDto.statusOk(driverRegisterResponseDto);
     }
 
     /**
@@ -100,12 +105,12 @@ public class AuthenticationController {
         try {
             authenticationResponse = authenticationService.authenticate(authenticationRequestDto);
         } catch (NotFoundException e) {
-            logger.debug("No user with mobileNumber " + authenticationRequestDto.getMobileNumber() +
+            logger.error("No user with mobileNumber " + authenticationRequestDto.getMobileNumber() +
                     " is found in database");
             authenticationResponse = AuthenticationResponseDto.builder().token("").build();
             return ApiResponseDto.statusNoContent(authenticationResponse);
         } catch (AuthenticationException e) {
-            logger.debug("Invalid credentials given by the user");
+            logger.error("Invalid credentials given by the user");
             authenticationResponse = AuthenticationResponseDto.builder().token("").build();
             return ApiResponseDto.statusUnAuthorized(authenticationResponse, e);
         }

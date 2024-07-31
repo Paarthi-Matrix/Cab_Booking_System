@@ -1,5 +1,7 @@
 package com.i2i.zapcab.mapper;
 
+import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_REMARKS;
+import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_STATUS_OF_DRIVER;
 import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
 import com.i2i.zapcab.dto.RegisterDriverRequestDto;
 import com.i2i.zapcab.model.PendingRequest;
@@ -17,6 +19,8 @@ public class PendingRequestMapper {
                 category(registerDriverDto.getCategory()).
                 model(registerDriverDto.getModel()).
                 type(registerDriverDto.getType()).
+                status(INITIAL_STATUS_OF_DRIVER).
+                remarks(INITIAL_REMARKS).
                 licensePlate(registerDriverDto.getLicensePlate()).
                 licenseNo(registerDriverDto.getLicenseNumber()).
                 rcBookNo(registerDriverDto.getRcBookNo()).build();

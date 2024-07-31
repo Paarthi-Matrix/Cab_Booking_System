@@ -12,7 +12,7 @@ import com.i2i.zapcab.dto.EmailInvoiceDto;
 import com.i2i.zapcab.dto.PaymentModeDto;
 import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideResponseDto;
-import com.i2i.zapcab.dto.StatusDto;
+import com.i2i.zapcab.dto.RideStatusDto;
 import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.mapper.RideMapper;
@@ -61,18 +61,25 @@ public class RideServiceImpl implements RideService {
     @Override
     public String updateRideRating(String id, RideRatingDto ratings) {
         try {
-            Ride ride = rideRepository.findById(id).get();
+            logger.info("Attempting to update ride rating for ride ID: {} with ratings: {}", id, ratings.getRatings());
+            Ride ride = rideRepository.findById(id)
+                    .orElseThrow(() -> new DatabaseException("Ride not found with ID: " + id));
             ride.setRideRating(ratings.getRatings());
             rideRepository.save(ride);
-            return ride.getDriver().getId();
+
+            String driverId = ride.getDriver().getId();
+            logger.info("Ride rating updated successfully for ride ID: {}. Driver ID: {}", id, driverId);
+
+            return driverId;
         } catch (Exception e) {
-            throw new DatabaseException("Error Occurred while updating ride rating with its id: " + id, e);
+            logger.error("Error occurred while updating ride rating for ride ID: {}. Error: {}", id, e.getMessage(), e);
+            throw new DatabaseException("Error occurred while updating ride rating with ID: " + id, e);
         }
     }
 
     @Override
-    public RideResponseDto updateRideStatus(String id, StatusDto statusDto) {
-        logger.debug("Updating status of ride with ID: {} to new status: {}", id, statusDto.getStatus());
+    public RideResponseDto updateRideStatus(String id, RideStatusDto rideStatusDto) {
+        logger.debug("Updating status of ride with ID: {} to new status: {}", id, rideStatusDto.getStatus());
         try {
             Optional<Ride> rideOptional = rideRepository.findByDriverIdAndIsDeleted(id);
             if (!rideOptional.isPresent()) {
@@ -80,7 +87,7 @@ public class RideServiceImpl implements RideService {
                 throw new NotFoundException("Ride not found for ID : " + id);
             }
             Ride ride = rideOptional.get();
-            ride.setStatus(statusDto.getStatus());
+            ride.setStatus(rideStatusDto.getStatus());
             Ride updatedRide = rideRepository.save(ride);
             rideRequestService.deleteRideRequest(ride.getRideRequest().getId());
             RideResponseDto rideResponseDto = RideResponseDto.builder()
@@ -159,5 +166,10 @@ public class RideServiceImpl implements RideService {
                     "driver ID: {}", driverId, e);
             throw new DatabaseException("Failed to update the payment mode. Driver ID : " + driverId, e);
         }
+    }
+
+    @Override
+    public Optional<Ride> getRideById(String id) {
+        return rideRepository.findById(id);
     }
 }

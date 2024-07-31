@@ -23,7 +23,7 @@ import com.i2i.zapcab.dto.CustomerProfileDto;
 import com.i2i.zapcab.dto.RideHistoryResponseDto;
 import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideRequestDto;
-import com.i2i.zapcab.dto.StatusDto;
+import com.i2i.zapcab.dto.RideStatusDto;
 import com.i2i.zapcab.dto.TierDto;
 import com.i2i.zapcab.dto.UpdateRideDto;
 import com.i2i.zapcab.dto.UpdateRideResponseDto;
@@ -154,14 +154,18 @@ public class CustomerController {
     public ApiResponseDto<?> getAssignedDriverDetails() {
         String id = JwtDecoder.extractUserIdFromToken();
         try {
+            logger.info("Fetching assigned driver details for customer ID: {}", id);
             AssignedDriverDto assignedDriverDto = customerService.getAssignedDriverDetails(id);
             if (!ObjectUtils.isEmpty(assignedDriverDto)) {
+                logger.info("Assigned driver details found for customer ID: {}", id);
                 return ApiResponseDto.statusOk(assignedDriverDto);
             } else {
-                return ApiResponseDto.statusAccepted("Searching for captain to accept request");
+                logger.info("No assigned driver found for customer ID: {}. Searching for captain to accept request.", id);
+                return ApiResponseDto.statusAccepted("Waiting for captain to accept request");
             }
         } catch (DatabaseException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Error occurred while fetching assigned driver details for customer ID: {}. Error: {}",
+                    id, e.getMessage(), e);
             return ApiResponseDto.statusInternalServerError(null, e);
         }
     }
@@ -179,14 +183,18 @@ public class CustomerController {
     public ApiResponseDto<?> getAllRideHistory() {
         String id = JwtDecoder.extractUserIdFromToken();
         try {
+            logger.info("Fetching ride history for customer ID: {}", id);
             List<RideHistoryResponseDto> rideHistoryResponseDtos = customerService.getAllRideHistoryById(id);
             if (!rideHistoryResponseDtos.isEmpty()) {
+                logger.info("Ride history found for customer ID: {}", id);
                 return ApiResponseDto.statusOk(rideHistoryResponseDtos);
             } else {
-                return ApiResponseDto.statusNotFound("No data Found");
+                logger.info("No ride history found for customer ID: {}", id);
+                return ApiResponseDto.statusNotFound("No data found");
             }
         } catch (DatabaseException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Error occurred while fetching ride history for customer ID: {}. Error: {}",
+                    id, e.getMessage(), e);
             return ApiResponseDto.statusInternalServerError(null, e);
         }
     }
@@ -202,10 +210,13 @@ public class CustomerController {
     public ApiResponseDto<?> deleteCustomerById() {
         String id = JwtDecoder.extractUserIdFromToken();
         try {
+            logger.info("Attempting to delete customer with ID: {}", id);
             userService.deleteById(id);
+            logger.info("Successfully deleted customer with ID: {}", id);
             return ApiResponseDto.statusOk("Deleted successfully");
         } catch (DatabaseException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Error occurred while deleting customer with ID: {}. Error: {}",
+                    id, e.getMessage(), e);
             return ApiResponseDto.statusInternalServerError(null, e);
         }
     }
@@ -301,9 +312,9 @@ public class CustomerController {
         String userId = JwtDecoder.extractUserIdFromToken();
         try {
             String customerId = customerService.retrieveCustomerIdByUserId(userId);
-            StatusDto statusDto = rideRequestService.cancelRide(customerId);
+            RideStatusDto rideStatusDto = rideRequestService.cancelRide(customerId);
             logger.info("Cancelled the ride successfully.");
-            return ApiResponseDto.statusOk(statusDto);
+            return ApiResponseDto.statusOk(rideStatusDto);
         } catch (NotFoundException e) {
             logger.warn("User with ID {} not found ", userId);
             return ApiResponseDto.statusNotFound("Invalid ID");

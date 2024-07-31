@@ -7,9 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
-import com.i2i.zapcab.common.FareCalculator;
 import com.i2i.zapcab.dto.AssignedDriverDto;
 import com.i2i.zapcab.dto.CheckVehicleAvailabilityDto;
 import com.i2i.zapcab.dto.CustomerProfileDto;
@@ -44,9 +42,10 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private HistoryService historyService;
     @Autowired
-    private OtpServiceImpl otpService;
+    private OtpService otpService;
+    @Autowired
+    private FareCalculatorService fareCalculatorService;
 
-    private final FareCalculator fareCalculator = new FareCalculator();
 
     @Override
     public VehicleAvailabilityResponseDto getAvailableVehiclesWithFare(
@@ -56,28 +55,28 @@ public class CustomerServiceImpl implements CustomerService {
         VehicleAvailabilityResponseDto vehicleAvailabilityResponseDto = new VehicleAvailabilityResponseDto();
         List<RideRequestResponseDto> rideRequestResponseDtos = new ArrayList<>();
         try {
-            if (checkVehicleAvailabilityDto.getPickupPoint().
-                    equalsIgnoreCase(checkVehicleAvailabilityDto.getDropPoint())) {
+            if (checkVehicleAvailabilityDto.getPickupPoint().toUpperCase().
+                    equalsIgnoreCase(checkVehicleAvailabilityDto.getDropPoint().toUpperCase())) {
                 logger.error("Same pickup and drop point : {}",
                         checkVehicleAvailabilityDto.getPickupPoint());
                 return null;
             }
             logger.info("Fetching vehicles for pickup point: {}",
-                    checkVehicleAvailabilityDto.getPickupPoint());
+                    checkVehicleAvailabilityDto.getPickupPoint().toUpperCase());
             vehicleLocationService.getVehiclesByLocation(
-                            checkVehicleAvailabilityDto.getPickupPoint())
+                            checkVehicleAvailabilityDto.getPickupPoint().toUpperCase())
                     .forEach(vehicle -> {
-                        RideRequestResponseDto rideRequestResponseDto = fareCalculator.calculateFare(
-                                checkVehicleAvailabilityDto.getPickupPoint(),
-                                checkVehicleAvailabilityDto.getDropPoint(),
+                        RideRequestResponseDto rideRequestResponseDto = fareCalculatorService.calculateFare(
+                                checkVehicleAvailabilityDto.getPickupPoint().toUpperCase(),
+                                checkVehicleAvailabilityDto.getDropPoint().toUpperCase(),
                                 vehicle.getVehicle().getCategory());
                         rideRequestResponseDtos.add(rideRequestResponseDto);
                     });
-            vehicleAvailabilityResponseDto.setPickup(checkVehicleAvailabilityDto.getPickupPoint());
-            vehicleAvailabilityResponseDto.setDrop(checkVehicleAvailabilityDto.getDropPoint());
+            vehicleAvailabilityResponseDto.setPickup(checkVehicleAvailabilityDto.getPickupPoint().toUpperCase());
+            vehicleAvailabilityResponseDto.setDrop(checkVehicleAvailabilityDto.getDropPoint().toUpperCase());
             vehicleAvailabilityResponseDto.setRideRequestResponseDtos(rideRequestResponseDtos);
             logger.info("Fetched vehicles successfully for pickup point {}",
-                    checkVehicleAvailabilityDto.getPickupPoint());
+                    checkVehicleAvailabilityDto.getPickupPoint().toUpperCase());
             return vehicleAvailabilityResponseDto;
         } catch (Exception e) {
             throw new DatabaseException("Error occurred while fetching vehicles" +
@@ -88,7 +87,10 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public boolean saveRideRequest(String id, RideRequestDto rideRequestDto) {
         try {
-            return rideRequestService.saveRideRequest(customerRepository.findByUserId(id), rideRequestDto);
+            logger.info("Attempting to save ride request for user ID: {}", id);
+            boolean result = rideRequestService.saveRideRequest(customerRepository.findByUserId(id), rideRequestDto);
+            logger.info("Ride request saved successfully for user ID: {}", id);
+            return result;
         } catch (Exception e) {
             logger.error("Error Occurred while adding ride request {}", e.getMessage());
             throw new DatabaseException("Error Occurred while saving ride request", e);
@@ -107,12 +109,12 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void saveCustomer(Customer customer) {
         try {
+            logger.info("Attempting to save customer: {}", customer.getUser().getName());
             customerRepository.save(customer);
+            logger.info("Customer saved successfully: {}", customer.getUser().getName());
         } catch (Exception e) {
-            logger.error("Un expected error happened while saving customer" +
-                    customer.getUser().getName(), e);
-            throw new DatabaseException("Un expected error happened while saving customer" +
-                    customer.getUser().getName(), e);
+            logger.error("Unexpected error occurred while saving customer: {}. Error: {}", customer.getUser().getName(), e.getMessage(), e);
+            throw new DatabaseException("Unexpected error occurred while saving customer: " + customer.getUser().getName(), e);
         }
     }
 
@@ -129,19 +131,33 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public AssignedDriverDto getAssignedDriverDetails(String id) {
         try {
+            logger.info("Fetching assigned driver details for customer ID: {}", id);
             RideRequest rideRequest = rideRequestService.checkStatusAssignedOrNot(id);
+            if (rideRequest == null) {
+                logger.info("No ride request found for customer ID: {}", id);
+                return null;
+            }
             Ride ride = rideService.getRideByRideRequest(rideRequest.getId());
+            if (ride == null) {
+                logger.info("No ride found for ride request ID: {}", rideRequest.getId());
+                return null;
+            }
             String otp = otpService.generateOTP(id);
-            AssignedDriverDto assignedDriverDto = AssignedDriverDto.builder().Otp(otp).
-                    name(ride.getDriver().getUser().getName()).
-                    mobileNumber(ride.getDriver().getUser().getMobileNumber()).
-                    ratings(ride.getDriver().getRatings()).
-                    category(ride.getDriver().getVehicle().getCategory()).
-                    model(ride.getDriver().getVehicle().getModel()).
-                    licensePlate(ride.getDriver().getVehicle().getLicensePlate()).build();
-            return !ObjectUtils.isEmpty(ride) ? assignedDriverDto : null;
+            AssignedDriverDto assignedDriverDto = AssignedDriverDto.builder()
+                    .Otp(otp)
+                    .name(ride.getDriver().getUser().getName())
+                    .mobileNumber(ride.getDriver().getUser().getMobileNumber())
+                    .ratings(ride.getDriver().getRatings())
+                    .category(ride.getDriver().getVehicle().getCategory())
+                    .model(ride.getDriver().getVehicle().getModel())
+                    .licensePlate(ride.getDriver().getVehicle().getLicensePlate())
+                    .build();
+
+            logger.info("Assigned driver details retrieved successfully for customer ID: {}", id);
+            return assignedDriverDto;
         } catch (Exception e) {
-            throw new DatabaseException("Error Occurred while fetch assigned driver for the customer with id :" + id, e);
+            logger.error("Error occurred while fetching assigned driver details for customer ID: {}. Error: {}", id, e.getMessage(), e);
+            throw new DatabaseException("Error occurred while fetching assigned driver for the customer with ID: " + id, e);
         }
     }
 
@@ -192,6 +208,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
+
     @Override
     public String retrieveCustomerIdByUserId(String userId) {
         try {
@@ -210,8 +227,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public TierDto getCustomerTier(String userId) {
-        TierDto tierDto = historyService.getCustomerTier(userId);
-        updateCustomerTier(userId, tierDto);
-        return tierDto;
+        try {
+            logger.info("Attempting to get tier for the customer {}", userId);
+            TierDto tierDto = historyService.getCustomerTier(userId);
+            logger.info("Updating the customer {} tier", userId);
+            updateCustomerTier(userId, tierDto);
+            return tierDto;
+        } catch (Exception e) {
+            throw new DatabaseException("Failed to get or update the customer tier");
+        }
     }
 }

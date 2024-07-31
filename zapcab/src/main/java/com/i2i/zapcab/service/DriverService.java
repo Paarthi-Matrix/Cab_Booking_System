@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.GetRideRequestListsDto;
+import com.i2i.zapcab.dto.CancelRideRequestDto;
+import com.i2i.zapcab.dto.CancelRideResponseDto;
 import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
 import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
 import com.i2i.zapcab.dto.OtpRequestDto;
@@ -73,7 +75,9 @@ public interface DriverService {
      * @return Driver {@link Driver}
      */
     Driver getByMobileNumber(String mobileNumber);
+
     void updateDriverStatusAndLocation(String id, UpdateDriverStatusDto updateDriverStatusDto);
+
     void changePassword(String id, String newPassword);
 
     /**
@@ -142,4 +146,6 @@ public interface DriverService {
      *       If error occurs while retrieving the driver ID.
      */
     String retrieveDriverIdByUserId(String userId);
+
+    CancelRideResponseDto cancelRide(CancelRideRequestDto cancelRideRequestDto, String id);
 }

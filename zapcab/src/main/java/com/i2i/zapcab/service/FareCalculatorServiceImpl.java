@@ -1,4 +1,4 @@
-package com.i2i.zapcab.common;
+package com.i2i.zapcab.service;
 
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.i2i.zapcab.dto.RideRequestResponseDto;
 import com.i2i.zapcab.exception.DatabaseException;
-import com.i2i.zapcab.service.ScheduledTaskService;
 
 import static com.i2i.zapcab.common.ZapCabConstant.ASSUMED_PETROL_PRICE;
 import static com.i2i.zapcab.common.ZapCabConstant.AUTO;
@@ -32,8 +31,8 @@ import static com.i2i.zapcab.common.ZapCabConstant.XUV;
 import static com.i2i.zapcab.common.ZapCabConstant.XUV_RATE_PER_KM;
 import static com.i2i.zapcab.common.ZapCabConstant.XUV_SPEED_PER_KM;
 
-public class FareCalculator {
-    private static final Logger logger = LoggerFactory.getLogger(FareCalculator.class);
+public class FareCalculatorServiceImpl implements FareCalculatorService {
+    private static final Logger logger = LoggerFactory.getLogger(FareCalculatorServiceImpl.class);
     private static final Map<String, Integer> distances = new HashMap<>();
 
     static {
@@ -44,16 +43,7 @@ public class FareCalculator {
 
     @Autowired
     private ScheduledTaskService scheduledTaskService;
-    /**
-     * <p>
-     * Calculates the fare based on the pickup and drop points and vehicle category.
-     * </p>
-     *
-     * @param pickup   The pickup location.
-     * @param drop     The drop location.
-     * @param category The vehicle category.
-     * @return A RideRequestResponseDto containing the fare details.
-     */
+
     public RideRequestResponseDto calculateFare(String pickup, String drop, String category) {
         logger.info("Calculating fare for route: {} to {}", pickup, drop);
         int airportCharge = 0;
@@ -80,7 +70,6 @@ public class FareCalculator {
             int distance, int currentHour, String category, int airportCharge) {
         RideRequestResponseDto rideRequestResponseDto = new RideRequestResponseDto();
         try {
-            //todo petrol price api hit
             Map<String, Integer> categoryRates = Map.of(
                     XUV, XUV_RATE_PER_KM,
                     SEDAN, SEDAN_RATE_PER_KM,

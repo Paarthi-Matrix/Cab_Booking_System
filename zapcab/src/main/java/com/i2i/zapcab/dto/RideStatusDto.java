@@ -20,6 +20,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StatusDto {
+public class RideStatusDto {
     private String status;
 }

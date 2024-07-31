@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByMobileNumber(String mobileNumber) {
         try {
+            logger.info("Fetching the user details by providing mobile number {}", mobileNumber);
             return userRepository.findByMobileNumber(mobileNumber);
         } catch (Exception e) {
             logger.error("Unexpected error occurred while fetching the user for mobile number {}", mobileNumber);
@@ -49,6 +50,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveUsers(User user) {
         try {
+            logger.info("Saving the user details for the user {}", user.getName());
             userRepository.save(user);
         } catch (Exception e) {
             logger.error("Un expected error happened while saving/updating user " +
@@ -65,6 +67,8 @@ public class UserServiceImpl implements UserService {
         assert user != null;
         user.setPassword(passwordEncoder.encode(newPassword));
         try {
+            logger.info("Updating the password for the user : {} ", user.getId(),"and their mobile " +
+                            "number is", user.getMobileNumber());
             userRepository.save(user);
         } catch (Exception e) {
             logger.error("Un expected error happened while updating the new password for the user");
@@ -80,11 +84,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public MaskMobileNumberResponseDto updateMaskMobileNumber(String id, boolean mask) {
-        User user = userRepository.findById(id).orElse(null);
-        assert user != null;
-        user.setMaskedMobileNumber(mask);
-        userRepository.save(user);
-        return MaskMobileNumberResponseDto.builder().message("Updated successfully").build();
+        try {
+            logger.info("Masking the {} mobile number", id);
+            User user = userRepository.findById(id).orElse(null);
+            assert user != null;
+            user.setMaskedMobileNumber(mask);
+            logger.info("Successfully updated the value");
+            userRepository.save(user);
+            return MaskMobileNumberResponseDto.builder().message("Updated successfully").build();
+        } catch (Exception e) {
+            logger.error("Error while updating the user masking their mobile number", e.getMessage(), e);
+            throw new DatabaseException("Unable to update the user's wish", e);
+        }
     }
 
     @Override

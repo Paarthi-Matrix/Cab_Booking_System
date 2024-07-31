@@ -38,9 +38,9 @@ public class VehicleLocationServiceImpl implements VehicleLocationService {
     @Transactional
     public void updateVehicleLocationByVehicleId(String location, Vehicle vehicle) {
         VehicleLocation vehicleLocation = vehicleLocationRepository.findByVehicleId(vehicle.getId());
-        vehicleLocation.setLocation(location);
+        vehicleLocation.setLocation(location.toUpperCase());
         try {
-            logger.debug("Saving the updated vehicle location...");
+            logger.info("Saving the updated vehicle location...");
             vehicleLocationRepository.save(vehicleLocation);
         } catch (Exception e) {
             logger.error("Unexpected error occurred while updating the vehicle " +
@@ -54,6 +54,7 @@ public class VehicleLocationServiceImpl implements VehicleLocationService {
     @Transactional
     public List<VehicleLocation> getVehiclesByLocation(String location) {
         try {
+            logger.info("Fetching the vehicles for the given location {}", location);
             return vehicleLocationRepository.findAllByLocation(location);
         } catch (Exception e) {
             logger.error("Error Occurred while fetching vehicles by its location: {}", location, e);
@@ -66,6 +67,7 @@ public class VehicleLocationServiceImpl implements VehicleLocationService {
     @Transactional
     public void saveVehicleLocation(VehicleLocation vehicleLocation) {
         try {
+            logger.info("Saves the vehicle location details {} ", vehicleLocation.getLocation());
             vehicleLocationRepository.save(vehicleLocation);
         } catch (Exception e) {
             logger.error("Unexpected error occurred while saving vehicle {}," +

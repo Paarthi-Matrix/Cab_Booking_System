@@ -1,7 +1,18 @@
 package com.i2i.zapcab.controller;
 
+import com.i2i.zapcab.dto.CancelRideRequestDto;
+import com.i2i.zapcab.dto.CancelRideResponseDto;
 import java.util.List;
 
+import com.i2i.zapcab.dto.PaymentModeDto;
+import com.i2i.zapcab.exception.DatabaseException;
+import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
+import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
+import com.i2i.zapcab.dto.OTPResponseDto;
+import com.i2i.zapcab.dto.OtpRequestDto;
+
+import com.i2i.zapcab.service.AuthenticationServiceImpl;
+import com.i2i.zapcab.service.RideService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,30 +29,22 @@ import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.ChangePasswordRequestDto;
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.GetRideRequestListsDto;
-import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
-import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
-import com.i2i.zapcab.dto.OTPResponseDto;
-import com.i2i.zapcab.dto.OtpRequestDto;
-import com.i2i.zapcab.dto.PaymentModeDto;
 import com.i2i.zapcab.dto.RequestedRideDto;
 import com.i2i.zapcab.dto.RideDetailsDto;
 import com.i2i.zapcab.dto.UpdateDriverStatusDto;
-import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.helper.JwtDecoder;
-import com.i2i.zapcab.service.AuthenticationServiceImpl;
 import com.i2i.zapcab.service.DriverService;
-import com.i2i.zapcab.service.RideService;
 import com.i2i.zapcab.service.UserService;
 
 /**
  * <p>
- * The DriverController class handles HTTP requests related to driver operations.
- * This includes updating the driver's status and location, and changing the driver's password.
+ *     The DriverController class handles HTTP requests related to driver operations.
+ *     This includes updating the driver's status and location, and changing the driver's password.
  * </p>
  * <p>
- * The methods in this controller return ApiResponseDto objects, which encapsulate the response
- * data and status code for the API responses.
+ *     The methods in this controller return ApiResponseDto objects, which encapsulate the response
+ *     data and status code for the API responses.
  * </p>
  */
 @RestController
@@ -63,10 +66,9 @@ public class DriverController {
      * NOTE : The status of the driver can be as follows,
      * </p>
      *     <ol>
-     *         <li>ON DUTY</li>
-     *         <li>OFF DUTY</li>
+     *         <li>ONDUTY</li>
+     *         <li>OFFDUTY</li>
      *         <li>SUSPENDED</li>
-     *         <li>TEMPORARILY SUSPENDED</li>
      *     </ol>
      * </p>
      *
@@ -102,10 +104,21 @@ public class DriverController {
     public ApiResponseDto<List<RequestedRideDto>> getAvailableRideRequest(@RequestBody GetRideRequestListsDto getRideRequestListsDto) {
         List<RequestedRideDto> requestedRideDtos = null;
         try {
+            logger.info("Fetching available ride requests with filter: {}", getRideRequestListsDto);
             requestedRideDtos = driverService.getRideRequests(getRideRequestListsDto);
-            return ApiResponseDto.statusOk(requestedRideDtos);
+            if (requestedRideDtos != null && !requestedRideDtos.isEmpty()) {
+                logger.info("Found {} ride requests.", requestedRideDtos.size());
+                return ApiResponseDto.statusOk(requestedRideDtos);
+            } else {
+                logger.info("No ride requests found.");
+                return ApiResponseDto.statusNotFound(requestedRideDtos);
+            }
         } catch (NotFoundException e) {
-            return ApiResponseDto.statusNotFound(requestedRideDtos, e);
+            logger.error("Ride requests not found. Error: {}", e.getMessage(), e);
+            return ApiResponseDto.statusNotFound(null, e);
+        } catch (DatabaseException e) {
+            logger.error("Error occurred while fetching ride requests. Error: {}", e.getMessage(), e);
+            return ApiResponseDto.statusInternalServerError(null, e);
         }
     }
 
@@ -119,13 +132,17 @@ public class DriverController {
      */
     @PatchMapping("/me/password")
     public ApiResponseDto<String> changePassword(@RequestBody ChangePasswordRequestDto changePasswordRequestDto) {
+        String id = JwtDecoder.extractUserIdFromToken();
         try {
-            String id = JwtDecoder.extractUserIdFromToken();
+            logger.info("Attempting to change password for driver ID: {}", id);
             driverService.changePassword(id, changePasswordRequestDto.getNewPassword());
+            logger.info("Password changed successfully for driver ID: {}", id);
+            return ApiResponseDto.statusOk("Driver password changed successfully!");
         } catch (DatabaseException e) {
+            logger.error("Error occurred while changing password for driver ID: {}. Error: {}",
+                    id, e.getMessage(), e);
             return ApiResponseDto.statusInternalServerError("Unexpected error occurred while changing password", e);
         }
-        return ApiResponseDto.statusOk("Driver password changed successfully!");
     }
 
     /**
@@ -152,39 +169,56 @@ public class DriverController {
         }
     }
 
+    /**
+     * This method is used to masks the mobile number according to the user's wish
+     * If they wish not to expose the number, they can set the option to true.
+     *
+     * @param maskMobileNumberRequestDto {@link MaskMobileNumberRequestDto}
+     * @return ApiResponseDto<MaskMobileNumberResponseDto>
+     * Return a message according to the action taken
+     */
     @PatchMapping("/me/mask")
     public ApiResponseDto<MaskMobileNumberResponseDto> maskMobileNumber(@RequestBody MaskMobileNumberRequestDto maskMobileNumberRequestDto) {
+        String id = JwtDecoder.extractUserIdFromToken();
         MaskMobileNumberResponseDto maskMobileNumberResponseDto = null;
         try {
-            String id = JwtDecoder.extractUserIdFromToken();
-            return ApiResponseDto.statusOk(driverService.updateMaskMobileNumber(id, maskMobileNumberRequestDto));
+            logger.info("Attempting to mask mobile number for driver ID: {}", id);
+            maskMobileNumberResponseDto = driverService.updateMaskMobileNumber(id, maskMobileNumberRequestDto);
+            logger.info("Mobile number masked successfully for driver ID: {}", id);
+            return ApiResponseDto.statusOk(maskMobileNumberResponseDto);
         } catch (DatabaseException e) {
+            logger.error("Error occurred while masking mobile number for driver ID: {}, id",
+                    e.getMessage(), e);
             return ApiResponseDto.statusInternalServerError(maskMobileNumberResponseDto, e);
         }
     }
 
     /**
      * <p>
-     * Validated the otp provided by the customer to start the ride.
+     * Validates the OTP provided by the customer to start the ride.
      * </p>
      *
      * @param otpRequestDto {@link OtpRequestDto}
-     * @return OTPResponseDto
-     * provides the successfull message if the otp is correct otherwise it returns an invalid message
+     * @return ApiResponseDto<OTPResponseDto>
+     * provides the successful message if the OTP is correct otherwise it returns an invalid message
      */
     @PostMapping("/me/otp")
-    ApiResponseDto<OTPResponseDto> otpValidation(@RequestBody OtpRequestDto otpRequestDto) {
+    public ApiResponseDto<OTPResponseDto> otpValidation(@RequestBody OtpRequestDto otpRequestDto) {
         String id = JwtDecoder.extractUserIdFromToken();
         OTPResponseDto otpResponseDto = null;
         try {
+            logger.info("Received request to validate OTP for user ID: {}", id);
             if (driverService.otpValidation(otpRequestDto, id)) {
-                otpResponseDto = OTPResponseDto.builder().msg("Otp validated successfully ! Your ride has been started").build();
+                otpResponseDto = OTPResponseDto.builder().msg("Otp validated successfully! Your ride has been started").build();
+                logger.info("Successfully validated OTP for user ID: {}", id);
                 return ApiResponseDto.statusOk(otpResponseDto);
             } else {
-                otpResponseDto = OTPResponseDto.builder().msg("Invalid otp !!!").build();
+                otpResponseDto = OTPResponseDto.builder().msg("Invalid otp!!!").build();
+                logger.warn("Invalid OTP provided for user ID: {}", id);
                 return ApiResponseDto.statusOk(otpResponseDto);
             }
         } catch (DatabaseException e) {
+            logger.error("Error occurred while validating OTP for user ID: {}", id, e);
             return ApiResponseDto.statusInternalServerError(otpResponseDto, e);
         }
     }
@@ -217,6 +251,22 @@ public class DriverController {
         }
     }
 
+    @PatchMapping("/me/cancel")
+    public ApiResponseDto<CancelRideResponseDto> cancelRide(@RequestBody CancelRideRequestDto cancelRideRequestDto) {
+        String userId = JwtDecoder.extractUserIdFromToken();
+        CancelRideResponseDto cancelRideResponseDto = null;
+        try {
+            logger.info("Attempting to cancel ride for user ID: {} with request: {}",
+                    userId, cancelRideRequestDto);
+            cancelRideResponseDto = driverService.cancelRide(cancelRideRequestDto, userId);
+            logger.info("Ride cancellation successful for user ID: {}", userId);
+            return ApiResponseDto.statusOk(cancelRideResponseDto);
+        } catch (DatabaseException e) {
+            logger.error("Error occurred while cancelling ride for user ID: {}", userId, e.getMessage(), e);
+            return ApiResponseDto.statusInternalServerError(cancelRideResponseDto, e);
+        }
+    }
+
     /**
      * <p>
      * Deletes the authenticated driver using the user ID from the JWT token.
@@ -224,14 +274,16 @@ public class DriverController {
      *
      * @return {@link ApiResponseDto}
      */
-    @DeleteMapping("me")
+    @DeleteMapping("/me")
     public ApiResponseDto<?> deleteDriverById() {
         String id = JwtDecoder.extractUserIdFromToken();
         try {
+            logger.info("Attempting to delete driver with ID: {}", id);
             userService.deleteById(id);
+            logger.info("Successfully deleted driver with ID: {}", id);
             return ApiResponseDto.statusOk("Deleted successfully");
         } catch (DatabaseException e) {
-            logger.error(e.getMessage(), e);
+            logger.error("Error occurred while deleting driver with ID: {}. Error: {}", id, e.getMessage(), e);
             return ApiResponseDto.statusInternalServerError(null, e);
         }
     }

@@ -10,11 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import com.i2i.zapcab.common.FareCalculator;
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.RideRequestDto;
 import com.i2i.zapcab.dto.RideRequestResponseDto;
-import com.i2i.zapcab.dto.StatusDto;
+import com.i2i.zapcab.dto.RideStatusDto;
 import com.i2i.zapcab.dto.UpdateRideDto;
 import com.i2i.zapcab.dto.UpdateRideResponseDto;
 import com.i2i.zapcab.exception.DatabaseException;
@@ -35,7 +34,8 @@ public class RideRequestServiceImpl implements RideRequestService {
     private static final Logger logger = LogManager.getLogger(RideRequestServiceImpl.class);
     @Autowired
     RideRequestRepository rideRequestRepository;
-    private final FareCalculator fareCalculator = new FareCalculator();
+    @Autowired
+    private FareCalculatorService fareCalculatorService;
 
     private final RideRequestMapper rideRequestMapper = new RideRequestMapper();
 
@@ -112,7 +112,7 @@ public class RideRequestServiceImpl implements RideRequestService {
             rideRequest.setPickupPoint(updateRideDto.getPickupPoint());
             rideRequest.setDropPoint(updateRideDto.getDropPoint());
             rideRequest.setVehicleCategory(updateRideDto.getVehicleCategory());
-            RideRequestResponseDto fareResponse = fareCalculator.calculateFare(updateRideDto.getPickupPoint(),
+            RideRequestResponseDto fareResponse = fareCalculatorService.calculateFare(updateRideDto.getPickupPoint(),
                     updateRideDto.getDropPoint(), updateRideDto.getVehicleCategory());
             if (null != fareResponse) {
                 rideRequest.setFare(fareResponse.getFare());
@@ -133,7 +133,7 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
-    public StatusDto cancelRide(String customerId) {
+    public RideStatusDto cancelRide(String customerId) {
         try {
             Optional<RideRequest> rideRequestOptional = rideRequestRepository.findByCustomerId(customerId);
             if (rideRequestOptional.isEmpty()) {
@@ -143,7 +143,7 @@ public class RideRequestServiceImpl implements RideRequestService {
             RideRequest rideRequest = rideRequestOptional.get();
             rideRequest.setStatus(RIDE_CANCELLED);
             rideRequestRepository.save(rideRequest);
-            return StatusDto.builder()
+            return RideStatusDto.builder()
                     .status(rideRequest.getStatus())
                     .build();
         } catch (Exception e) {

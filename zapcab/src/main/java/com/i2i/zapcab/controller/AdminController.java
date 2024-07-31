@@ -1,5 +1,6 @@
 package com.i2i.zapcab.controller;
 
+import com.i2i.zapcab.exception.DatabaseException;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,7 +17,6 @@ import com.i2i.zapcab.dto.ApiResponseDto;
 import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
 import com.i2i.zapcab.dto.UpdatePendingRequestDto;
-import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.service.AdminService;
 
 /**
@@ -28,7 +28,7 @@ import com.i2i.zapcab.service.AdminService;
  * </p>
  */
 @RestController
-@RequestMapping("/v1/admins")
+@RequestMapping("/v1/admin")
 public class AdminController {
     private static final Logger logger = LogManager.getLogger(AdminController.class);
     @Autowired
@@ -36,21 +36,22 @@ public class AdminController {
 
     /**
      * <p>
-     * This method is responsible for fetching the pending requests for the driver,
-     * which is used by admin to approve or reject the driver's request to ride or work as
-     * ZapCab driver/rider.
+     *     This method is responsible for fetching the pending requests for the driver,
+     *     which is used by admin to approve or reject the driver's request to ride or work as
+     *     ZapCab driver/rider.
      * </p>
      * <ul>
      *     <li>This method uses the pagination concept.</li>
      *     <li>Provide proper page and size for the pagination</li>
      * </ul>
-     *
-     * @param page Page to be fetched.
-     * @param size Number of rows to be fetched.
-     * @return ApiResponseDto<Page < FetchAllPendingRequestsDto>> {@link FetchAllPendingRequestsDto}
+     * @param page
+     *        Page to be fetched.
+     * @param size
+     *        Number of rows to be fetched.
+     * @return ApiResponseDto<Page<FetchAllPendingRequestsDto>> {@link FetchAllPendingRequestsDto}
      */
     @GetMapping
-    public ApiResponseDto<Page<FetchAllPendingRequestsDto>> fetchAllPendingRequests(
+    public ApiResponseDto<Page<FetchAllPendingRequestsDto>> fetchAllPendingRequests (
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         logger.debug("Entering into the method to fetch all the requests..");
@@ -92,3 +93,5 @@ public class AdminController {
         return ApiResponseDto.statusOk(authenticationResponse);
     }
 }
+
+

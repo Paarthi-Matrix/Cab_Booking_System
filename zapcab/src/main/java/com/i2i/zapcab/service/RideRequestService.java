@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
 import com.i2i.zapcab.dto.RideRequestDto;
-import com.i2i.zapcab.dto.StatusDto;
+import com.i2i.zapcab.dto.RideStatusDto;
 import com.i2i.zapcab.dto.UpdateRideDto;
 import com.i2i.zapcab.dto.UpdateRideResponseDto;
 import com.i2i.zapcab.exception.DatabaseException;
@@ -94,9 +94,9 @@ public interface RideRequestService {
      * </p>
      *
      * @param customerId User's particular id
-     * @return {@link StatusDto}
+     * @return {@link RideStatusDto}
      * Contains the updated status of the ride request.
      * @throws DatabaseException if an error occurs while updating the ride request status.
      */
-    StatusDto cancelRide(String customerId);
+    RideStatusDto cancelRide(String customerId);
 }

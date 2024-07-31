@@ -7,26 +7,9 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-
-import com.i2i.zapcab.dto.DriverSelectedRideDto;
-import com.i2i.zapcab.dto.GetRideRequestListsDto;
-import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
-import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
-import com.i2i.zapcab.dto.OtpRequestDto;
-import com.i2i.zapcab.dto.RequestedRideDto;
-import com.i2i.zapcab.dto.RideDetailsDto;
-import com.i2i.zapcab.dto.StatusDto;
-import com.i2i.zapcab.dto.UpdateDriverStatusDto;
-import com.i2i.zapcab.exception.DatabaseException;
-import com.i2i.zapcab.exception.NotFoundException;
-import com.i2i.zapcab.helper.RideRequestStatusEnum;
-import com.i2i.zapcab.mapper.RideRequestMapper;
-import com.i2i.zapcab.model.Driver;
-import com.i2i.zapcab.model.RideRequest;
-import com.i2i.zapcab.model.User;
-import com.i2i.zapcab.repository.DriverRepository;
 
 import static com.i2i.zapcab.common.ZapCabConstant.ASSIGNED;
 import static com.i2i.zapcab.common.ZapCabConstant.DRIVER_STATUS;
@@ -35,6 +18,27 @@ import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_VEHICLE_STATUS;
 import static com.i2i.zapcab.common.ZapCabConstant.PAYMENT_CASH;
 import static com.i2i.zapcab.common.ZapCabConstant.RIDE_COMPLETED;
 import static com.i2i.zapcab.common.ZapCabConstant.RIDE_STARTED;
+import static com.i2i.zapcab.common.ZapCabConstant.TEMPORARILY_SUSPENDED;
+import com.i2i.zapcab.dto.CancelRideRequestDto;
+import com.i2i.zapcab.dto.CancelRideResponseDto;
+import com.i2i.zapcab.dto.DriverSelectedRideDto;
+import com.i2i.zapcab.dto.GetRideRequestListsDto;
+import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
+import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
+import com.i2i.zapcab.dto.OtpRequestDto;
+import com.i2i.zapcab.dto.RequestedRideDto;
+import com.i2i.zapcab.dto.RideDetailsDto;
+import com.i2i.zapcab.dto.RideStatusDto;
+import com.i2i.zapcab.dto.UpdateDriverStatusDto;
+import com.i2i.zapcab.exception.DatabaseException;
+import com.i2i.zapcab.exception.NotFoundException;
+import com.i2i.zapcab.helper.RideRequestStatusEnum;
+import com.i2i.zapcab.mapper.RideRequestMapper;
+import com.i2i.zapcab.model.Driver;
+import com.i2i.zapcab.model.Ride;
+import com.i2i.zapcab.model.RideRequest;
+import com.i2i.zapcab.model.User;
+import com.i2i.zapcab.repository.DriverRepository;
 
 /**
  * Implements {@link DriverService}
@@ -199,7 +203,7 @@ public class DriverServiceImpl implements DriverService {
             User user = userService.getUserByMobileNumber(otpRequestDto.getCustomerMobileNumber());
             boolean isValid = otpService.validateOTP(user.getId(), otpRequestDto.getOtp());
             if (isValid) {
-                rideService.updateRideStatus(id, StatusDto.builder().status(RIDE_STARTED).build());
+                rideService.updateRideStatus(id, RideStatusDto.builder().status(RIDE_STARTED).build());
             }
             logger.info("OTP validation result for mobile number {}: {}", otpRequestDto.getCustomerMobileNumber(), isValid);
             return isValid;
@@ -258,5 +262,37 @@ public class DriverServiceImpl implements DriverService {
             logger.error("Failed to retrieve the driver ID for user ID: {}", userId, e);
             throw new DatabaseException("Failed to retrieve the driver ID for user ID: " + userId, e);
         }
+    }
+
+    @Override
+    public CancelRideResponseDto cancelRide(CancelRideRequestDto cancelRideRequestDto, String id) {
+        Optional<Ride> getRide = rideService.getRideById(cancelRideRequestDto.getRideId());
+        Optional<Driver> getDrive = driverRepository.findById(id);
+        try {
+            if (!getRide.isPresent()) {
+                logger.error("No ride found for the id {}", cancelRideRequestDto.getRideId());
+            } else if (!getDrive.isPresent()) {
+                logger.error("No such driver found for the given id : {}", id);
+            }
+            Driver driver = getDrive.get();
+            Ride ride = getRide.get();
+            if (driver.getNoOfCancellation() == 0) {
+                driver.setStatus(TEMPORARILY_SUSPENDED);
+            }
+            ride.setStatus("cancel");
+            driver.setNoOfCancellation(driver.getNoOfCancellation() - 1);
+            return CancelRideResponseDto.builder().message("You have only one cancellation more !!").build();
+        } catch (Exception e) {
+            throw new DatabaseException("Unable to cancel the ride : "+cancelRideRequestDto.getRideId(), e);
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void updateDriverStatusAndCancellation() {
+        driverRepository.findDriversByStatusAndCancellation()
+                .forEach(driver -> {
+                    driver.setStatus(INITIAL_DRIVER_STATUS);
+                    driver.setNoOfCancellation(2);
+                });
     }
 }

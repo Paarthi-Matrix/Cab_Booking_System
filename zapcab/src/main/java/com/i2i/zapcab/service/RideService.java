@@ -5,11 +5,12 @@ import org.springframework.stereotype.Component;
 import com.i2i.zapcab.dto.PaymentModeDto;
 import com.i2i.zapcab.dto.RideRatingDto;
 import com.i2i.zapcab.dto.RideResponseDto;
-import com.i2i.zapcab.dto.StatusDto;
+import com.i2i.zapcab.dto.RideStatusDto;
 import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.model.RideRequest;
+import java.util.Optional;
 
 /**
  * <p>
@@ -50,7 +51,7 @@ public interface RideService {
      */
     Ride getRideByRideRequest(String id);
 
-    public RideResponseDto updateRideStatus(String id, StatusDto statusDto);
+    public RideResponseDto updateRideStatus(String id, RideStatusDto rideStatusDto);
 
     /**
      * <p>
@@ -73,4 +74,6 @@ public interface RideService {
      * @throws DatabaseException If error occurs while updating the payment mode details.
      */
     PaymentModeDto paymentMode(String driverId, PaymentModeDto paymentModeDto);
+
+    Optional<Ride> getRideById(String id);
 }

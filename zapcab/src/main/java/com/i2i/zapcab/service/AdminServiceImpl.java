@@ -148,9 +148,7 @@ public class AdminServiceImpl implements AdminService {
             Driver driver = Driver.builder().region(pendingRequest.getRegion()).noOfCancellation(2)
                     .licenseNo(pendingRequest.getLicenseNo()).rcBookNo(pendingRequest.getRcBookNo()).user(user)
                     .status(INITIAL_DRIVER_STATUS).vehicle(vehicle).build();
-
             driverService.saveDriver(driver);
-            //vehicleLocationService.saveVehicleLocation(vehicleLocation);
             emailSenderService.sendRegistrationEmailToDriver(
                     EmailRequestDto.builder()
                             .toEmail(pendingRequest.getEmail())
