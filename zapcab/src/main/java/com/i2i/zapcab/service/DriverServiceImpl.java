@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.i2i.zapcab.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import static com.i2i.zapcab.common.ZapCabConstant.ASSIGNED;
-import static com.i2i.zapcab.common.ZapCabConstant.DRIVER_STATUS;
-import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_DRIVER_STATUS;
-import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_VEHICLE_STATUS;
-import static com.i2i.zapcab.common.ZapCabConstant.PAYMENT_CASH;
-import static com.i2i.zapcab.common.ZapCabConstant.RIDE_COMPLETED;
-import static com.i2i.zapcab.common.ZapCabConstant.RIDE_STARTED;
-import static com.i2i.zapcab.common.ZapCabConstant.TEMPORARILY_SUSPENDED;
 import com.i2i.zapcab.dto.CancelRideRequestDto;
 import com.i2i.zapcab.dto.CancelRideResponseDto;
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
@@ -34,11 +27,9 @@ import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.helper.RideRequestStatusEnum;
 import com.i2i.zapcab.mapper.RideRequestMapper;
-import com.i2i.zapcab.model.Driver;
-import com.i2i.zapcab.model.Ride;
-import com.i2i.zapcab.model.RideRequest;
-import com.i2i.zapcab.model.User;
 import com.i2i.zapcab.repository.DriverRepository;
+
+import static com.i2i.zapcab.common.ZapCabConstant.*;
 
 /**
  * Implements {@link DriverService}
@@ -90,12 +81,13 @@ public class DriverServiceImpl implements DriverService {
         if (!ObjectUtils.isEmpty(driver)) {
             if (updateDriverStatusDto.getStatus().equalsIgnoreCase(DRIVER_STATUS)) {
                 vehicleService.updateVehicleStatus("Available", driver.getVehicle());
-                vehicleLocationService.updateVehicleLocationByVehicleId(updateDriverStatusDto.getLocation(), driver.getVehicle());
+                vehicleLocationService.updateVehicleLocationByVehicleId(updateDriverStatusDto.getLocation(), driver.getVehicle().getId());
             } else if (updateDriverStatusDto.getStatus().equalsIgnoreCase(INITIAL_DRIVER_STATUS)
                     || updateDriverStatusDto.getStatus().equalsIgnoreCase("SUSPENDED")) {
                 vehicleService.updateVehicleStatus("Un Available", driver.getVehicle());
             }
             driver.setStatus(updateDriverStatusDto.getStatus());
+            driverRepository.save(driver);
         }
     }
 
@@ -108,8 +100,8 @@ public class DriverServiceImpl implements DriverService {
     public boolean updateDriverRating(String id, int ratings) {
         try {
             Driver driver = driverRepository.findById(id).get();
-            int currentRating = driver.getRatings();
-            int updatedRating = (currentRating + ratings) / 2;
+            double currentRating = driver.getRatings();
+            double updatedRating = (currentRating + ratings) / 2;
             driver.setRatings(updatedRating);
             return !ObjectUtils.isEmpty(driverRepository.save(driver));
         } catch (Exception e) {
@@ -153,6 +145,7 @@ public class DriverServiceImpl implements DriverService {
                 logger.warn("No ride request found for customer: {}", selectedRideDto.getCustomerName());
                 throw new NotFoundException("Ride request not found for customer: " + selectedRideDto.getCustomerName());
             }
+            vehicleService.updateVehicleStatus(VEHICLE_STATUS_UNAVAILABLE, getDriver.getVehicle());
             request.setStatus(ASSIGNED);
             RideDetailsDto rideDetailsDto = RideDetailsDto.builder()
                     .customerName(request.getCustomer().getUser().getName())
@@ -217,7 +210,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public void updateDriverWallet(String id, String paymentMode, String rideStatus, int fare) {
+    public void updateDriverWallet(String id, String paymentMode, String rideStatus, double fare) {
         try {
             logger.info("Updating driver wallet for driver ID: {}", id);
             Optional<Driver> driver = driverRepository.findById(id);
@@ -225,17 +218,17 @@ public class DriverServiceImpl implements DriverService {
                 Driver drivers = driver.get();
                 logger.info("Driver found: {}", drivers);
                 if (paymentMode.equalsIgnoreCase(PAYMENT_CASH) && rideStatus.equalsIgnoreCase(RIDE_COMPLETED)) {
-                    int fareToReduce = Math.round((20 / 100) * fare); // Corrected division to get a float value
+                    double fareToReduce = Math.round(ZAPCAB_RIDE_COMMISSION_PERCENTAGE * fare); // Corrected division to get a float value
                     logger.info("Fare to reduce: {}", fareToReduce);
-                    if (drivers.getWallet() != 0) {
-                        int updatedWallet = drivers.getWallet() - fareToReduce;
+                    if (drivers.getWallet() > 0) {
+                        double updatedWallet = drivers.getWallet() - fareToReduce;
                         drivers.setWallet(updatedWallet);
                         logger.info("Updated wallet amount: {}", updatedWallet);
                         driverRepository.save(drivers);
                         logger.info("Driver wallet updated successfully");
                     } else {
                         drivers.setStatus("Temporarily Unavailable");
-                        drivers.getVehicle().setStatus(INITIAL_VEHICLE_STATUS);
+                        drivers.getVehicle().setStatus(VEHICLE_STATUS_UNAVAILABLE);
                         driverRepository.save(drivers);
                         logger.info("Driver set to temporarily unavailable due to zero wallet balance");
                     }
@@ -286,6 +279,29 @@ public class DriverServiceImpl implements DriverService {
             return CancelRideResponseDto.builder().message("You have only one cancellation more !!").build();
         } catch (Exception e) {
             throw new DatabaseException("Unable to cancel the ride : "+cancelRideRequestDto.getRideId(), e);
+        }
+    }
+
+    @Override
+    public Optional<Driver> getDriverById(String driverId) {
+        try {
+            return driverRepository.findById(driverId);
+        } catch (Exception e) {
+            logger.error("Error occurred while fetching the driver by id {} ", driverId) ;
+            throw new DatabaseException("Error occurred while fetching the driver by id " +
+            driverId, e);
+        }
+    }
+
+    @Override
+    public String getVehicleIdByDriverId(String driverId) {
+        try {
+            Optional<Driver> driver = driverRepository.findById(driverId);
+            return driver.get().getVehicle().getId();
+        } catch (Exception e) {
+            logger.error("Error occurred while fetching the driver by id {} ", driverId) ;
+            throw new DatabaseException("Error occurred while fetching the driver by id " +
+                    driverId, e);
         }
     }
 

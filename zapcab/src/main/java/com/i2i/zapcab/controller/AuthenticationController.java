@@ -1,9 +1,11 @@
 package com.i2i.zapcab.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,25 +43,28 @@ public class AuthenticationController {
      * </p>
      *
      * @param registerCustomerDto {@link RegisterCustomerDto}
-     *                            The request body must contain all the fields of RegisterCustomerRequestDto.
+     *        The request body must contain all the fields of RegisterCustomerRequestDto.
      * @return ApiResponseDto<AuthenticationResponse> {@link ApiResponseDto}
      * Returns the JWT Token with 201 CREATED upon successful registration .
      * Else returns 500 INTERNAL_SERVER_ERROR.
      */
     @PostMapping("/customers/register")
     public ApiResponseDto<AuthenticationResponseDto> registerCustomer(
-            @RequestBody RegisterCustomerDto registerCustomerDto) {
+            @Valid @RequestBody RegisterCustomerDto registerCustomerDto) {
         AuthenticationResponseDto authenticationResponseDto = null;
         try {
-            logger.info("Received customer registration request for: {}", registerCustomerDto.getEmail());
+            logger.debug("Received customer registration request for: {}", registerCustomerDto.getEmail());
             authenticationResponseDto = authenticationService.customerRegister(registerCustomerDto);
-            logger.info("Customer registration successful for: {}", registerCustomerDto.getEmail());
-            return ApiResponseDto.statusCreated(authenticationResponseDto);
+            if (ObjectUtils.isEmpty(authenticationResponseDto)) {
+                return ApiResponseDto.statusConflict(authenticationResponseDto);
+            }
         } catch (DatabaseException e) {
             logger.error("Error occurred while registering customer: {}. Error: {}", registerCustomerDto.getEmail(),
                     e.getMessage(), e);
             return ApiResponseDto.statusInternalServerError(authenticationResponseDto, e);
         }
+        logger.info("Customer successfully created!.");
+        return ApiResponseDto.statusCreated(authenticationResponseDto);
     }
 
     /**
@@ -68,23 +73,27 @@ public class AuthenticationController {
      * </p>
      *
      * @param registerDriverRequestDto {@link DriverRegisterResponseDto}
-     *                                 The request body must contain all the fields of the RegisterDriverDto.
+     *        The request body must contain all the fields of the RegisterDriverDto.
      * @return ApiResponseDto<DriverRegisterRequestResponseDto> {@link ApiResponseDto}
      * Returns the JWT Token with 201 CREATED upon successful registration .
      * Else returns 500 INTERNAL_SERVER_ERROR.
      */
     @PostMapping("/drivers/register")
-    public ApiResponseDto<DriverRegisterResponseDto> registerDriver(@RequestBody RegisterDriverRequestDto registerDriverRequestDto) {
+    public ApiResponseDto<DriverRegisterResponseDto> registerDriver(
+            @Valid @RequestBody RegisterDriverRequestDto registerDriverRequestDto) {
         DriverRegisterResponseDto driverRegisterResponseDto = null;
         try {
-            logger.info("Received driver registration request for: {}", registerDriverRequestDto.getName());
+            logger.debug("Received driver registration request for: {}", registerDriverRequestDto.getName());
             driverRegisterResponseDto = authenticationService.driverRegisterRequest(registerDriverRequestDto);
-            logger.info("Driver registration successful for: {}", registerDriverRequestDto.getName());
-            return ApiResponseDto.statusOk(driverRegisterResponseDto);
+            if (ObjectUtils.isEmpty(driverRegisterResponseDto)) {
+                return ApiResponseDto.statusConflict(driverRegisterResponseDto);
+            }
         } catch (DatabaseException e) {
             logger.error("Error occurred while registering driver: {}. Error: {}", registerDriverRequestDto.getName(), e.getMessage(), e);
             return ApiResponseDto.statusInternalServerError(driverRegisterResponseDto, e);
         }
+        logger.info("Driver successfully added to pending request!.");
+        return ApiResponseDto.statusOk(driverRegisterResponseDto);
     }
 
     /**
@@ -94,24 +103,26 @@ public class AuthenticationController {
      * </p>
      *
      * @param authenticationRequestDto {@link AuthenticationRequestDto}
-     *                                 This dto must contain fields of AuthenticationRequestDto.
+     *        This dto must contain fields of AuthenticationRequestDto.
      * @return ApiResponseDto<AuthenticationResponse>
      * @throws NotFoundException       Thrown if the username(MOBILE NUMBER) is not found in the database.
      * @throws AuthenticationException Thrown if the authentication failed with bad credentials.
      */
     @PostMapping
-    public ApiResponseDto<AuthenticationResponseDto> authentication(@RequestBody AuthenticationRequestDto authenticationRequestDto) {
+    public ApiResponseDto<AuthenticationResponseDto> authentication(
+            @Valid @RequestBody AuthenticationRequestDto authenticationRequestDto) {
         AuthenticationResponseDto authenticationResponse = null;
         try {
             authenticationResponse = authenticationService.authenticate(authenticationRequestDto);
         } catch (NotFoundException e) {
             logger.error("No user with mobileNumber " + authenticationRequestDto.getMobileNumber() +
                     " is found in database");
-            authenticationResponse = AuthenticationResponseDto.builder().token("").build();
-            return ApiResponseDto.statusNoContent(authenticationResponse);
+            authenticationResponse = AuthenticationResponseDto.builder().token(null).build();
+            return ApiResponseDto.statusNotFound(authenticationResponse, e);
         } catch (AuthenticationException e) {
-            logger.error("Invalid credentials given by the user");
-            authenticationResponse = AuthenticationResponseDto.builder().token("").build();
+            logger.error("Invalid credentials given by the user " +
+                    " for mobile number {}", authenticationRequestDto.getMobileNumber());
+            authenticationResponse = AuthenticationResponseDto.builder().token(null).build();
             return ApiResponseDto.statusUnAuthorized(authenticationResponse, e);
         }
         logger.info("User authenticated successfully!");

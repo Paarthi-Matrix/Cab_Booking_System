@@ -1,5 +1,6 @@
 package com.i2i.zapcab.mapper;
 
+import com.i2i.zapcab.dto.RideResponseDto;
 import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.model.RideRequest;
@@ -14,5 +15,11 @@ public class RideMapper {
                 fare(rideRequest.getFare()).
                 dropPoint(rideRequest.getDropPoint()).
                 driver(driver).build();
+    }
+
+    public RideResponseDto rideToRideResponseDto(Ride ride) {
+        return RideResponseDto.builder()
+                .status(ride.getStatus())
+                .fare(ride.getFare()).build();
     }
 }

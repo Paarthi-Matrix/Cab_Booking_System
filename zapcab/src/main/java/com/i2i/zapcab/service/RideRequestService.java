@@ -1,7 +1,9 @@
 package com.i2i.zapcab.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.i2i.zapcab.dto.*;
 import org.springframework.stereotype.Component;
 
 import com.i2i.zapcab.dto.DriverSelectedRideDto;
@@ -73,7 +75,7 @@ public interface RideRequestService {
      * @return The RideRequest if found, otherwise null.
      * @throws DatabaseException if an error occurs while checking the ride request status.
      */
-    RideRequest checkStatusAssignedOrNot(String id);
+    boolean checkStatusAssignedOrNot(String id);
 
     /**
      * <p>
@@ -99,4 +101,6 @@ public interface RideRequestService {
      * @throws DatabaseException if an error occurs while updating the ride request status.
      */
     RideStatusDto cancelRide(String customerId);
+
+    Optional<RideRequest> getRideRequestByCustomerId(String customerId);
 }

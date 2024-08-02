@@ -1,14 +1,14 @@
 package com.i2i.zapcab.mapper;
 
 import com.i2i.zapcab.dto.RideHistoryResponseDto;
-import com.i2i.zapcab.model.History;
+import com.i2i.zapcab.model.RideHistory;
 import com.i2i.zapcab.model.Ride;
 
 import java.time.LocalDate;
 
 public class HistoryMapper {
 
-    public RideHistoryResponseDto entityToDto(History history) {
+    public RideHistoryResponseDto entityToDto(RideHistory history) {
         return RideHistoryResponseDto.builder().date(history.getDate())
                 .pickup(history.getPickupPoint())
                 .drop(history.getDropPoint())
@@ -18,8 +18,8 @@ public class HistoryMapper {
                 .fare(history.getFare()).build();
     }
 
-    public History rideToHistory(Ride ride) {
-        return History.builder().date(LocalDate.now())
+    public RideHistory rideToHistory(Ride ride) {
+        return RideHistory.builder().date(LocalDate.now())
                 .pickupPoint(ride.getRideRequest().getPickupPoint())
                 .dropPoint(ride.getDropPoint())
                 .startTime(ride.getStartTime())

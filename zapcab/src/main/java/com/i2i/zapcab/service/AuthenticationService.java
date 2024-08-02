@@ -57,6 +57,7 @@ public interface AuthenticationService {
      *
      * @param registerDriverRequestDto {@link RegisterCustomerRequestDto}
      * @return DriverRegisterResponseDto {@link DriverRegisterResponseDto}
+     *         Returns null if the user already exists.
      */
     DriverRegisterResponseDto driverRegisterRequest(RegisterDriverRequestDto registerDriverRequestDto);
 }

@@ -60,8 +60,9 @@ public interface RideService {
      *
      * @param id The ID of the ride whose status needs to be updated.
      * @throws DatabaseException If error occurs while updating the status.
+     * @return Ride {@link Ride}
      */
-    void updateRideStatus(String id);
+    String updateRideStatus(String id);
 
     /**
      * <p>
@@ -69,11 +70,11 @@ public interface RideService {
      * </p>
      *
      * @param driverId The ID of the ride whose payment mode to be updated.
-     * @return PaymentModeDto
-     * The response object containing the current payment mode.
+     * @return RideResponseDto {@link  RideResponseDto}
      * @throws DatabaseException If error occurs while updating the payment mode details.
      */
-    PaymentModeDto paymentMode(String driverId, PaymentModeDto paymentModeDto);
+    RideResponseDto setPaymentMode(String driverId, PaymentModeDto paymentModeDto);
 
     Optional<Ride> getRideById(String id);
+
 }

@@ -101,14 +101,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 //todo exception
                 logger.warn("The JWT for the user is not valid. Either the user's JWT is invalid or" +
                         " the user got deleted(soft deleted)");
-
             }
         }
         if (isAuthorized(request)) {
             logger.info("The request authorized");
             filterChain.doFilter(request, response);
         } else {
-            logger.info("The request is not authorized");
+            logger.error("The request is not authorized");
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         }
     }
@@ -143,7 +142,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Map<String, List<String>> allowedPaths = new HashMap<>();
         allowedPaths.put("DRIVER", List.of("/v1/drivers/**", "/v1/customers/**"));
         allowedPaths.put("CUSTOMER", List.of("/v1/customers/**"));
-        allowedPaths.put("ADMIN", List.of("/v1/admins/**", "/v1/drivers/**", "/v1/customers/**"));
+        allowedPaths.put("ADMIN", List.of("/v1/admin/**", "/v1/drivers/**", "/v1/customers/**"));
         String requestPath = request.getServletPath();
         for (Map.Entry<String, List<String>> entry : allowedPaths.entrySet()) {
             String role = entry.getKey();

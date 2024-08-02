@@ -23,8 +23,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "history")
-public class History {
+@Table(name = "ride_history")
+public class RideHistory {
     @Id
     private String id;
     @Column(name = "date", nullable = false)

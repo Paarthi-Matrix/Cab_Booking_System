@@ -15,4 +15,6 @@ public interface RideRepository extends JpaRepository<Ride, String> {
 
     @Query("from Ride r where r.driver.user.id = :driverId and r.isDeleted = false")
     Optional<Ride> findByDriverIdAndIsDeleted(@Param("driverId") String driverId);
+
+    String findStatusById(String driverId);
 }

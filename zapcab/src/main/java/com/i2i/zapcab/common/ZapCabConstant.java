@@ -7,7 +7,8 @@ package com.i2i.zapcab.common;
  */
 public class ZapCabConstant {
     //Regex
-    public static final String STRING_REGEX = "^[a-zA-Z\\s]+$";
+    public static final String STRING_REGEX = "^[A-Za-z\\s]+$";
+    public static final String STRING_AND_NUMBER_REGEX = "^[a-zA-Z0-9_.-]*$";
     public static final String EMAIL_REGEX = "^[\\w.-]+@[\\w.-]+\\.com$";
     public static final String PASSWORD_REGEX = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])" +
             "[A-Za-z\\d@$!%*?&]+$";
@@ -19,6 +20,7 @@ public class ZapCabConstant {
             "{1,2}[ -][0-9]{4})");
 
     // Message
+    public static final String LICENSE_NUMBER_MESSAGE = "License number must be as like DL-1420110012345 or DL14 20110012345";
     public static final String NAME_NOT_BLANK = "Name is mandatory";
     public static final String NAME_PATTERN_MESSAGE = "Name must contain only alphabetic characters";
     public static final String REGION_NOT_BLANK = "Region is mandatory";
@@ -38,7 +40,10 @@ public class ZapCabConstant {
     public static final String GENDER_PATTERN_MESSAGE = "Gender is not valid";
     public static final String MOBILE_NUMBER_PATTERN_MESSAGE = "Mobile number must be a valid number";
     public static final String LICENSE_PLATE_NOT_BLANK = "License plate is mandatory";
-
+    public static final String PICKUP_POINT_NOT_BLANK = "PickupPoint is mandatory";
+    public static final String PICKUP_POINT_PATTERN_MESSAGE = "PickupPoint must contain only alphabetic characters";
+    public static final String DROP_POINT_NOT_BLANK = "DropPoint is mandatory";
+    public static final String DROP_POINT_PATTERN_MESSAGE = "DropPoint must contain only alphabetic characters";
     //Cab Category
     public static final String XUV = "XUV";
     public static final String SEDAN = "SEDAN";
@@ -65,6 +70,9 @@ public class ZapCabConstant {
     public static final int PEAK_RATE = 3;
 
     //Common
+    public static final int AUTO_MAX_SEATS = 3;
+    public static final int SEDAN_OR_XUV_MAX_SEATS = 4;
+    public static final int BIKE_MAX_SEATS = 1;
     public static final String REQUEST_STATUS = "Pending";
     public static final String ASSIGNED = "Assigned";
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -72,7 +80,7 @@ public class ZapCabConstant {
     public static final String INITIAL_STATUS_OF_DRIVER = "Pending";
     public static final String INITIAL_CUSTOMER_TIRE = "Bronze";
     public static final String INITIAL_REMARKS = " ";
-    public static final String INITIAL_VEHICLE_STATUS = "Unavailable";
+    public static final String VEHICLE_STATUS_UNAVAILABLE = "Unavailable";
     public static final String VEHICLE_AVAILABLE_STATUS = "Available";
     public static final String INITIAL_DRIVER_STATUS = "OFF-DUTY";
     public static final String DRIVER_STATUS = "ON-DUTY";
@@ -80,8 +88,11 @@ public class ZapCabConstant {
     public static final String RIDE_STARTED = "Started";
     public static final String RIDE_COMPLETED = "Completed";
     public static final String RIDE_CANCELLED = "Cancelled";
-    public static final String REJECTED_STATUS = "Rejected";
+    public static final String REJECTED = "Rejected";
     public static final String TEMPORARILY_SUSPENDED = "TEMPORARILY_SUSPENDED";
+    public static final double INITIAL_WALLET_AMOUNT = 200.00;
+    public static final String DEFAULT_PAYMENT_MODE = "CASH";
+    public static final double ZAPCAB_RIDE_COMMISSION_PERCENTAGE = 20.0/100;// 20% commission on every ride
     public static final String TEMPORARILY_UNAVAILABLE = "Temporarily Unavailable";
 
     //Otp duration
@@ -92,9 +103,9 @@ public class ZapCabConstant {
     public static final String FIND_BY_ROLE_TYPE_QUERY = "SELECT r FROM Role r WHERE r.roleName IN :roleEnum";
     public static final String FIND_BY_STATUS_QUERY = "SELECT pr from PendingRequest pr WHERE pr.status =:status";
     public static final String FIND_BY_CUSTOMER_NAME_AND_RIDE_ID = "SELECT rr FROM RideRequest rr WHERE rr.customer.user.name = :customerName AND rr.id = :rideID";
-    public static final String FIND_BY_CUSTOMER_ID = "from RideRequest r JOIN r.customer c where c.user.id = :customerId and r.isDeleted = false";
+    public static final String FIND_BY_CUSTOMER_ID = "from RideRequest r JOIN r.customer c where c.id = :customerId and r.isDeleted = false";
     public static final String FIND_BY_STATUS = "SELECT pr from PendingRequest pr WHERE pr.status =:status";
-    public static final String COUNT_BY_USER_ID = "SELECT COUNT(h) FROM History h WHERE h.user.id = :userId";
+    public static final String COUNT_BY_USER_ID = "SELECT COUNT(h) FROM RideHistory h WHERE h.user.id = :userId";
 
     //EMAIL
     public static final String EMAIL_SUBJECT_FOR_DRIVE_ON_SUCCESSFUL_REGISTRATION = "Welcome to ZapCab: Your Driver Account Details";

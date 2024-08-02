@@ -42,6 +42,8 @@ public class RideServiceImpl implements RideService {
     private RideRequestService rideRequestService;
     @Autowired
     private HistoryService historyService;
+    @Autowired
+    private VehicleLocationService vehicleLocationService;
 
     @Override
     public void saveRide(RideRequest rideRequest, Driver driver) {
@@ -88,6 +90,7 @@ public class RideServiceImpl implements RideService {
             }
             Ride ride = rideOptional.get();
             ride.setStatus(rideStatusDto.getStatus());
+            ride.setStartTime(LocalDateTime.now());
             Ride updatedRide = rideRepository.save(ride);
             rideRequestService.deleteRideRequest(ride.getRideRequest().getId());
             RideResponseDto rideResponseDto = RideResponseDto.builder()
@@ -117,7 +120,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public void updateRideStatus(String driverId) {
+    public String updateRideStatus(String driverId) {
         logger.debug("Updating status of the ride associated with driver ID: {}", driverId);
         try {
             Optional<Ride> rideOptional = rideRepository.findByDriverId(driverId);
@@ -135,6 +138,7 @@ public class RideServiceImpl implements RideService {
                     .fare(ride.getFare()).build());
             logger.info("Successfully updated ride status for the ride associated with " +
                     "driver ID: {}", driverId);
+            return ride.getDropPoint();
         } catch (Exception e) {
             logger.error("Failed to update ride status for the ride associated with " +
                     "driver ID: {}", driverId, e);
@@ -143,7 +147,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
-    public PaymentModeDto paymentMode(String driverId, PaymentModeDto paymentModeDto) {
+    public RideResponseDto setPaymentMode(String driverId, PaymentModeDto paymentModeDto) {
         logger.debug("Updating the payment mode for the ride associated with driver ID: {}", driverId);
         try {
             Optional<Ride> rideOptional = rideRepository.findByDriverId(driverId);
@@ -158,9 +162,7 @@ public class RideServiceImpl implements RideService {
             historyService.saveHistory(ride);
             logger.info("Successfully updated the payment mode for the ride associated with " +
                     "driver ID: {}", driverId);
-            return PaymentModeDto.builder()
-                    .paymentMode(ride.getPaymentMode())
-                    .build();
+            return rideMapper.rideToRideResponseDto(ride);
         } catch (Exception e) {
             logger.error("Failed to update the payment mode for the ride associated with " +
                     "driver ID: {}", driverId, e);
@@ -172,4 +174,5 @@ public class RideServiceImpl implements RideService {
     public Optional<Ride> getRideById(String id) {
         return rideRepository.findById(id);
     }
+
 }

@@ -80,11 +80,13 @@ public class RideRequestServiceImpl implements RideRequestService {
     }
 
     @Override
-    public RideRequest checkStatusAssignedOrNot(String id) {
+    public boolean checkStatusAssignedOrNot(String id) {// todo should return true or false according to the status.
         try {
-            Optional<RideRequest> rideRequest = rideRequestRepository.findByCustomerId(id);
-            return rideRequest.orElse(null);
+            Optional<RideRequest> rideRequest = rideRequestRepository.
+                    findByCustomerId(id);
+            return rideRequest.get().getStatus().equalsIgnoreCase(ASSIGNED);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new DatabaseException("Error Occurred while checking ride request status is assigned or not", e);
         }
     }
@@ -114,7 +116,9 @@ public class RideRequestServiceImpl implements RideRequestService {
             rideRequest.setVehicleCategory(updateRideDto.getVehicleCategory());
             RideRequestResponseDto fareResponse = fareCalculatorService.calculateFare(updateRideDto.getPickupPoint(),
                     updateRideDto.getDropPoint(), updateRideDto.getVehicleCategory());
+
             if (null != fareResponse) {
+                System.out.println("fareResponse is not null! " + fareResponse.getFare() + " " +fareResponse.getDistance());
                 rideRequest.setFare(fareResponse.getFare());
                 rideRequest.setDistance(fareResponse.getDistance());
             }
@@ -127,6 +131,7 @@ public class RideRequestServiceImpl implements RideRequestService {
                     .distance(rideRequest.getDistance())
                     .build();
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("Failed to update ride details for customer with ID: {}", customerId);
             throw new DatabaseException("Failed to update ride details. Customer ID: " + customerId, e);
         }
@@ -150,5 +155,9 @@ public class RideRequestServiceImpl implements RideRequestService {
             logger.error("Failed to cancel ride details for customer with ID: {}", customerId);
             throw new DatabaseException("Failed to cancel ride details. Customer ID: " + customerId, e);
         }
+    }
+
+    public Optional<RideRequest> getRideRequestByCustomerId(String customerId) {
+        return rideRequestRepository.findByCustomerId(customerId);
     }
 }

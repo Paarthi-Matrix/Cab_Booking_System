@@ -1,9 +1,13 @@
 package com.i2i.zapcab.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import static com.i2i.zapcab.common.ZapCabConstant.*;
 
 /**
  * <p>
@@ -22,6 +26,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CheckVehicleAvailabilityDto {
+    @NotBlank(message = PICKUP_POINT_NOT_BLANK)
+    @Pattern(regexp = STRING_REGEX, message = PICKUP_POINT_PATTERN_MESSAGE)
     private String pickupPoint;
+
+    @NotBlank(message = DROP_POINT_NOT_BLANK)
+    @Pattern(regexp = STRING_REGEX, message = DROP_POINT_PATTERN_MESSAGE)
     private String dropPoint;
 }

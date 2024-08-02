@@ -38,9 +38,9 @@ public class FareCalculatorServiceImpl implements FareCalculatorService {
     private static final Map<String, Integer> distances = new HashMap<>();
 
     static {
-        distances.put("Guindy-Velachery", 10);
-        distances.put("Guindy-Airport", 8);
-        distances.put("Velachery-Airport", 12);
+        distances.put("GUINDY-VELACHERY", 10);
+        distances.put("GUINDY-AIRPORT", 8);
+        distances.put("VELACHERY-AIRPORT", 12);
     }
 
     @Autowired
@@ -51,8 +51,8 @@ public class FareCalculatorServiceImpl implements FareCalculatorService {
         int airportCharge = 0;
         airportCharge = (pickup.equalsIgnoreCase("Airport")
                 || drop.equalsIgnoreCase("Airport")) ? 100 : 0;
-        return fareByCategory(distances.getOrDefault(pickup + "-" + drop,
-                        distances.getOrDefault(drop + "-" + pickup, 0)),
+        return fareByCategory(distances.getOrDefault(pickup.toUpperCase() + "-" + drop.toUpperCase(),
+                        distances.getOrDefault(drop.toUpperCase() + "-" + pickup.toUpperCase(), 0)),
                 LocalTime.now().getHour(), category.toUpperCase(), airportCharge);
     }
 

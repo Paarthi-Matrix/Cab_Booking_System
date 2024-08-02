@@ -41,7 +41,7 @@ public class SecurityConfiguration implements WebSecurityConfigurer {
                         .requestMatchers("/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/drivers/**").hasAnyRole("DRIVER", "ADMIN")
                         .requestMatchers("/api/v1/customers/**").hasAnyRole("CUSTOMER", "ADMIN")
-                        .requestMatchers("/api/v1/admins/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))

@@ -54,13 +54,13 @@ public class AdminController {
     public ApiResponseDto<Page<FetchAllPendingRequestsDto>> fetchAllPendingRequests (
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        logger.debug("Entering into the method to fetch all the requests..");
-        Page<FetchAllPendingRequestsDto> fetchAllPendingRequestsDto = adminService.getAllPendingRequest(page, size);
+        logger.debug("Entering into the method to fetch all the pending requests..");
+        Page<FetchAllPendingRequestsDto> fetchAllPendingRequestsDto = null;
         try {
-            logger.info("Fetching all the requests");
+            logger.debug("Fetching all the requests");
+            fetchAllPendingRequestsDto = adminService.getAllPendingRequest(page, size);
             return ApiResponseDto.statusOk(fetchAllPendingRequestsDto);
         } catch (DatabaseException e) {
-            logger.error("Error occurred while fetching the pending requests ");
             return ApiResponseDto.statusInternalServerError(fetchAllPendingRequestsDto, e);
         }
     }
@@ -79,19 +79,18 @@ public class AdminController {
      * @return ApiResponseDto<AuthenticationResponseDto>
      */
     @PutMapping
-    public ApiResponseDto<AuthenticationResponseDto> updatePendingRequest(@Valid @RequestBody UpdatePendingRequestDto updatePendingRequestDto) {
+    public ApiResponseDto<AuthenticationResponseDto> updatePendingRequest(
+            @Valid @RequestBody UpdatePendingRequestDto updatePendingRequestDto) {
         logger.debug("Entering into the method to update the particular request...");
         AuthenticationResponseDto authenticationResponse = null;
         try {
-            logger.info("Updating the request for the user : {}", updatePendingRequestDto.getMobileNumber());
+            logger.debug("Updating the request for the user : {}", updatePendingRequestDto.getMobileNumber());
             authenticationResponse = adminService.updatePendingRequest(updatePendingRequestDto);
             logger.info("Successfully updated the {} user's status ", updatePendingRequestDto.getMobileNumber());
         } catch (DatabaseException e) {
             return ApiResponseDto.statusInternalServerError(authenticationResponse, e);
         }
         logger.debug("leaving the method  updateRequest ");
-        return ApiResponseDto.statusOk(authenticationResponse);
+        return ApiResponseDto.statusCreated(authenticationResponse);
     }
 }
-
-

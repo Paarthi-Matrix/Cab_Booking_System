@@ -82,7 +82,5 @@ public class RegisterCustomerDto {
     @NotNull(message = DOB_NOT_NULL)
     @Past(message = DOB_PAST_MESSAGE)
     private LocalDate dateOfBirth;
-
-    private List<RoleEnum> role;
 }
 

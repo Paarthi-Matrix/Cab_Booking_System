@@ -52,9 +52,9 @@ public class Driver extends Auditable {
     @Column(name = "status", columnDefinition = "VARCHAR(15)")
     private String status;
     @Column(name = "ratings", nullable = false)
-    private int ratings;
+    private double ratings;
     @Column(name = "wallet", nullable = false)
-    private int wallet;
+    private double wallet;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;

@@ -1,6 +1,7 @@
 package com.i2i.zapcab.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -131,7 +132,7 @@ public interface DriverService {
      * @param fare
      *      Specifies the amount of that particular ride
      */
-    void updateDriverWallet(String id, String paymentMode, String rideStatus, int fare);
+    void updateDriverWallet(String id, String paymentMode, String rideStatus, double fare);
 
     /**
      * <p>
@@ -140,12 +141,16 @@ public interface DriverService {
      *
      * @param userId
      *      The user id for whom the driver ID needs to be retrieved.
-     * @return String
-     *      The driver ID associated with the given user ID.
+     * @return Driver {@link Driver}
+     *      The driver associated with the given user ID.
      * @throws DatabaseException
      *       If error occurs while retrieving the driver ID.
      */
     String retrieveDriverIdByUserId(String userId);
 
     CancelRideResponseDto cancelRide(CancelRideRequestDto cancelRideRequestDto, String id);
+
+    Optional<Driver> getDriverById(String driverId);
+
+    String getVehicleIdByDriverId(String driverId);
 }

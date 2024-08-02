@@ -30,7 +30,7 @@ public class AssignedDriverDto {
     private String Otp;
     private String name;
     private String mobileNumber;
-    private int ratings;
+    private double ratings;
     private String category;
     private String model;
     private String licensePlate;

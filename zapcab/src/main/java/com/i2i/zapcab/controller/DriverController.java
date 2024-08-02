@@ -1,18 +1,14 @@
 package com.i2i.zapcab.controller;
 
-import com.i2i.zapcab.dto.CancelRideRequestDto;
-import com.i2i.zapcab.dto.CancelRideResponseDto;
+import com.i2i.zapcab.dto.*;
+
 import java.util.List;
+import java.util.Optional;
 
-import com.i2i.zapcab.dto.PaymentModeDto;
 import com.i2i.zapcab.exception.DatabaseException;
-import com.i2i.zapcab.dto.MaskMobileNumberRequestDto;
-import com.i2i.zapcab.dto.MaskMobileNumberResponseDto;
-import com.i2i.zapcab.dto.OTPResponseDto;
-import com.i2i.zapcab.dto.OtpRequestDto;
 
-import com.i2i.zapcab.service.AuthenticationServiceImpl;
-import com.i2i.zapcab.service.RideService;
+import com.i2i.zapcab.model.Driver;
+import com.i2i.zapcab.service.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,17 +22,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.i2i.zapcab.dto.ApiResponseDto;
-import com.i2i.zapcab.dto.ChangePasswordRequestDto;
-import com.i2i.zapcab.dto.DriverSelectedRideDto;
-import com.i2i.zapcab.dto.GetRideRequestListsDto;
-import com.i2i.zapcab.dto.RequestedRideDto;
-import com.i2i.zapcab.dto.RideDetailsDto;
-import com.i2i.zapcab.dto.UpdateDriverStatusDto;
 import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.helper.JwtDecoder;
-import com.i2i.zapcab.service.DriverService;
-import com.i2i.zapcab.service.UserService;
+
+import static com.i2i.zapcab.common.ZapCabConstant.DEFAULT_PAYMENT_MODE;
 
 /**
  * <p>
@@ -59,7 +48,8 @@ public class DriverController {
     private RideService rideService;
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private VehicleLocationService vehicleLocationService;
     /**
      * <p>
      * This function is used to update the status and location of the driver.
@@ -85,7 +75,7 @@ public class DriverController {
             logger.info("Updating the status and location for the driver {} ", Userid);
             driverService.updateDriverStatusAndLocation(Userid, updateDriverStatusDto);
         } catch (NotFoundException e) {
-            logger.error("Unale to update the details for the driver :{} ", Userid);
+            logger.error("Unable to update the details for the driver :{} ", Userid);
             return ApiResponseDto.statusNoContent("No such driver available");
         }
         logger.debug("Exiting the method ");
@@ -238,11 +228,16 @@ public class DriverController {
         String userId = JwtDecoder.extractUserIdFromToken();
         try {
             String driverId = driverService.retrieveDriverIdByUserId(userId);
-            PaymentModeDto paymentMode = rideService.paymentMode(driverId, paymentModeDto);
+            RideResponseDto rideResponseDto = rideService.setPaymentMode(driverId, paymentModeDto);
             logger.info("Updated payment mode for user with ID {}", userId);
-            rideService.updateRideStatus(driverId);
+            vehicleLocationService.updateVehicleLocationByVehicleId(rideService.updateRideStatus(driverId),
+                    driverService.getVehicleIdByDriverId(driverId));
+            if (paymentModeDto.getPaymentMode().equalsIgnoreCase(DEFAULT_PAYMENT_MODE)) {
+                driverService.updateDriverWallet(userId, paymentModeDto.getPaymentMode(),
+                        rideResponseDto.getStatus(),rideResponseDto.getFare());
+            }
             logger.info("Updated ride status for user with ID {}", userId);
-            return ApiResponseDto.statusOk(paymentMode);
+            return ApiResponseDto.statusOk(paymentModeDto);
         } catch (NotFoundException e) {
             logger.warn("User with ID {} not found", userId);
             return ApiResponseDto.statusNotFound("Invalid ID");

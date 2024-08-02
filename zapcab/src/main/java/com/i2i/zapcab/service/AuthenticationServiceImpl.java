@@ -5,6 +5,8 @@ import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.mapper.PendingRequestMapper;
 import java.util.List;
 
+import com.i2i.zapcab.helper.RoleEnum;
+import com.i2i.zapcab.mapper.AuthenticationMapper;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +35,12 @@ import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_CUSTOMER_TIRE;
 
 /**
  * <p>
- *     The `AuthenticationServiceImpl` responsible for registering and authenticating the users.
- *     The customer can directly register themselves to the database,
- *     but the driver cannot. They can be added only to the pending request table initially.
- *     After proper background and personal information verification admin will approve his request to
- *     act as driver. Then after the driver is added to the driver table.
- *     The users are categorized as follows
+ * The `AuthenticationServiceImpl` responsible for registering and authenticating the users.
+ * The customer can directly register themselves to the database,
+ * but the driver cannot. They can be added only to the pending request table initially.
+ * After proper background and personal information verification admin will approve his request to
+ * act as driver. Then after the driver is added to the driver table.
+ * The users are categorized as follows
  * </p>
  * <ol>
  *     <li>Driver</li>
@@ -49,7 +51,7 @@ import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_CUSTOMER_TIRE;
 @Service
 public class AuthenticationServiceImpl implements  AuthenticationService {
 
-    private static Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(AuthenticationServiceImpl.class);
 
     @Autowired
     private UserService userService;
@@ -66,66 +68,40 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
     private PasswordEncoder passwordEncoder;
+    private final AuthenticationMapper authenticationMapper = new AuthenticationMapper();
 
-    private final PendingRequestMapper pendingRequestMapper = new PendingRequestMapper();
-    /**
-     * <p>
-     *     The `CustomerRegister` is responsible for registering the customer with ROLE_CUSTOMER.
-     *     The customer tire is initially set to Bronze. Their tire is updated according to
-     *     their history and frequency of rides. The INITIAL_CUSTOMER_TIRE is set in constants.
-     * </p>
-     * <p>
-     *     Also Refer {@link com.i2i.zapcab.common.ZapCabConstant}
-     * </p>
-     *
-     * @param registerCustomerDto {@link RegisterDriverRequestDto}
-     *
-     * @throws DatabaseException
-     *         Arises while saving/updating the entity to the database.
-     * @return AuthenticationResponseDto
-     *         Contains JWT token upon successfull registration.
-     */
     @Override
     @Transactional
     public AuthenticationResponseDto customerRegister(RegisterCustomerDto registerCustomerDto) {
-        List<Role> roles = roleService.getByRoleType(registerCustomerDto.getRole());
-        User user = User.builder()
-                .name(registerCustomerDto.getName())
-                .dateOfBirth(registerCustomerDto.getDateOfBirth())
-                .email(registerCustomerDto.getEmail())
-                .gender(registerCustomerDto.getGender())
-                .mobileNumber(registerCustomerDto.getMobileNumber())
-                .password(passwordEncoder.encode(registerCustomerDto.getPassword()))
-                .role(roles)
-                .build();
+        if (!ObjectUtils.isEmpty(userService.getUserByMobileNumber(registerCustomerDto.getMobileNumber()))){
+            logger.warn("User already exist with mobile number {} in database", registerCustomerDto.getMobileNumber());
+            return null;
+        }
+        logger.debug("Initiated customer register");
+        List<RoleEnum> roleEnums = List.of(RoleEnum.CUSTOMER);
+        List<Role> roles = roleService.getByRoleType(roleEnums);
+        registerCustomerDto.setPassword(passwordEncoder.encode(registerCustomerDto.getPassword()));
+        User user = authenticationMapper.toUser(registerCustomerDto, roles);
         Customer customer = Customer.builder()
                 .tier(INITIAL_CUSTOMER_TIRE)
                 .user(user)
                 .build();
         customerService.saveCustomer(customer);
         emailSenderService.sendRegistrationMailtoCustomer(registerCustomerDto);
-        logger.info("Customer " + registerCustomerDto.getName() + " registered successfully!");
+        logger.info("Customer {} registered successfully!", registerCustomerDto.getName());
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponseDto.builder()
                 .token(jwtToken).build();
     }
 
-    /**
-     * <p>
-     *      This method is used for authentication of both driver and customer.
-     *      The user can use mobile number and password to sign in.
-     *      Upon successful authentication a JWT token is returned.
-     * </p>
-     *
-     * @param authenticationRequestDto {@link AuthenticationRequestDto}
-     * @return AuthenticationResponseDto {@link AuthenticationResponseDto}
-     */
     @Override
     public AuthenticationResponseDto authenticate(AuthenticationRequestDto authenticationRequestDto) {
         User user = userService.getUserByMobileNumber(authenticationRequestDto.getMobileNumber());
         if (ObjectUtils.isEmpty(user)) {
-            logger.info("No user with given mobile number is found in the database.");
+            logger.error("No user with given mobile number is found in the database.");
             throw new NotFoundException("No user with phone number " +
                     authenticationRequestDto.getMobileNumber() + " found in database!");
         }
@@ -140,34 +116,25 @@ public class AuthenticationServiceImpl implements  AuthenticationService {
             );
         } catch (Exception e) {
             logger.error("Authentication failed: " + e.getMessage());
-            throw new AuthenticationException("Invalid credentials credentials",e);
+            throw new AuthenticationException("Invalid credentials credentials", e);
         }
         logger.info("Fetched user: " + (user != null ? user.getName() : "null"));
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponseDto.builder().token(jwtToken).build();
     }
 
-    /**
-     * <p>
-     *    This method is responsible for registering driver to the database.
-     *    The drive cannot register as driver by themselves, due to some security constrains.
-     *    Due to which
-     * </p>
-     * @param registerDriverRequestDto {@link RegisterDriverRequestDto}
-     * @return
-     */
     @Override
     @Transactional
     public DriverRegisterResponseDto driverRegisterRequest(RegisterDriverRequestDto registerDriverRequestDto) {
-        try {
-            PendingRequest pendingRequest = pendingRequestMapper.dtoToEntity(registerDriverRequestDto);
-            pendingRequestService.savePendingRequest(pendingRequest);
-            return DriverRegisterResponseDto.builder()
-                    .status("Driver added to the pending request successfully!")
-                    .build();
-        } catch (Exception e) {
-            throw new AuthenticationException("Unable to give request to register as a driver with the name" +
-                    registerDriverRequestDto.getName(), e);
+        PendingRequest pendingRequest = authenticationMapper.toPendingRequest(registerDriverRequestDto);
+        if (!ObjectUtils.isEmpty(pendingRequestService.findRequestByMobileNumber(pendingRequest.getMobileNumber()))) {
+            logger.warn("User already exist with mobile number {} in database", registerDriverRequestDto.getMobileNumber());
+            return null;
         }
+        pendingRequestService.savePendingRequest(pendingRequest);
+        logger.info("Driver saved to pending request successfully.");
+        return DriverRegisterResponseDto.builder()
+                .status("Driver added to the pending request successfully!")
+                .build();
     }
 }

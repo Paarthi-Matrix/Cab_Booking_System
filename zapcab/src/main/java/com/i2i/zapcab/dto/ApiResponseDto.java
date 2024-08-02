@@ -67,7 +67,7 @@ public class ApiResponseDto<T> extends ResponseEntity<Object> {
 
     public static <T> ApiResponseDto<T> statusCreated(T data) {
         return new ApiResponseDto<>(new SuccessMessage<>(
-                "Resource created successfully",
+                "Entity created successfully",
                 data,
                 HttpStatus.CREATED.value()), HttpStatus.CREATED);
     }
@@ -93,6 +93,21 @@ public class ApiResponseDto<T> extends ResponseEntity<Object> {
                 data,
                 HttpStatus.NOT_FOUND.value(),
                 e), HttpStatus.NOT_FOUND);
+    }
+
+    public static <T> ApiResponseDto<T> statusConflict(T data, Exception e) {
+        return new ApiResponseDto<>(new ErrorMessage<>(
+                "Conflict occurs",
+                data,
+                HttpStatus.CONFLICT.value(),
+                e), HttpStatus.CONFLICT);
+    }
+
+    public static <T> ApiResponseDto<T> statusConflict(T data) {
+        return new ApiResponseDto<>(new ErrorMessage<>(
+                "Conflict occurs. Resource already available cannot create same resource again.",
+                data,
+                HttpStatus.CONFLICT.value()), HttpStatus.CONFLICT);
     }
 
     public static <T> ApiResponseDto<T> statusUnAuthorized(T data, Exception e) {
@@ -131,5 +146,13 @@ public class ApiResponseDto<T> extends ResponseEntity<Object> {
                 data,
                 HttpStatus.BAD_REQUEST.value()
         ), HttpStatus.BAD_REQUEST);
+    }
+
+    public static <T> ApiResponseDto<T> statusMethodNotAllowed(String message, Exception e) {
+        return new ApiResponseDto<>(new ErrorMessage<>(
+                message,
+                e,
+                HttpStatus.METHOD_NOT_ALLOWED.value()
+        ), HttpStatus.METHOD_NOT_ALLOWED);
     }
 }

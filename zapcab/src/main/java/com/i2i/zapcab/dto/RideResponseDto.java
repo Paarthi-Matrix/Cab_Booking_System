@@ -37,4 +37,5 @@ public class RideResponseDto {
     private Long driverContactNumber;
     private String vehicleNumber;
     private int rating;
+    private String status;
 }

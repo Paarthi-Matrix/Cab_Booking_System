@@ -37,7 +37,7 @@ public class PendingRequestServiceImpl implements PendingRequestService {
             pendingRequestRepository.save(pendingRequest);
         } catch (Exception e) {
             logger.error("Unable to save the request for {}", pendingRequest.getName());
-            String errorMessage = "Un expected error happened while updating " +
+            String errorMessage = "Un expected error happened while saving " +
                     pendingRequest.getName() +
                     " to the pending requests";
             throw new DatabaseException(errorMessage, e);

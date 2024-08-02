@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
             Optional<User> user = userRepository.findById(id);
             if (user.isPresent()) {
                 User updatedUser = user.get();
-                updatedUser.setDeleted(true);
+                updatedUser.setSoftDelete(true);
                 return !ObjectUtils.isEmpty(userRepository.save(updatedUser));
             }
         } catch (Exception e) {

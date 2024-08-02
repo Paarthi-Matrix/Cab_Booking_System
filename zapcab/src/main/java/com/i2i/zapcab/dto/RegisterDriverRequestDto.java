@@ -12,28 +12,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-import static com.i2i.zapcab.common.ZapCabConstant.DOB_NOT_NULL;
-import static com.i2i.zapcab.common.ZapCabConstant.DOB_PAST_MESSAGE;
-import static com.i2i.zapcab.common.ZapCabConstant.EMAIL_NOT_BLANK;
-import static com.i2i.zapcab.common.ZapCabConstant.EMAIL_PATTERN_MESSAGE;
-import static com.i2i.zapcab.common.ZapCabConstant.EMAIL_REGEX;
-import static com.i2i.zapcab.common.ZapCabConstant.GENDER_NOT_BLANK;
-import static com.i2i.zapcab.common.ZapCabConstant.GENDER_PATTERN_MESSAGE;
-import static com.i2i.zapcab.common.ZapCabConstant.LICENSE_NUMBER_NOT_BLANK;
-import static com.i2i.zapcab.common.ZapCabConstant.LICENSE_NUMBER_REGEX;
-import static com.i2i.zapcab.common.ZapCabConstant.LICENSE_PLATE_NOT_BLANK;
-import static com.i2i.zapcab.common.ZapCabConstant.LICENSE_PLATE_REGEX;
-import static com.i2i.zapcab.common.ZapCabConstant.MOBILE_NUMBER_NOT_BLANK;
-import static com.i2i.zapcab.common.ZapCabConstant.MOBILE_NUMBER_PATTERN_MESSAGE;
-import static com.i2i.zapcab.common.ZapCabConstant.MOBILE_NUMBER_REGEX;
-import static com.i2i.zapcab.common.ZapCabConstant.NAME_NOT_BLANK;
-import static com.i2i.zapcab.common.ZapCabConstant.NAME_PATTERN_MESSAGE;
-import static com.i2i.zapcab.common.ZapCabConstant.RC_BOOK_NOT_BLANK;
-import static com.i2i.zapcab.common.ZapCabConstant.REGION_NOT_BLANK;
-import static com.i2i.zapcab.common.ZapCabConstant.REGION_PATTERN_MESSAGE;
-import static com.i2i.zapcab.common.ZapCabConstant.STRING_REGEX;
-import static com.i2i.zapcab.common.ZapCabConstant.VALID_GENDER;
+import static com.i2i.zapcab.common.ZapCabConstant.*;
 
 /**
  * <p>
@@ -83,8 +62,9 @@ public class RegisterDriverRequestDto {
     private String name;
 
     @NotBlank(message = REGION_NOT_BLANK)
-    @Pattern(regexp = STRING_REGEX, message = REGION_PATTERN_MESSAGE)
+    @Pattern(regexp = STRING_AND_NUMBER_REGEX, message = REGION_PATTERN_MESSAGE)
     private String region;
+
     @NotBlank(message = REGION_NOT_BLANK)
     @Pattern(regexp = STRING_REGEX, message = REGION_PATTERN_MESSAGE)
     private String city;
@@ -99,7 +79,7 @@ public class RegisterDriverRequestDto {
     private String email;
 
     @NotBlank(message = LICENSE_NUMBER_NOT_BLANK)
-    @Pattern(regexp = LICENSE_NUMBER_REGEX)
+    @Pattern(regexp = LICENSE_NUMBER_REGEX, message = LICENSE_NUMBER_MESSAGE)
     private String licenseNumber;
 
     @NotBlank(message = RC_BOOK_NOT_BLANK)

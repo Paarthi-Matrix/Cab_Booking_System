@@ -15,7 +15,6 @@ import com.i2i.zapcab.dto.AuthenticationResponseDto;
 import com.i2i.zapcab.dto.EmailRequestDto;
 import com.i2i.zapcab.dto.FetchAllPendingRequestsDto;
 import com.i2i.zapcab.dto.UpdatePendingRequestDto;
-import com.i2i.zapcab.exception.AuthenticationException;
 import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.helper.PinGeneration;
 import com.i2i.zapcab.helper.RoleEnum;
@@ -27,8 +26,7 @@ import com.i2i.zapcab.model.User;
 import com.i2i.zapcab.model.Vehicle;
 import com.i2i.zapcab.model.VehicleLocation;
 
-import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_DRIVER_STATUS;
-import static com.i2i.zapcab.common.ZapCabConstant.VEHICLE_AVAILABLE_STATUS;
+import static com.i2i.zapcab.common.ZapCabConstant.*;
 
 /**
  * <p>
@@ -66,32 +64,30 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Page<FetchAllPendingRequestsDto> getAllPendingRequest(int page, int size) {
         try {
-            logger.info("Retrieving the pending request");
-            return pendingRequestService.getAllPendingRequests(page, size).map(pendingRequest -> {
-                FetchAllPendingRequestsDto fetchAllPendingRequestsDto = pendingRequestMapper.entityToRequestDto(pendingRequest);
-                return fetchAllPendingRequestsDto;
-            });
+            logger.debug("Retrieving the pending request");
+            return pendingRequestService.getAllPendingRequests(page, size).map(pendingRequest ->
+                    pendingRequestMapper.entityToRequestDto(pendingRequest));
         } catch (Exception e) {
-            logger.error("Error occurred while fetching the list of requests");
+            logger.error("Error occurred while fetching the list of pending requests", e);
             throw new DatabaseException("Unable to retrieve the pending requests list", e);
         }
     }
 
     @Override
     public AuthenticationResponseDto updatePendingRequest(UpdatePendingRequestDto updatePendingRequestDto) {
-        logger.info("Starting to update pending request for phone number: {}",
+        logger.debug("Starting to update pending request for phone number: {}",
                 updatePendingRequestDto.getMobileNumber());
         try {
             AuthenticationResponseDto authenticationResponse = new AuthenticationResponseDto();
             Optional<PendingRequest> pendingRequest = pendingRequestService.findRequestByMobileNumber(updatePendingRequestDto.getMobileNumber());
             if (pendingRequest.isPresent()) {
                 PendingRequest request = pendingRequest.get();
-                logger.info("Updating pending request status for phone number: {}",
+                logger.debug("Updating pending request status for phone number: {}",
                         updatePendingRequestDto.getMobileNumber());
                 request.setStatus(updatePendingRequestDto.getStatus());
                 request.setRemarks(updatePendingRequestDto.getRemarks());
                 pendingRequestService.savePendingRequest(request);
-                if (request.getStatus().equalsIgnoreCase("rejected")) {
+                if (request.getStatus().equalsIgnoreCase(REJECTED)) {
                     emailSenderService.sendRejectionEmailToDriver(
                             EmailRequestDto.builder()
                                     .toEmail(pendingRequest.get().getEmail())
@@ -99,8 +95,8 @@ public class AdminServiceImpl implements AdminService {
                                     .remarks(updatePendingRequestDto.getRemarks())
                                     .build()
                     );
-                    return AuthenticationResponseDto.builder().token("Your application has been rejected with the " +
-                            "following reason : " + request.getRemarks()).build();
+                    logger.info("The application has been rejected because {}", updatePendingRequestDto.getRemarks());
+                    return AuthenticationResponseDto.builder().token(null).build();
                 }
                 logger.info("Pending request successfully updated for phone number: {}",
                         updatePendingRequestDto.getMobileNumber());
@@ -111,9 +107,9 @@ public class AdminServiceImpl implements AdminService {
             }
             return authenticationResponse;
         } catch (Exception e) {
-            logger.error("Error updating pending request for phone number: {}",
+            logger.error("Error while updating pending request for phone number: {}",
                     updatePendingRequestDto.getMobileNumber(), e);
-            throw new AuthenticationException("Cant able to update the pending requests for the driver : ");
+            throw new DatabaseException("Can't update the pending requests for the driver : ");
         }
     }
 
@@ -131,6 +127,10 @@ public class AdminServiceImpl implements AdminService {
             List<RoleEnum> roleEnums = List.of(RoleEnum.DRIVER);
             List<Role> roles = roleService.getByRoleType(roleEnums);
             String password = PinGeneration.driverPasswordGeneration();
+            int maxSeats = determineMaxSeatsByCategory(pendingRequest);
+            if (maxSeats == -1) {
+                return null;
+            }
             User user = User.builder().name(pendingRequest.getName()).dateOfBirth(pendingRequest.getDob())
                     .email(pendingRequest.getEmail()).gender(pendingRequest.getGender())
                     .mobileNumber(pendingRequest.getMobileNumber())
@@ -139,15 +139,16 @@ public class AdminServiceImpl implements AdminService {
                     .build();
             VehicleLocation vehicleLocation = VehicleLocation.builder().location(pendingRequest.getRegion())
                     .build();
-            Vehicle vehicle = Vehicle.builder().category(pendingRequest.getCategory())
+            Vehicle vehicle = Vehicle.builder().category(pendingRequest.getCategory().toUpperCase())
                     .type(pendingRequest.getType())
                     .vehicleLocation(vehicleLocation).model(pendingRequest.getModel())
                     .licensePlate(pendingRequest.getLicensePlate())
-                    .maxSeats(4).status(VEHICLE_AVAILABLE_STATUS).build();
+                    .maxSeats(maxSeats).status(VEHICLE_STATUS_UNAVAILABLE).build();
             vehicleLocation.setVehicle(vehicle);
             Driver driver = Driver.builder().region(pendingRequest.getRegion()).noOfCancellation(2)
-                    .licenseNo(pendingRequest.getLicenseNo()).rcBookNo(pendingRequest.getRcBookNo()).user(user)
-                    .status(INITIAL_DRIVER_STATUS).vehicle(vehicle).build();
+                    .wallet(INITIAL_WALLET_AMOUNT).licenseNo(pendingRequest.getLicenseNo())
+                    .rcBookNo(pendingRequest.getRcBookNo()).user(user).status(INITIAL_DRIVER_STATUS)
+                    .vehicle(vehicle).build();
             driverService.saveDriver(driver);
             emailSenderService.sendRegistrationEmailToDriver(
                     EmailRequestDto.builder()
@@ -162,8 +163,21 @@ public class AdminServiceImpl implements AdminService {
                     .token(jwtToken).build();
         } catch (Exception e) {
             logger.error("Driver registration failed for email: {}", pendingRequest.getEmail(), e);
-            throw new AuthenticationException("Driver registration failed for : " + pendingRequest.getName() +
+            throw new DatabaseException("Driver registration failed for : " + pendingRequest.getName() +
                     "\t mobile number : " + pendingRequest.getMobileNumber(), e);
+        }
+    }
+
+    private int determineMaxSeatsByCategory(PendingRequest pendingRequest) {
+        if (pendingRequest.getCategory().equalsIgnoreCase("AUTO")) {
+            return AUTO_MAX_SEATS;
+        } else if (pendingRequest.getCategory().equalsIgnoreCase("SEDAN")
+                    || pendingRequest.getCategory().equalsIgnoreCase("XUV")) {
+            return SEDAN_OR_XUV_MAX_SEATS;
+        } else if (pendingRequest.getCategory().equalsIgnoreCase("BIKE")) {
+            return BIKE_MAX_SEATS;
+        } else {
+            return -1;
         }
     }
 }

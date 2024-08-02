@@ -2,6 +2,7 @@ package com.i2i.zapcab.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,32 +130,32 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public AssignedDriverDto getAssignedDriverDetails(String id) {
+        Customer customer = customerRepository.findByUserId(id);
         try {
-            logger.info("Fetching assigned driver details for customer ID: {}", id);
-            RideRequest rideRequest = rideRequestService.checkStatusAssignedOrNot(id);
-            if (rideRequest == null) {
-                logger.info("No ride request found for customer ID: {}", id);
-                return null;
+            logger.info("Fetching assigned driver details for customer ID: {}", customer.getId());
+            Optional<RideRequest> rideRequest = rideRequestService.getRideRequestByCustomerId(customer.getId());
+            if (rideRequestService.checkStatusAssignedOrNot(customer.getId())) {
+                Ride ride = rideService.getRideByRideRequest(rideRequest.get().getId());
+                if (ride == null) {
+                    logger.info("No ride found for ride request ID: {}", rideRequest.get().getId());
+                    return null;
+                }
+                String otp = otpService.generateOTP(id);
+                logger.info("Assigned driver details retrieved successfully for customer ID: {}", id);
+                return AssignedDriverDto.builder()
+                        .Otp(otp)
+                        .name(ride.getDriver().getUser().getName())
+                        .mobileNumber(ride.getDriver().getUser().getMobileNumber())
+                        .ratings(ride.getDriver().getRatings())
+                        .category(ride.getDriver().getVehicle().getCategory())
+                        .model(ride.getDriver().getVehicle().getModel())
+                        .licensePlate(ride.getDriver().getVehicle().getLicensePlate())
+                        .build();
             }
-            Ride ride = rideService.getRideByRideRequest(rideRequest.getId());
-            if (ride == null) {
-                logger.info("No ride found for ride request ID: {}", rideRequest.getId());
-                return null;
-            }
-            String otp = otpService.generateOTP(id);
-            AssignedDriverDto assignedDriverDto = AssignedDriverDto.builder()
-                    .Otp(otp)
-                    .name(ride.getDriver().getUser().getName())
-                    .mobileNumber(ride.getDriver().getUser().getMobileNumber())
-                    .ratings(ride.getDriver().getRatings())
-                    .category(ride.getDriver().getVehicle().getCategory())
-                    .model(ride.getDriver().getVehicle().getModel())
-                    .licensePlate(ride.getDriver().getVehicle().getLicensePlate())
-                    .build();
-
-            logger.info("Assigned driver details retrieved successfully for customer ID: {}", id);
-            return assignedDriverDto;
+            logger.info("No driver assigned for the customer with user id {}", id);
+            return null;
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("Error occurred while fetching assigned driver details for customer ID: {}. Error: {}", id, e.getMessage(), e);
             throw new DatabaseException("Error occurred while fetching assigned driver for the customer with ID: " + id, e);
         }
@@ -206,7 +207,6 @@ public class CustomerServiceImpl implements CustomerService {
             throw new DatabaseException("Error updating tier for customer with userId: " + userId, e);
         }
     }
-
 
     @Override
     public String retrieveCustomerIdByUserId(String userId) {

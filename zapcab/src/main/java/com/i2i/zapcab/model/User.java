@@ -49,9 +49,6 @@ public class User extends Auditable implements UserDetails {
     private boolean isSoftDelete;
     @Column
     private boolean isMaskedMobileNumber;
-
-    private boolean isDeleted;
-
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))

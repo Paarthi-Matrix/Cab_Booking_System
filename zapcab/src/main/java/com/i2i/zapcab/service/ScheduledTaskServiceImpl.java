@@ -33,7 +33,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
     @PostConstruct
     public void initializePetrolPrice() {
         logger.info("Initializing petrol price.");
-        fetchPetrolPrice();
+        //fetchPetrolPrice();
     }
 
     /**
@@ -45,7 +45,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
     @Scheduled(cron = "0 0 0 * * ?")
     public void fetchPetrolPriceAtMidnight() {
         logger.info("Fetching petrol price at midnight.");
-        fetchPetrolPrice();
+        //fetchPetrolPrice();
     }
 
     /**

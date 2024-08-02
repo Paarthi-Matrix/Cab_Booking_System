@@ -36,17 +36,17 @@ public class VehicleLocationServiceImpl implements VehicleLocationService {
 
     @Override
     @Transactional
-    public void updateVehicleLocationByVehicleId(String location, Vehicle vehicle) {
-        VehicleLocation vehicleLocation = vehicleLocationRepository.findByVehicleId(vehicle.getId());
+    public void updateVehicleLocationByVehicleId(String location, String vehicleId) {
+        VehicleLocation vehicleLocation = vehicleLocationRepository.findByVehicleId(vehicleId);
         vehicleLocation.setLocation(location.toUpperCase());
         try {
             logger.info("Saving the updated vehicle location...");
             vehicleLocationRepository.save(vehicleLocation);
         } catch (Exception e) {
-            logger.error("Unexpected error occurred while updating the vehicle " +
-                    vehicle.getLicensePlate() + " with location " + location, e);
-            throw new DatabaseException("Unexpected error occurred while updating the vehicle " +
-                    vehicle.getLicensePlate() + " with location " + location, e);
+            logger.error("Unexpected error occurred while updating the vehicle with id" +
+                    vehicleId + " with location " + location, e);
+            throw new DatabaseException("Unexpected error occurred while updating the vehicle with id" +
+                    vehicleId + " with location " + location, e);
         }
     }
 

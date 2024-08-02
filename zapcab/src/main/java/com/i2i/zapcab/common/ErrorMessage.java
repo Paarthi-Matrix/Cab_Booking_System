@@ -87,4 +87,18 @@ public class ErrorMessage<T> {
         this.data = data;
         this.status = status;
     }
+
+    public ErrorMessage(String message, T data, int status) {
+        this();
+        this.message = message;
+        this.data = data;
+        this.status = status;
+    }
+
+    public ErrorMessage(String message, Exception e, int status) {
+        this();
+        this.message = message;
+        this.e = e;
+        this.status = status;
+    }
 }

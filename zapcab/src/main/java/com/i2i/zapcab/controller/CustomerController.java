@@ -2,6 +2,7 @@ package com.i2i.zapcab.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,7 +70,7 @@ public class CustomerController {
      */
     @GetMapping("/me/vehicles")
     public ApiResponseDto<?> getAvailableVehiclesWithFare(
-            @RequestBody CheckVehicleAvailabilityDto checkVehicleAvailabilityDto) {
+            @Valid @RequestBody CheckVehicleAvailabilityDto checkVehicleAvailabilityDto) {
         try {
             logger.info("Received request to check vehicle availability with details: {}"
                     , checkVehicleAvailabilityDto);
@@ -80,7 +80,7 @@ public class CustomerController {
                 logger.info("Available vehicles found: {}", vehicleAvailabilityResponseDto);
                 return ApiResponseDto.statusOk(vehicleAvailabilityResponseDto);
             } else {
-                logger.warn("Same pickup and drop point not allowed: {}", checkVehicleAvailabilityDto);
+                logger.error("Same pickup and drop point not allowed: {}", checkVehicleAvailabilityDto);
                 return ApiResponseDto.statusBadRequest("Same pickup and drop point not allowed");
             }
         } catch (DatabaseException e) {
@@ -104,7 +104,7 @@ public class CustomerController {
             logger.info("Received ride request from user ID: {}, details: {}", id, rideRequestDto);
             if (customerService.saveRideRequest(id, rideRequestDto)) {
                 logger.info("Ride request saved successfully for user ID: {}", id);
-                return ApiResponseDto.statusOk("Searching For Captain to Accept...");
+                return ApiResponseDto.statusOk("Ride request accepted.");
             } else {
                 logger.warn("Ride request not found for user ID: {}", id);
                 return ApiResponseDto.statusNotFound(null);
@@ -124,10 +124,10 @@ public class CustomerController {
      * @param ratings The data transfer object containing the ride and driver ratings.
      * @return {@link ApiResponseDto}
      */
-    @PatchMapping("me/rides/{id}")
+    @PatchMapping("/me/rides/{id}")
     public ApiResponseDto<String> updateRideAndDriverRating(@PathVariable String id, @RequestBody RideRatingDto ratings) {
         try {
-            logger.info("Received request to update ride and driver rating for ride ID: {}, with ratings: {}", id, ratings);
+            logger.debug("Received request to update ride and driver rating for ride ID: {}, with ratings: {}", id, ratings);
             if (customerService.updateRideAndDriverRating(id, ratings)) {
                 logger.info("Ratings updated successfully for ride ID: {}", id);
                 return ApiResponseDto.statusOk("Ratings updated successfully");
@@ -279,7 +279,7 @@ public class CustomerController {
      * @return {@link ApiResponseDto}
      * The response entity containing the updated ride details or an error message.
      */
-    @PutMapping("/me/rides")
+    @PatchMapping("/me/rides")
     public ApiResponseDto<?> updateRideDetails(@RequestBody UpdateRideDto updateRideDto) {
         String userId = JwtDecoder.extractUserIdFromToken();
         try {
@@ -289,8 +289,8 @@ public class CustomerController {
             logger.info("Updated ride details for ride with user ID {}", userId);
             return ApiResponseDto.statusOk(updateRideResponseDto);
         } catch (NotFoundException e) {
-            logger.warn("user with ID {} not found", userId);
-            return ApiResponseDto.statusNotFound("Invalid ID");
+            logger.warn("user with ID {} not found", userId, e);
+            return ApiResponseDto.statusNotFound("Invalid id for the user with id " + userId, e);
         } catch (DatabaseException e) {
             logger.error("Error updating ride details for user with ID {}", userId, e);
             return ApiResponseDto.statusInternalServerError("Error occurred while updating customer ride " +

@@ -3,7 +3,6 @@ package com.i2i.zapcab.service;
 import java.util.List;
 
 import com.i2i.zapcab.exception.DatabaseException;
-import com.i2i.zapcab.model.Vehicle;
 import com.i2i.zapcab.model.VehicleLocation;
 
 import org.springframework.stereotype.Component;
@@ -49,10 +48,10 @@ public interface VehicleLocationService {
      * </p>
      *
      * @param location the new location of the vehicle
-     * @param vehicle  the vehicle whose location needs to be updated
+     * @param vehicleId  the vehicle whose location needs to be updated
      * @throws DatabaseException Arises when there is update anomalies in Vehicle Location Repository.
      */
-    void updateVehicleLocationByVehicleId(String location, Vehicle vehicle);
+    void updateVehicleLocationByVehicleId(String location, String vehicleId);
 
     /**
      * <p>
