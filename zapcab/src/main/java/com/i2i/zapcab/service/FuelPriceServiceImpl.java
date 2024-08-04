@@ -36,7 +36,6 @@ public class FuelPriceServiceImpl implements FuelPriceService {
 
     @Override
     public double getPetrolPrice() {
-        ;
         HttpHeaders headers = new HttpHeaders();
         headers.set("x-rapidapi-key", fuelPriceApiToken);
         headers.set("Accept", "application/json");

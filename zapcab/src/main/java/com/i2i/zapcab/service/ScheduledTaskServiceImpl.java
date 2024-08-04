@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.i2i.zapcab.exception.DatabaseException;
+import com.i2i.zapcab.exception.ApiException;
 
 /**
  * <p>
@@ -27,8 +27,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
 
     /**
      * <p>
-     * Initializes the service by fetching the current petrol price.
-     * This method is called once when the bean is fully initialized.
+     * Initializes petrol price by fetching it from an external API.
      * </p>
      */
     @PostConstruct
@@ -54,7 +53,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
      * Fetches the latest petrol price and updates the {@code latestPetrolPrice} field.
      * </p>
      *
-     * @throws DatabaseException if there is an error fetching the petrol price.
+     * @throws ApiException if there is an error fetching the petrol price.
      */
     private void fetchPetrolPrice() {
         try {
@@ -62,7 +61,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
             logger.info("Successfully fetched latest petrol price.");
         } catch (Exception e) {
             logger.error("Failed to fetch petrol price", e);
-            throw new DatabaseException("Failed to fetch petrol price");
+            throw new ApiException("Failed to fetch petrol price");
         }
     }
 

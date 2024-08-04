@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.i2i.zapcab.dto.RideRequestResponseDto;
 import com.i2i.zapcab.exception.DatabaseException;
+import org.springframework.stereotype.Service;
 
 import static com.i2i.zapcab.common.ZapCabConstant.ASSUMED_PETROL_PRICE;
 import static com.i2i.zapcab.common.ZapCabConstant.AUTO;
@@ -31,6 +32,7 @@ import static com.i2i.zapcab.common.ZapCabConstant.XUV;
 import static com.i2i.zapcab.common.ZapCabConstant.XUV_RATE_PER_KM;
 import static com.i2i.zapcab.common.ZapCabConstant.XUV_SPEED_PER_KM;
 
+@Service
 public class FareCalculatorServiceImpl implements FareCalculatorService {
     private static final Logger logger = LoggerFactory.getLogger(FareCalculatorServiceImpl.class);
     private static final Map<String, Integer> distances = new HashMap<>();

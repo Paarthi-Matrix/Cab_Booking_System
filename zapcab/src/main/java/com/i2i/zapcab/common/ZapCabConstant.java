@@ -79,8 +79,8 @@ public class ZapCabConstant {
     public static final String RIDE_BOOKED = "Booked";
     public static final String RIDE_STARTED = "Started";
     public static final String RIDE_COMPLETED = "Completed";
-    public static final String REJECTED_STATUS = "Rejected";
     public static final String RIDE_CANCELLED = "Cancelled";
+    public static final String REJECTED_STATUS = "Rejected";
     public static final String TEMPORARILY_SUSPENDED = "TEMPORARILY_SUSPENDED";
 
     //Otp duration
