@@ -19,6 +19,7 @@ public class RideMapper {
 
     public RideResponseDto rideToRideResponseDto(Ride ride) {
         return RideResponseDto.builder()
+                .rideId(ride.getId())
                 .status(ride.getStatus())
                 .fare(ride.getFare()).build();
     }

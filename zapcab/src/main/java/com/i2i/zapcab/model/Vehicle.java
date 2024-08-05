@@ -36,7 +36,7 @@ public class Vehicle extends Auditable {
     private String licensePlate;
     @Column(name = "max_seat")
     private int maxSeats;
-    @Column(name = "status", columnDefinition = "VARCHAR(10)")
+    @Column(name = "status", columnDefinition = "VARCHAR(15)")
     private String status;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id")

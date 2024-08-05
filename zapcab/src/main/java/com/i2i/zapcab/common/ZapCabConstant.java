@@ -104,7 +104,6 @@ public class ZapCabConstant {
     public static final String FIND_BY_STATUS_QUERY = "SELECT pr from PendingRequest pr WHERE pr.status =:status";
     public static final String FIND_BY_CUSTOMER_NAME_AND_RIDE_ID = "SELECT rr FROM RideRequest rr WHERE rr.customer.user.name = :customerName AND rr.id = :rideID";
     public static final String FIND_BY_CUSTOMER_ID = "from RideRequest r JOIN r.customer c where c.id = :customerId and r.isDeleted = false";
-    public static final String FIND_BY_STATUS = "SELECT pr from PendingRequest pr WHERE pr.status =:status";
     public static final String COUNT_BY_USER_ID = "SELECT COUNT(h) FROM RideHistory h WHERE h.user.id = :userId";
 
     //EMAIL

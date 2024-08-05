@@ -4,7 +4,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.i2i.zapcab.dto.*;
+import com.i2i.zapcab.service.VehicleLocationService;
 import org.junit.jupiter.api.AfterAll;
+
+import static com.i2i.zapcab.common.ZapCabConstant.RIDE_COMPLETED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,16 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import static com.i2i.zapcab.common.ZapCabConstant.PAYMENT_CASH;
-import com.i2i.zapcab.dto.ApiResponseDto;
-import com.i2i.zapcab.dto.ChangePasswordRequestDto;
-import com.i2i.zapcab.dto.DriverSelectedRideDto;
-import com.i2i.zapcab.dto.GetRideRequestListsDto;
-import com.i2i.zapcab.dto.OTPResponseDto;
-import com.i2i.zapcab.dto.OtpRequestDto;
-import com.i2i.zapcab.dto.PaymentModeDto;
-import com.i2i.zapcab.dto.RequestedRideDto;
-import com.i2i.zapcab.dto.RideDetailsDto;
-import com.i2i.zapcab.dto.UpdateDriverStatusDto;
+
 import com.i2i.zapcab.exception.DatabaseException;
 import com.i2i.zapcab.exception.NotFoundException;
 import com.i2i.zapcab.helper.JwtDecoder;
@@ -48,6 +43,9 @@ public class DriverControllerTest {
 
     @Mock
     private RideService rideService;
+
+    @Mock
+    private VehicleLocationService vehicleLocationService;
 
     @InjectMocks
     private DriverController driverController;
@@ -202,16 +200,18 @@ public class DriverControllerTest {
     void testUpdatePaymentMode_Success() {
         PaymentModeDto paymentModeDto = new PaymentModeDto();
         paymentModeDto.setPaymentMode(PAYMENT_CASH);
-        PaymentModeDto updatedPaymentMode = new PaymentModeDto();
-        updatedPaymentMode.setPaymentMode(PAYMENT_CASH);
-        String userId = "driver123";
+        RideResponseDto rideResponseDto = RideResponseDto.builder().fare(450.0).status(RIDE_COMPLETED).build();
+        String userId = "user123";
         String driverId = "driver456";
         when(JwtDecoder.extractUserIdFromToken()).thenReturn(userId);
         when(driverService.retrieveDriverIdByUserId(userId)).thenReturn(driverId);
-        when(rideService.paymentMode(driverId, paymentModeDto)).thenReturn(updatedPaymentMode);
+        when(rideService.setPaymentMode(driverId, paymentModeDto)).thenReturn(rideResponseDto);
+        when(rideService.updateRideStatus(driverId)).thenReturn("Velachery");
+        when(driverService.getVehicleIdByDriverId(driverId)).thenReturn("vehicle002");
+        vehicleLocationService.updateVehicleLocationByVehicleId("Velachery", "vehicle002");
         ApiResponseDto<?> response = driverController.updatePaymentMode(paymentModeDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(updatedPaymentMode, response.getData());
+        assertEquals(paymentModeDto, response.getData());
     }
 
     @Test
@@ -234,7 +234,7 @@ public class DriverControllerTest {
         String driverId = "driver456";
         when(JwtDecoder.extractUserIdFromToken()).thenReturn(userId);
         when(driverService.retrieveDriverIdByUserId(userId)).thenReturn(driverId);
-        doThrow(new DatabaseException("Database error")).when(rideService).paymentMode(driverId, paymentModeDto);
+        doThrow(new DatabaseException("Database error")).when(rideService).setPaymentMode(driverId, paymentModeDto);
         ApiResponseDto<?> response = driverController.updatePaymentMode(paymentModeDto);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getData());

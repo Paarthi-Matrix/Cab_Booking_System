@@ -20,6 +20,8 @@ import com.i2i.zapcab.model.Driver;
 import com.i2i.zapcab.model.Ride;
 import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.repository.RideRepository;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import static com.i2i.zapcab.common.ZapCabConstant.RIDE_COMPLETED;
 
@@ -46,6 +48,7 @@ public class RideServiceImpl implements RideService {
     private VehicleLocationService vehicleLocationService;
 
     @Override
+    @Transactional
     public void saveRide(RideRequest rideRequest, Driver driver) {
         try {
             logger.info("Saving the request {} to the ride table....", rideRequest.getPickupPoint());
@@ -61,6 +64,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
+    @Transactional
     public String updateRideRating(String id, RideRatingDto ratings) {
         try {
             logger.info("Attempting to update ride rating for ride ID: {} with ratings: {}", id, ratings.getRatings());
@@ -80,6 +84,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
+    @Transactional
     public RideResponseDto updateRideStatus(String id, RideStatusDto rideStatusDto) {
         logger.debug("Updating status of ride with ID: {} to new status: {}", id, rideStatusDto.getStatus());
         try {
@@ -111,6 +116,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
+    @Transactional
     public Ride getRideByRideRequest(String id) {
         try {
             return rideRepository.findRideByRideRequestId(id);
@@ -120,6 +126,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
+    @Transactional
     public String updateRideStatus(String driverId) {
         logger.debug("Updating status of the ride associated with driver ID: {}", driverId);
         try {
@@ -140,6 +147,7 @@ public class RideServiceImpl implements RideService {
                     "driver ID: {}", driverId);
             return ride.getDropPoint();
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("Failed to update ride status for the ride associated with " +
                     "driver ID: {}", driverId, e);
             throw new DatabaseException("Failed to update ride status. Driver ID: " + driverId, e);
@@ -147,6 +155,7 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
+    @Transactional
     public RideResponseDto setPaymentMode(String driverId, PaymentModeDto paymentModeDto) {
         logger.debug("Updating the payment mode for the ride associated with driver ID: {}", driverId);
         try {
@@ -157,7 +166,6 @@ public class RideServiceImpl implements RideService {
             }
             Ride ride = rideOptional.get();
             ride.setPaymentMode(paymentModeDto.getPaymentMode());
-            ride.setDeleted(true);
             rideRepository.save(ride);
             historyService.saveHistory(ride);
             logger.info("Successfully updated the payment mode for the ride associated with " +
@@ -171,8 +179,26 @@ public class RideServiceImpl implements RideService {
     }
 
     @Override
+    @Transactional
     public Optional<Ride> getRideById(String id) {
         return rideRepository.findById(id);
+    }
+
+    @Override
+    public void softDeleteRide(String rideId) {
+        try {
+            Optional<Ride> rideOptional = rideRepository.findById(rideId);
+            if (ObjectUtils.isEmpty(rideOptional) && rideOptional.isPresent()) {
+                logger.error("No ride with given ride id {} found", rideId);
+                throw new NotFoundException("No ride with given ride id " + rideId + "found ");
+            }
+            Ride ride = rideOptional.get();
+            ride.setDeleted(true);
+            rideRepository.save(ride);
+        } catch (Exception e) {
+            logger.error("Error occurred while deleting the ride with {} id ", rideId, e);
+            throw new DatabaseException("Error occurred while deleting the ride with id " + rideId, e);
+        }
     }
 
 }

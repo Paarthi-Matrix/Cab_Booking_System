@@ -28,6 +28,7 @@ import lombok.Data;
 @Builder
 @Data
 public class RideResponseDto {
+    private String rideId;
     private String pickupPoint;
     private String dropPoint;
     private int distance;

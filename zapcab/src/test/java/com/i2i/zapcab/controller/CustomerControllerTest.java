@@ -102,7 +102,7 @@ public class CustomerControllerTest {
         when(customerService.saveRideRequest(userId, rideRequestDto)).thenReturn(true);
         ApiResponseDto<String> response = customerController.saveRideRequest(rideRequestDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Searching For Captain to Accept...", response.getData());
+        assertEquals("Ride request accepted.", response.getData());
     }
     @Test
     void testSaveRideRequest_NotFound() {
@@ -198,7 +198,7 @@ public class CustomerControllerTest {
         when(customerService.retrieveCustomerIdByUserId(userId)).thenThrow(new NotFoundException("Not found"));
         ApiResponseDto<?> response = customerController.updateRideDetails(updateRideDto);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Invalid ID", response.getData());
+        assertNull(response.getData());
     }
 
     @Test

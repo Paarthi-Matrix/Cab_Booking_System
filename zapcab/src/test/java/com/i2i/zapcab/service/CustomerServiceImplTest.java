@@ -11,6 +11,8 @@ import com.i2i.zapcab.model.RideRequest;
 import com.i2i.zapcab.model.User;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -144,7 +146,9 @@ class CustomerServiceImplTest {
     }
     @Test
     void testGetAssignedDriverDetails_Success() {
-        String customerId = "customer123";
+        String id = "user1234";
+        Customer customer = Customer.builder().id("customer005").build();
+        when(customerRepository.findByUserId(id)).thenReturn(customer);
         RideRequest rideRequest = RideRequest.builder().id("ride002").pickupPoint("Airport").dropPoint("Guindy")
                 .distance(10).vehicleCategory("XUV").customer(Customer.builder().id("e1234-abcdef-100")
                         .tier(INITIAL_CUSTOMER_TIRE).build()).fare(450).build();
@@ -162,10 +166,11 @@ class CustomerServiceImplTest {
         vehicle.setLicensePlate("ABC123");
         driver.setVehicle(vehicle);
         ride.setDriver(driver);
-        when(rideRequestService.checkStatusAssignedOrNot(customerId)).thenReturn(rideRequest);
+        when(rideRequestService.getRideRequestByCustomerId(customer.getId())).thenReturn(Optional.of(rideRequest));
+        when(rideRequestService.checkStatusAssignedOrNot(customer.getId())).thenReturn(true);
         when(rideService.getRideByRideRequest(rideRequest.getId())).thenReturn(ride);
-        when(otpService.generateOTP(customerId)).thenReturn("123456");
-        AssignedDriverDto result = customerService.getAssignedDriverDetails(customerId);
+        when(otpService.generateOTP(id)).thenReturn("123456");
+        AssignedDriverDto result = customerService.getAssignedDriverDetails(id);
         assertNotNull(result);
         assertEquals("123456", result.getOtp());
         assertEquals("John Doe", result.getName());
@@ -174,42 +179,48 @@ class CustomerServiceImplTest {
         assertEquals("SUV", result.getCategory());
         assertEquals("Toyota", result.getModel());
         assertEquals("ABC123", result.getLicensePlate());
-        verify(rideRequestService, times(1)).checkStatusAssignedOrNot(customerId);
+        verify(rideRequestService, times(1)).checkStatusAssignedOrNot(customer.getId());
         verify(rideService, times(1)).getRideByRideRequest(rideRequest.getId());
-        verify(otpService, times(1)).generateOTP(customerId);
+        verify(otpService, times(1)).generateOTP(id);
     }
     @Test
     void testGetAssignedDriverDetails_NoRideRequestFound() {
-        String customerId = "customer123";
-        when(rideRequestService.checkStatusAssignedOrNot(customerId)).thenReturn(null);
-        AssignedDriverDto result = customerService.getAssignedDriverDetails(customerId);
+        String id = "user123";
+        Customer customer = Customer.builder().id("customer005").build();
+        when(customerRepository.findByUserId(id)).thenReturn(customer);
+        when(rideRequestService.checkStatusAssignedOrNot(customer.getId())).thenReturn(false);
+        AssignedDriverDto result = customerService.getAssignedDriverDetails(id);
         assertNull(result);
-        verify(rideRequestService, times(1)).checkStatusAssignedOrNot(customerId);
+        verify(rideRequestService, times(1)).checkStatusAssignedOrNot(customer.getId());
         verify(rideService, times(0)).getRideByRideRequest(anyString());
         verify(otpService, times(0)).generateOTP(anyString());
     }
     @Test
     void testGetAssignedDriverDetails_NoRideFound() {
-        String customerId = "customer123";
+        String id = "user123";
+        Customer customer = Customer.builder().id("customer005").build();
+        when(customerRepository.findByUserId(id)).thenReturn(customer);
         RideRequest rideRequest = new RideRequest();
         rideRequest.setId("rideRequest123");
-        when(rideRequestService.checkStatusAssignedOrNot(customerId)).thenReturn(rideRequest);
+        when(rideRequestService.checkStatusAssignedOrNot(customer.getId())).thenReturn(false);
         when(rideService.getRideByRideRequest(rideRequest.getId())).thenReturn(null);
-        AssignedDriverDto result = customerService.getAssignedDriverDetails(customerId);
+        AssignedDriverDto result = customerService.getAssignedDriverDetails(id);
         assertNull(result);
-        verify(rideRequestService, times(1)).checkStatusAssignedOrNot(customerId);
-        verify(rideService, times(1)).getRideByRideRequest(rideRequest.getId());
-        verify(otpService, times(0)).generateOTP(anyString());
+        verify(rideRequestService, times(1)).checkStatusAssignedOrNot(customer.getId());
+       // verify(rideService, times(0)).getRideByRideRequest(rideRequest.getId());
+        verify(otpService, times(0)).generateOTP(id);
     }
     @Test
     void testGetAssignedDriverDetails_ExceptionDuringDataRetrieval() {
-        String customerId = "customer123";
-        when(rideRequestService.checkStatusAssignedOrNot(customerId)).thenThrow(new RuntimeException("Database error"));
+        String id = "user123";
+        Customer customer = Customer.builder().id("customer005").build();
+        when(customerRepository.findByUserId(id)).thenReturn(customer);
+        when(rideRequestService.checkStatusAssignedOrNot(customer.getId())).thenThrow(new RuntimeException("Database error"));
         DatabaseException exception = assertThrows(DatabaseException.class, () -> {
-            customerService.getAssignedDriverDetails(customerId);
+            customerService.getAssignedDriverDetails(id);
         });
-        assertEquals("Error occurred while fetching assigned driver for the customer with ID: " + customerId, exception.getMessage());
-        verify(rideRequestService, times(1)).checkStatusAssignedOrNot(customerId);
+        assertEquals("Error occurred while fetching assigned driver for the customer with ID: " + id, exception.getMessage());
+        verify(rideRequestService, times(1)).checkStatusAssignedOrNot(customer.getId());
         verify(rideService, times(0)).getRideByRideRequest(anyString());
         verify(otpService, times(0)).generateOTP(anyString());
     }

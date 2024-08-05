@@ -1,11 +1,4 @@
 package com.i2i.zapcab.service;
-import static com.i2i.zapcab.common.ZapCabConstant.DRIVER_STATUS;
-import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_DRIVER_STATUS;
-import static com.i2i.zapcab.common.ZapCabConstant.INITIAL_VEHICLE_STATUS;
-import static com.i2i.zapcab.common.ZapCabConstant.PAYMENT_CASH;
-import static com.i2i.zapcab.common.ZapCabConstant.RIDE_COMPLETED;
-import static com.i2i.zapcab.common.ZapCabConstant.TEMPORARILY_UNAVAILABLE;
-import static com.i2i.zapcab.common.ZapCabConstant.VEHICLE_AVAILABLE_STATUS;
 import com.i2i.zapcab.dto.CancelRideRequestDto;
 import com.i2i.zapcab.dto.CancelRideResponseDto;
 import com.i2i.zapcab.dto.UpdateDriverStatusDto;
@@ -20,6 +13,8 @@ import com.i2i.zapcab.repository.DriverRepository;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.i2i.zapcab.common.ZapCabConstant.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -92,7 +87,7 @@ public class DriverServiceTest {
         when(driverRepository.findByUserId("user1234")).thenReturn(driver1);
         driverService.updateDriverStatusAndLocation("user1234", updateDriverStatusDto);
         verify(vehicleService, times(1)).updateVehicleStatus(VEHICLE_AVAILABLE_STATUS, driver1.getVehicle());
-        verify(vehicleLocationService, times(1)).updateVehicleLocationByVehicleId("Velachery", driver1.getVehicle());
+        verify(vehicleLocationService, times(1)).updateVehicleLocationByVehicleId("Velachery", driver1.getVehicle().getId());
         assertEquals(DRIVER_STATUS, driver1.getStatus());
     }
 
@@ -207,7 +202,7 @@ public class DriverServiceTest {
         driverService.updateDriverWallet(id, paymentMode, rideStatus, fare);
         verify(driverRepository).save(driver);
         assertEquals(TEMPORARILY_UNAVAILABLE, driver.getStatus());
-        assertEquals(INITIAL_VEHICLE_STATUS, driver.getVehicle().getStatus());
+        assertEquals(VEHICLE_STATUS_UNAVAILABLE, driver.getVehicle().getStatus());
     }
 
     @Test

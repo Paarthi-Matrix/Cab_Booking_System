@@ -77,4 +77,5 @@ public interface RideService {
 
     Optional<Ride> getRideById(String id);
 
+    void softDeleteRide(String rideId);
 }

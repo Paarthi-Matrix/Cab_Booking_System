@@ -236,6 +236,7 @@ public class DriverController {
                 driverService.updateDriverWallet(userId, paymentModeDto.getPaymentMode(),
                         rideResponseDto.getStatus(),rideResponseDto.getFare());
             }
+            rideService.softDeleteRide(rideResponseDto.getRideId());
             logger.info("Updated ride status for user with ID {}", userId);
             return ApiResponseDto.statusOk(paymentModeDto);
         } catch (NotFoundException e) {
@@ -243,7 +244,7 @@ public class DriverController {
             return ApiResponseDto.statusNotFound("Invalid ID");
         } catch (DatabaseException e) {
             logger.error("Error updating ride status for user with ID {}", userId, e);
-            return ApiResponseDto.statusInternalServerError("Error updating payment mode", e);
+            return ApiResponseDto.statusInternalServerError(e.getMessage(), e);
         }
     }
 
