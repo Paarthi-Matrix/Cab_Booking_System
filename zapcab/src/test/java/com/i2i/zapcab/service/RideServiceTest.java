@@ -53,20 +53,6 @@ public class RideServiceTest {
         assertEquals(4, ride.getRideRating());
     }
 
-//    @Test
-//    public void testUpdateRideRating_NotFoundException() {
-//        String rideId = "asd123";
-//        RideRatingDto rideRatingDto = new RideRatingDto();
-//        rideRatingDto.setRatings(4);
-//
-//        when(rideRepository.findById(rideId)).thenReturn(Optional.empty());
-//        NotFoundException thrown = assertThrows(NotFoundException.class, () -> {
-//            rideServiceImpl.updateRideRating(rideId, rideRatingDto);
-//        });
-//
-//        assertEquals("Ride not found for ID : " + rideId, thrown.getMessage());
-//    }
-
     @Test
     public void testUpdateRideRatingDatabaseException() {
         String rideId = "asd123";
@@ -76,6 +62,6 @@ public class RideServiceTest {
         DatabaseException thrown = assertThrows(DatabaseException.class, () -> {
             rideServiceImpl.updateRideRating(rideId, rideRatingDto);
         });
-        assertEquals("Error Occurred while updating ride rating with its id: " + rideId, thrown.getMessage());
+        assertEquals("Error occurred while updating ride rating with ID: " + rideId, thrown.getMessage());
     }
 }

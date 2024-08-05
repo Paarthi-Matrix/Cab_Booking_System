@@ -46,24 +46,6 @@ public class RideRequestServiceTest {
         assertEquals(RIDE_CANCELLED, rideStatusDto.getStatus());
     }
 
-//    @Test
-//    void testCancelRideRideNotFound() {
-//        String customerId = "asd123";
-//        when(rideRequestRepository.findByCustomerId(customerId)).thenReturn(Optional.empty());
-//        NotFoundException thrown = assertThrows(NotFoundException.class, () -> rideRequestService.cancelRide(customerId));
-//        assertEquals("Ride request not found for customer ID: " + customerId, thrown.getMessage());
-//        verify(rideRequestRepository, never()).save(any());
-//    }
-
-//    @Test
-//    void testCancelRideDatabaseException() {
-//        String customerId = "asd123";
-//        when(rideRequestRepository.findByCustomerId(customerId)).thenThrow(new RuntimeException("Database error"));
-//        DatabaseException thrown = assertThrows(DatabaseException.class, () -> rideRequestService.cancelRide(customerId));
-//        assertTrue(thrown.getMessage().contains("Failed to cancel ride details. Customer ID: " + customerId));
-//        verify(rideRequestRepository, never()).save(any());
-//    }
-
     @Test
     void testCancelRideDatabaseException() {
         String customerId = "asd123";

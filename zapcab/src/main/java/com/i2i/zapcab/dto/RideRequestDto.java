@@ -1,7 +1,9 @@
 package com.i2i.zapcab.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * <p>
@@ -21,6 +23,8 @@ import lombok.Data;
  */
 @Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RideRequestDto {
     private String pickupPoint;
     private String dropPoint;

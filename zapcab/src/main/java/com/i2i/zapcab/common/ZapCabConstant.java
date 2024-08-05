@@ -82,6 +82,7 @@ public class ZapCabConstant {
     public static final String RIDE_CANCELLED = "Cancelled";
     public static final String REJECTED_STATUS = "Rejected";
     public static final String TEMPORARILY_SUSPENDED = "TEMPORARILY_SUSPENDED";
+    public static final String TEMPORARILY_UNAVAILABLE = "Temporarily Unavailable";
 
     //Otp duration
     public static final long OTP_VALID_DURATION = 5 * 60 * 1000; // 30 minutes

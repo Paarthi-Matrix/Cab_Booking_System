@@ -46,7 +46,6 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private FareCalculatorService fareCalculatorService;
 
-
     @Override
     public VehicleAvailabilityResponseDto getAvailableVehiclesWithFare(
             CheckVehicleAvailabilityDto checkVehicleAvailabilityDto) {

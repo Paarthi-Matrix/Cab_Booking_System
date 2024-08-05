@@ -70,10 +70,13 @@ public class DriverServiceImpl implements DriverService {
     public Driver saveDriver(Driver driver) {
         try {
             logger.info("Saving the driver details..");
-            return driverRepository.save(driver);
+            Driver driver1 =  driverRepository.save(driver);
+            logger.info("Driver details saved {}", driver1.getId());
+            return driver1;
         } catch (Exception e) {
             logger.error("Unable to save the driver {}", driver.getUser().getName());
-            throw new DatabaseException("Error occurred while saving the driver " + driver.getUser().getName(), e);
+            throw new DatabaseException("Error occurred while saving the driver "
+                    + driver.getUser().getName(), e);
         }
     }
 
@@ -248,6 +251,8 @@ public class DriverServiceImpl implements DriverService {
         }
     }
 
+
+
     @Override
     public String retrieveDriverIdByUserId(String userId) {
         try {
@@ -267,14 +272,11 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public CancelRideResponseDto cancelRide(CancelRideRequestDto cancelRideRequestDto, String id) {
         Optional<Ride> getRide = rideService.getRideById(cancelRideRequestDto.getRideId());
-        Optional<Driver> getDrive = driverRepository.findById(id);
+        Driver driver = driverRepository.findByUserId(id);
         try {
             if (!getRide.isPresent()) {
                 logger.error("No ride found for the id {}", cancelRideRequestDto.getRideId());
-            } else if (!getDrive.isPresent()) {
-                logger.error("No such driver found for the given id : {}", id);
             }
-            Driver driver = getDrive.get();
             Ride ride = getRide.get();
             if (driver.getNoOfCancellation() == 0) {
                 driver.setStatus(TEMPORARILY_SUSPENDED);

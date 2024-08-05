@@ -169,7 +169,6 @@ public class CustomerController {
             return ApiResponseDto.statusInternalServerError(null, e);
         }
     }
-
     /**
      * <p>
      * This method handles the request to Retrieve all ride history records
